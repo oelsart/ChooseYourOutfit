@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="396.371"
+   height="1024.0001"
+   viewBox="0 0 396.371 1024.0001"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="collidersnone.svg"
+   inkscape:export-filename="..\..\..\ButtonColliders\None.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#000000"
+     bordercolor="#000000"
+     borderopacity="0.3"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="-24.5"
+     inkscape:cy="168.5"
+     inkscape:document-units="px"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:export-bgcolor="#00000000"
+     inkscape:clip-to-page="false"
+     inkscape:current-layer="svg1" />
+  <defs
+     id="defs1">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect5"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
+       radius="0"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+  </defs>
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Selected"
+     style="display:none">
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 84.7588 129.484 L 83.5555 132.537 L 81.9345 139.958 L 81.4537 148.438 L 83.0317 169.403 L 84.1695 184.498 L 82.2002 191.049 L 80.6085 199.881 L 81.2825 220.808 L 82.0061 243.349 L 80.9552 247.972 L 81.0216 248.889 L 90.3066 248.889 L 90.7157 246.481 L 90.5931 243.318 L 91.1844 234.033 L 92.4117 225.77 L 94.9056 210.939 L 95.512 200.775 L 96.9336 194.659 L 97.9291 189.205 L 98.3762 184.518 L 99.0243 180.061 L 101.071 164.226 L 102.261 155.104 L 102.7 151.292 L 103.355 149.578 L 104.457 148.843 L 104.457 129.484 L 84.7588 129.484"
+       id="path104"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_leg.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right femur"
+       sodipodi:nodetypes="ccsssssccssssscsscccc"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 66.5994 143.371 L 63.6875 145.352 L 61.5564 148.25 L 59.216 154.704 L 59.2251 155.728 L 59.8398 156.293 L 61.3787 155.078 L 61.8412 153.373 L 63.4731 150.903 L 64.1832 150.4 L 64.131 151.285 L 63.3284 155.708 L 61.142 164.834 L 61.1226 165.708 L 61.6939 166.272 L 62.9889 165.542 L 65.797 156.302 L 66.3355 156.024 L 66.6517 156.551 L 65.5025 166.971 L 66.4425 168.2 L 67.6336 167.22 L 68.9953 156.964 L 69.3482 156.551 L 69.7229 156.867 L 70.0169 166.979 L 71.237 167.876 L 71.9718 166.91 L 72.1207 156.964 L 72.3982 156.551 L 72.7578 156.867 L 74.2404 165.274 L 75.3205 166.016 L 76.0228 164.834 L 74.997 156.502 L 74.8854 147.232 L 74.1066 145.015 L 73.9151 144.109 L 66.5994 143.371"
+       id="path105"
+       inkscape:label="rightHand"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_hand.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccsscc"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 72.8833 96.323 L 71.561 115.435 L 69.8191 123.361 L 68.2931 133.711 L 66.9665 142.434 L 74.1028 143.232 L 79.7046 123.801 L 80.2539 117.805 L 82.9903 100.741 L 83.3856 98.6162 L 72.8833 96.323"
+       id="path106"
+       inkscape:label="rightArm"
+       sodipodi:nodetypes="cssccssscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_arm.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 89.0065 73.0079 L 84.3909 74.1632 L 79.5682 76.0023 L 77.5232 77.5881 L 75.9612 79.6895 L 74.4921 82.981 L 73.1515 90.2624 L 72.8679 95.2759 L 83.6825 97.7494 L 85.0234 95.8066 L 85.9178 90.8216 L 88.299 84.8186 L 92.1827 79.5332 L 95.5688 76.0445 L 89.0065 73.0079 L 89.0065 73.0079"
+       id="path107"
+       inkscape:label="rightShoulder"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_shoulder.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cssccccscc"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+    <path
+       id="path108"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="utility"
+       d="M 87.0522 121.943 L 85.9384 125.764 L 85.1361 128.484 L 124.692 128.484 L 123.889 125.764 L 122.776 121.943 L 87.0522 121.943"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)"
+       sodipodi:nodetypes="csccccc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Waist.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path109"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="torso"
+       d="M 96.698 76.3612 L 93.4661 79.6127 L 89.1698 85.3085 L 86.7013 91.681 L 85.9271 96.2058 L 86.6224 100.929 L 87.6672 106.556 L 88.348 113.215 L 87.1985 120.943 L 122.629 120.943 L 121.48 113.215 L 122.161 106.556 L 123.205 100.929 L 123.901 96.2058 L 123.127 91.681 L 120.658 85.3085 L 116.362 79.6127 L 113.13 76.3612 L 104.94 77.4771 L 96.698 76.3612 L 96.698 76.3612"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)"
+       sodipodi:nodetypes="cscsssccssscscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Torso.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path110"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.270643;stroke-dasharray:none"
+       inkscape:label="jaws"
+       d="M 93.175 51.1915 L 94.8329 56.8744 L 96.787 59.8996 L 100.175 62.5008 L 104.914 64.3843 L 109.653 62.5008 L 113.041 59.8996 L 114.995 56.8744 L 116.653 51.1915 L 93.175 51.1915"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)"
+       sodipodi:nodetypes="cscscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Jaw.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path111"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.270643;stroke-dasharray:none"
+       inkscape:label="eyes"
+       d="M 92.9465 44.4069 L 92.8499 47.7042 L 93.0228 50.2384 L 116.805 50.2384 L 116.978 47.7042 L 116.881 44.4069 L 92.9465 44.4069"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Eye.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.04765"
+       d="M 142.584 51.6637 L 137.814 53.155 L 134.626 55.7434 L 132.606 59.2256 L 131.338 63.3981 L 130.637 68.5961 L 130.854 73.8192 L 131.922 78.864 L 133.774 83.527 L 138.175 89.5147 L 143.319 93.8785 L 142.584 89.2457 L 141.684 74.6178 L 142.584 51.6637 L 142.584 51.6637"
+       id="path112"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_ear.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right ear"
+       sodipodi:nodetypes="cssccccc" />
+    <path
+       id="path114"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.245959;stroke-dasharray:none"
+       inkscape:label="head"
+       d="M 93.6793 37.3057 L 92.9876 43.368 L 116.84 43.368 L 116.149 37.3057 L 114.635 34.1208 L 112.011 31.8459 L 108.648 30.481 L 104.914 30.026 L 101.18 30.481 L 97.8167 31.8459 L 95.193 34.1208 L 93.6793 37.3057 L 93.6793 37.3057"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)"
+       sodipodi:nodetypes="sccss"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Head.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path118"
+       style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.100095;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="neck"
+       d="M 97.9144 62.1729 L 97.7776 68.6708 L 96.9234 69.9023 L 95.2293 70.9256 L 90.3193 72.6368 L 97.3402 75.5098 L 104.914 76.4676 L 112.487 75.5099 L 119.509 72.6368 L 114.599 70.9256 L 112.904 69.9023 L 112.05 68.6708 L 111.913 62.1729 L 110.777 63.0456 L 109.075 64.0822 L 104.914 65.3848 L 100.752 64.0822 L 99.0512 63.0456 L 97.9144 62.1729 L 97.9144 62.1729"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)"
+       sodipodi:nodetypes="ccccccsscssc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Neck.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 81.0938 249.889 L 80.9553 251.393 L 78.3632 255.682 L 75.5995 259.778 L 73.7782 261.875 L 73.0631 262.965 L 73.2808 264.7 L 74.9494 265.651 L 78.2104 266.29 L 84.3602 266.642 L 87.1758 266.704 L 88.8368 266.315 L 90.6994 265.102 L 91.436 263.413 L 91.2234 260.939 L 90.1485 253.828 L 90.1516 249.889 L 81.0938 249.889"
+       id="path122"
+       inkscape:label="rightFoot"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_foot.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 285.189 430.332 L 290.394 443.536 L 294.589 459.793 L 297.406 475.64 L 298.99 492.632 L 299.486 512.324 L 298.877 531.896 L 297.294 554.579 L 292.66 603.016 L 288.503 645.104 L 287.514 659.852 L 287.738 668.314 L 291.265 680.964 L 296.257 696.655 L 300.841 714.813 L 302.394 724.637 L 303.143 734.861 L 303.238 755.865 L 302.631 778.139 L 300.227 825.388 L 297.769 874.382 L 297.097 922.895 L 297.979 929.65 L 299.695 934.984 L 301.248 939.273 L 301.643 942.895 L 301.356 946.861 L 261.189 946.861 L 259.936 941.028 L 259.42 936.445 L 259.95 922.762 L 259.142 902.033 L 257.392 882.596 L 252.083 846.853 L 246.044 814.048 L 241.295 782.697 L 239.808 758.93 L 238.672 738.728 L 236.673 726.085 L 232.522 712.268 L 229.603 700.179 L 228.216 688.674 L 227.421 678 L 226.281 668.402 L 223.478 649.12 L 220.276 619.438 L 214.626 580.621 L 209.478 541.158 L 208.983 533.556 L 207.576 524.668 L 204.745 517.255 L 202.635 514.963 L 199.977 514.074 L 199.977 430.332 L 285.189 430.332"
+       id="path124"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_leg.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right femur"
+       sodipodi:nodetypes="ccsssssccssssscsscccc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 363.744 490.404 L 366.011 492.879 L 369.177 495.12 L 376.341 498.973 L 379.164 500.984 L 381.66 503.856 L 385.559 511.512 L 395.684 539.428 L 395.644 543.859 L 394.635 545.669 L 392.986 546.304 L 388.889 544.427 L 386.328 541.049 L 384.328 533.669 L 380.22 526.991 L 377.268 522.986 L 375.901 521.17 L 374.197 520.809 L 373.951 522.204 L 374.422 524.64 L 377.894 543.774 L 387.352 583.252 L 387.436 587.03 L 386.59 588.571 L 384.965 589.469 L 381.706 589 L 380.272 587.928 L 379.363 586.315 L 367.215 546.34 L 366.364 545.274 L 364.886 545.14 L 363.727 545.963 L 363.518 547.42 L 368.489 592.493 L 367.447 595.936 L 364.423 597.809 L 362.539 597.691 L 360.992 596.817 L 359.27 593.573 L 353.38 549.206 L 352.935 547.846 L 351.853 547.42 L 350.561 548.141 L 350.232 548.786 L 348.96 592.529 L 347.336 595.108 L 343.682 596.408 L 342.072 596.034 L 341.099 595.02 L 340.504 592.23 L 339.86 549.206 L 339.726 547.942 L 338.659 547.42 L 337.48 547.684 L 337.103 548.786 L 330.69 585.152 L 328.987 587.531 L 326.018 588.362 L 324.609 587.717 L 323.596 586.433 L 322.98 583.252 L 327.417 547.207 L 327.059 530.174 L 327.15 516.767 L 327.9 507.108 L 331.269 497.516 L 332.097 493.595 L 363.744 490.404"
+       id="path125"
+       inkscape:label="rightHand"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_hand.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccsscc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 336.561 286.88 L 342.281 369.554 L 343.169 377 L 344.676 383.595 L 349.816 403.844 L 353.887 426.87 L 356.417 448.615 L 358.732 468.601 L 362.156 486.349 L 331.285 489.803 L 312.67 428.181 L 308.945 415.086 L 307.052 405.748 L 305.68 391.54 L 304.677 379.809 L 292.839 305.99 L 291.129 296.8 L 336.561 286.88"
+       id="path126"
+       inkscape:label="rightArm"
+       sodipodi:nodetypes="cssccssscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_arm.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 266.814 186.022 L 286.78 191.019 L 297.481 194.113 L 307.642 198.975 L 316.489 205.835 L 320.177 210.087 L 323.246 214.925 L 326.339 220.889 L 329.601 229.164 L 332.725 241.754 L 335.401 260.662 L 336.627 282.35 L 289.845 293.05 L 286.981 288.149 L 284.044 284.646 L 282.92 275.213 L 280.175 263.081 L 275.822 249.849 L 269.874 237.113 L 261.976 225.147 L 253.074 214.249 L 238.426 199.157 L 254.276 192.914 L 266.814 186.022 L 266.814 186.022"
+       id="path127"
+       inkscape:label="rightShoulder"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_shoulder.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cssccccscc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.04765"
+       d="M 253.416 51.6637 L 258.186 53.155 L 261.374 55.7434 L 263.395 59.2256 L 264.662 63.398 L 265.363 68.5961 L 265.146 73.8192 L 264.078 78.864 L 262.226 83.527 L 257.825 89.5147 L 252.681 93.8785 L 253.416 89.2457 L 254.316 74.6178 L 253.416 51.6637 L 253.416 51.6637"
+       id="path132"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_ear.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right ear"
+       sodipodi:nodetypes="cssccccc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 301.043 951.187 L 301.642 957.694 L 303.042 961.895 L 305.632 966.485 L 312.855 976.246 L 320.265 985.8 L 323.086 990.13 L 324.811 993.967 L 326.178 996.813 L 328.164 999.107 L 332.69 1003.04 L 334.578 1005.17 L 335.783 1007.75 L 335.979 1011.03 L 334.841 1015.26 L 332.441 1017.49 L 327.623 1019.37 L 313.516 1022.14 L 298.09 1023.56 L 286.913 1023.66 L 274.733 1023.93 L 267.548 1022.24 L 263.635 1020.18 L 259.491 1017 L 257.297 1013.86 L 256.304 1009.69 L 256.338 1004.67 L 257.224 998.99 L 261.874 968.227 L 262.558 958.937 L 261.86 951.187 L 301.043 951.187"
+       id="path135"
+       inkscape:label="rightFoot"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_foot.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="UnSelected"
+     sodipodi:insensitive="true"
+     style="display:none">
+    <path
+       id="path136"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="right femur"
+       d="m 113.63672,435.12305 c -5.51935,13.17018 -8.55381,27.18564 -10.55135,41.28254 -2.83158,21.63027 -2.3003,43.61804 -0.8375,65.35881 1.22498,17.6767 3.09224,35.29992 4.75771,52.93838 2.26144,22.92426 5.17023,45.81336 6.02291,68.84956 -0.005,7.98579 -3.0146,15.5078 -5.41524,22.99837 -3.69578,11.40793 -7.21566,22.9335 -8.972625,34.78132 -1.108654,7.18782 -1.503459,14.43062 -1.417969,21.69727 0.02544,14.6221 0.393469,29.24202 1.047873,43.84923 1.524769,34.69861 4.169611,69.34782 4.959291,104.07783 0.18484,9.13937 0.36898,18.28303 0.20199,27.42394 -0.1102,3.62772 -0.23203,7.26682 -0.66856,10.87046 -0.80133,4.5182 -3.358101,8.54747 -3.868719,13.13401 3.036169,-0.0731 6.085269,-10e-4 9.126949,-0.0258 7.74219,10e-4 15.48438,0.003 23.22657,0.004 0.86682,-4.00972 0.99406,-8.30928 0.51699,-12.42028 -0.7263,-24.81391 2.22061,-49.55671 6.03966,-74.02997 4.36581,-26.8155 10.70906,-53.34284 12.97033,-80.43936 1.24457,-15.86043 0.78987,-31.92023 3.63914,-47.63899 1.92624,-9.88606 6.14185,-19.22864 7.70743,-29.17112 1.10725,-8.19589 1.53195,-16.56227 2.40854,-24.83176 0.5592,-5.63768 1.38078,-11.24567 2.37405,-16.82211 1.86668,-12.27116 2.26916,-24.73455 4.19379,-37.00053 2.7734,-19.97565 5.92919,-39.9059 8.53886,-59.90003 1.30626,-10.03019 2.39122,-20.06329 3.28564,-30.13904 0.69595,-6.10228 2.30543,-12.34855 6.14244,-17.27101 0.68376,-0.78613 1.52449,-1.44055 2.46828,-1.88463 -0.003,-25.32812 -0.005,-50.65625 -0.008,-75.98437 -25.92122,0 -51.84245,0 -77.76367,0 -0.0417,0.0976 -0.0833,0.19531 -0.125,0.29297 z" />
+    <path
+       id="path137"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightHand"
+       d="m 33.976562,495.33789 c -4.06957,4.07884 -9.819869,5.69492 -14.301825,9.19733 -2.467085,2.22631 -3.56379,5.46812 -4.912492,8.40933 -2.269203,5.5118 -4.036899,11.21 -6.0649794,16.81131 2.6607814,-4.44828 5.5914294,-8.88934 9.2988254,-12.58724 2.894243,-2.25251 7.773915,-0.382 8.447592,3.2165 0.569846,2.61071 -0.625019,5.14294 -0.90218,7.7107 -2.214076,12.80053 -4.969527,25.50361 -8.158395,38.09562 -0.825596,3.47942 -1.702406,6.9468 -2.529592,10.42575 3.523925,-11.04937 6.498924,-22.27821 10.408203,-33.20117 1.855347,-3.17004 6.602251,-3.65595 9.368412,-1.4314 2.153661,1.59346 2.832669,4.54374 2.243258,7.06395 -1.652194,14.44589 -3.302193,28.88727 -4.709327,43.35963 -0.06503,0.76721 0.199415,-0.77344 0.259092,-1.04135 0.975678,-6.11878 1.613818,-12.28668 2.493127,-18.4201 1.268392,-8.80675 2.13267,-17.6756 3.784891,-26.42331 1.235829,-3.54278 6.277371,-4.67486 9.084317,-2.31456 2.144063,1.58462 2.996541,4.4401 2.558261,7.00596 0.283066,9.63478 0.540713,19.2703 0.849609,28.9043 0.17173,-11.06373 0.155887,-22.13774 0.726563,-33.18945 0.796619,-3.16651 4.648053,-4.75671 7.601562,-3.70899 1.965368,0.65591 3.396875,2.42731 3.819599,4.43292 0.308256,1.42456 0.357736,2.8889 0.678715,4.31443 0.596713,3.48481 1.194931,6.96927 1.804421,10.45187 -1.090156,-8.03178 -1.973172,-16.13854 -1.552441,-24.25538 0.19278,-10.10973 0.567954,-20.27589 -0.670216,-30.31688 -1.123966,-3.37637 -2.59938,-6.63887 -3.478515,-10.10352 -8.646485,-0.87305 -17.292969,-1.74609 -25.939453,-2.61914 -0.06901,0.071 -0.138021,0.14193 -0.207032,0.21289 z M 6.4863281,535.56641 c -0.6191849,1.52617 -1.2513985,3.06015 -1.6074219,4.67382 1.1989085,-1.59959 1.5172532,-3.63052 1.9609376,-5.52929 -0.1178386,0.28515 -0.2356771,0.57031 -0.3535157,0.85547 z" />
+    <path
+       id="path138"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightArm"
+       d="m 58.199219,369.87305 c -0.866849,12.20629 -5.353827,23.72365 -7.794922,35.63281 -4.131911,18.48003 -5.471251,37.43355 -7.759639,56.21987 -0.758052,6.22625 -1.707211,12.42955 -2.746977,18.61255 -0.04593,0.72147 -0.223713,1.42622 -0.428931,2.1168 7.332682,0.81901 14.665365,1.63802 21.998047,2.45703 7.170305,-24.37276 14.981056,-48.56611 21.742792,-73.04285 2.955894,-12.99411 2.300359,-26.47908 4.687184,-39.58293 3.521947,-21.71425 6.822558,-43.46495 10.579253,-65.14003 0.391629,-2.29086 0.796067,-4.57948 1.195849,-6.86896 -12.035807,-2.63086 -24.071615,-5.26171 -36.107422,-7.89257 -1.788411,25.82942 -3.576823,51.65885 -5.365234,77.48828 z" />
+    <path
+       id="path139"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightShoulder"
+       d="m 120.00781,193.125 c -7.21102,1.69377 -14.56882,3.14826 -21.402668,5.82231 -6.621508,2.58209 -12.823716,6.38604 -17.485246,11.81142 -4.113577,5.00137 -7.130813,10.85155 -9.350365,16.87134 -4.056065,11.16989 -5.699317,22.99368 -6.664182,34.7805 -0.443758,5.46433 -0.719499,10.92834 -1.021365,16.40388 13.216266,2.98064 26.418421,6.0426 39.629266,9.05448 0.44514,-0.0467 0.58733,-0.83506 0.92152,-1.17166 0.93107,-1.49257 2.06706,-2.88251 3.00507,-4.3455 1.86384,-17.55809 7.20894,-34.8255 16.17647,-50.06986 7.00243,-11.54162 15.96494,-21.7505 25.47275,-31.27996 -7.22554,-2.74117 -14.20643,-6.13138 -20.8125,-10.14257 -2.82291,0.7552 -5.64583,1.51041 -8.46875,2.26562 z" />
+    <path
+       id="path140"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="utility"
+       d="m 271.37695,402.16406 c -3.90223,0.12232 -7.80723,-0.0256 -11.71054,0.0449 -45.19089,0 -90.38177,0 -135.57266,0 -1.84483,6.46054 -3.82215,12.88176 -5.76758,19.3125 23.33351,-0.032 46.66748,-0.004 70.00117,-0.0137 29.77891,0 59.55782,0 89.33672,0 -1.89187,-6.45855 -4.02586,-12.86547 -5.72265,-19.38867 -0.18815,0.015 -0.37631,0.0299 -0.56446,0.0449 z" />
+    <path
+       id="path141"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="torso"
+       d="m 163.53906,205.67578 c -11.50515,11.24783 -22.73164,23.10646 -30.52044,37.30448 -4.05409,7.35886 -6.71358,15.35153 -9.00891,23.41978 -1.76082,6.40823 -3.22222,12.92076 -3.50068,19.56977 -0.0841,3.06999 0.53051,6.10051 0.9086,9.13469 1.39819,9.4015 3.39824,18.70367 4.78615,28.10631 2.02722,9.0695 4.21657,18.17213 4.63718,27.49258 0.55912,10.2304 -1.26903,20.36713 -2.38908,30.49681 -0.33439,2.57743 -0.74126,5.14748 -1.29954,7.68652 47.25456,0 94.50912,0 141.76368,0 -2.23669,-10.51417 -2.95101,-21.2657 -3.90571,-31.94961 -0.0639,-11.43398 2.12901,-22.72982 4.81054,-33.79751 1.8072,-11.31348 4.03566,-22.55394 5.62124,-33.89195 0.48902,-6.5702 -1.02038,-12.99065 -2.53098,-19.31771 -3.54059,-14.7534 -9.56248,-29.06451 -19.12635,-40.92932 -6.54736,-8.37994 -13.83564,-16.16021 -21.5289,-23.49476 -22.36045,5.75139 -46.17089,5.74411 -68.53125,-0.004 -0.0619,0.058 -0.1237,0.11589 -0.18555,0.17383 z" />
+    <path
+       id="path142"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.17077;stroke-dasharray:none"
+       inkscape:label="jaws"
+       d="m 242.79688,96.123047 c -29.91861,0.04219 -59.83725,0.0078 -89.75586,0.0332 -0.74,-0.120942 -0.1101,0.787125 -0.13477,1.226562 1.83164,8.205641 4.56585,16.393171 9.17383,23.505861 2.4209,3.66509 5.48012,7.08499 9.02703,9.77354 7.42026,5.70402 15.62116,10.73499 24.79365,12.98937 1.2358,0.39576 2.5637,0.5102 3.81334,0.10075 5.67439,-1.41063 11.10894,-3.79737 16.1288,-6.82588 4.43832,-2.691 8.64156,-5.78866 12.48327,-9.27997 6.21356,-5.94629 9.9962,-13.93225 12.57099,-22.02537 0.98608,-3.12447 1.77042,-6.309519 2.48565,-9.505879 -0.19531,0.0026 -0.39062,0.0052 -0.58593,0.0078 z" />
+    <path
+       id="path143"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.17077;stroke-dasharray:none"
+       inkscape:label="eyes"
+       d="m 150.31055,76.431641 c 0.0868,2.205675 0.14302,4.417302 0.32031,6.591797 31.58529,0 63.17057,-10e-7 94.75586,0 0.43393,-5.374769 0.17835,-10.824791 0.0156,-16.230469 -31.59961,0 -63.19922,0 -94.79882,0 -0.0977,3.21289 -0.19532,6.425781 -0.29297,9.638672 z" />
+    <path
+       id="path144"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.04765"
+       inkscape:label="right ear"
+       d="m 137.32227,59.791016 c -0.58189,1.01843 -1.02025,2.367795 -1.32836,3.587393 -0.72252,2.697591 -0.98237,5.31346 -0.81516,8.106561 0.1882,3.195302 0.957,6.512642 2.37008,9.456436 -0.45525,-7.161336 -0.42597,-14.348759 -0.01,-21.511718 -0.0723,0.120442 -0.14453,0.240885 -0.21679,0.361328 z" />
+    <path
+       id="path145"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.06399;stroke-dasharray:none"
+       inkscape:label="head"
+       d="m 195.9707,4.6269531 c -7.63889,0.2924725 -15.21165,1.8036206 -22.17189,5.0127974 -5.11017,2.3747055 -9.78033,5.6025375 -13.43867,9.9299075 -2.73151,3.192152 -4.77645,6.920884 -5.94229,10.929434 -2.27648,7.399079 -2.59298,15.160084 -3.31043,22.813408 31.24085,-0.02681 62.48178,-0.0043 93.72266,-0.01172 -0.47049,-8.037148 -1.14949,-16.074149 -3.58809,-23.817703 -2.25195,-7.137847 -7.53384,-13.023949 -13.78201,-16.98779 -6.63232,-4.1998397 -14.32284,-6.5245845 -22.0342,-7.4347411 -3.1426,-0.3623676 -6.28114,-0.4927726 -9.45508,-0.4335928 z" />
+    <path
+       id="path146"
+       style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="neck"
+       d="m 173.01758,149.00781 c 0.28977,7.19413 0.0491,14.58179 -2.36568,21.43482 -2.18123,4.50061 -6.44975,7.52169 -10.78251,9.75413 -4.2336,2.14537 -8.75489,3.62672 -13.21705,5.20949 24.77323,11.41146 53.32848,13.97833 79.86976,7.81236 7.83084,-1.82426 15.52246,-4.42534 22.82556,-7.79283 -7.18809,-2.32844 -14.45252,-5.09205 -20.3224,-9.98607 -3.142,-2.78372 -4.87176,-6.86428 -5.34234,-10.98203 -0.64176,-4.46812 -0.73462,-8.99499 -0.76843,-13.50179 0.009,-0.79996 0.0267,-1.59994 0.0601,-2.39925 -7.44642,4.71064 -15.87696,8.22449 -24.73867,8.84691 -4.5163,0.003 -8.87359,-1.40785 -13.11875,-2.80394 -4.24635,-1.56412 -8.30085,-3.62753 -12.1211,-6.04883 0.007,0.15235 0.0143,0.30469 0.0215,0.45703 z" />
+    <path
+       id="path147"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightFoot"
+       d="m 99.201172,956.08594 c -0.859987,6.50576 -4.312868,12.31224 -8.270363,17.41343 -4.785381,6.5142 -10.352411,12.48735 -14.394461,19.52361 -1.17567,2.12713 -1.843343,4.51157 -3.147676,6.56491 -2.299184,3.33221 -6.113084,5.22821 -8.42582,8.54051 -0.886614,1.7357 -0.5987,4.0824 0.797785,5.4616 1.49718,0.8422 3.247264,1.0227 4.846718,1.604 6.773763,1.9263 13.894397,2.8255 20.93066,3.36 5.354481,0.4084 10.713755,0.6851 16.097075,0.6595 4.26506,0.01 8.53224,0.069 12.79341,0.2046 5.24559,-0.2209 10.4342,-2.6775 13.73255,-6.792 1.30806,-2.264 1.1205,-4.9326 0.99782,-7.4815 -0.4854,-5.16547 -2.01705,-10.23919 -2.47528,-15.44092 -1.06167,-8.77684 -2.82453,-17.50935 -3.53408,-26.34731 -0.18286,-2.5515 -0.23824,-5.11893 -0.0304,-7.67082 -9.95703,0 -19.91406,0 -29.871093,0 -0.01563,0.13346 -0.03125,0.26692 -0.04687,0.40039 z" />
+    <path
+       id="path148"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="right femur"
+       d="m 204.47656,510.875 c 3.5481,2.0257 5.45093,5.92075 6.58543,9.69202 2.70485,8.16488 2.40299,16.87182 3.51903,25.30952 2.76401,23.77721 6.57936,47.40229 9.87907,71.10821 1.50249,10.94916 2.7564,21.93287 3.66117,32.94786 1.06756,9.59954 3.26582,19.07442 3.8519,28.74305 0.8142,10.42564 1.30521,20.99771 4.48958,31.02243 2.00462,6.59777 4.38351,13.11637 5.50336,19.9454 1.43124,8.11307 1.70682,16.36723 2.13734,24.57808 0.37218,7.96367 0.69046,15.91151 1.33142,23.84286 0.66448,8.25768 1.91668,16.45114 3.24309,24.63736 3.63321,22.16873 8.49172,44.16759 11.50625,66.45218 2.65823,19.11849 4.39277,38.40957 4.18433,57.72697 -0.0736,3.60788 -0.46147,7.21346 -0.34119,10.82218 0.12861,1.49471 0.43838,3.1339 0.78321,4.65821 10.7832,0 21.5664,0 32.34961,0 -0.0186,-2.34441 -1.31815,-4.3991 -1.96812,-6.59468 -1.46812,-4.07783 -2.60121,-8.34627 -2.55256,-12.712 -0.21316,-6.39793 -0.0795,-12.801 -0.0768,-19.20104 0.42736,-47.80963 4.96003,-95.46169 6.06208,-143.24897 0.19443,-10.93395 0.35119,-21.89058 -0.4418,-32.80543 -1.30594,-13.83622 -5.27095,-27.32188 -9.60136,-40.50187 -1.92612,-6.10346 -4.04694,-12.17791 -5.25518,-18.47487 -0.83128,-5.98024 -0.10034,-12.01826 0.25543,-18.00546 1.73144,-22.58715 4.37969,-45.08955 6.54071,-67.63696 1.95702,-20.02765 3.86246,-40.07211 4.61188,-60.18278 0.56943,-16.59308 0.18492,-33.28389 -2.23353,-49.67108 -1.60403,-10.56554 -4.01441,-20.95047 -7.34359,-31.11047 -0.88804,-2.49699 -1.91935,-4.93975 -2.94251,-7.38369 -25.91276,0 -51.82552,0 -77.73828,0 0,25.34766 0,50.69531 0,76.04297 z" />
+    <path
+       id="path149"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightHand"
+       d="m 355.5332,495.75781 c -6.55403,0.66211 -13.10807,1.32422 -19.66211,1.98633 -0.8675,3.72765 -2.65752,7.16482 -3.61737,10.86009 -0.56906,3.62127 -0.48172,7.30274 -0.65094,10.95519 -0.21096,9.64225 0.2699,19.28603 0.14743,28.92656 -0.49177,4.66887 -1.02262,9.33349 -1.58615,13.99449 0.96254,-5.36379 1.85579,-10.74609 2.91107,-16.08937 1.26662,-3.40985 6.00972,-4.52632 8.87995,-2.47313 2.11334,1.36728 2.59965,4.11761 2.42334,6.45546 0.14701,9.79614 0.27576,19.59257 0.4497,29.38829 0.31114,-10.64997 0.57656,-21.30266 1.03321,-31.94727 0.66762,-4.0428 6.05298,-6.2678 9.3847,-3.89139 2.17592,1.53864 2.65634,4.36685 2.87731,6.84153 1.83094,13.673 3.59049,27.36636 5.53227,41.01632 0.097,0.26464 0.12911,1.828 0.29008,1.14772 0.1378,-1.31393 -0.35033,-2.59449 -0.3561,-3.90802 -1.55051,-14.18746 -3.19117,-28.36144 -4.5974,-42.56358 0.12359,-4.24248 5.31033,-7.24927 9.07795,-5.35715 2.47578,1.06083 3.65244,3.74829 4.14861,6.23606 2.94289,9.67196 5.87334,19.36175 8.8457,29.01562 -2.80636,-11.82495 -5.76115,-23.61766 -8.28085,-35.50718 -1.14834,-6.51896 -2.45959,-13.01626 -3.40919,-19.56546 -0.0178,-3.36478 3.86704,-6.01584 6.95957,-4.83751 2.66915,0.69636 4.14866,3.22092 5.63169,5.32419 1.92007,2.70601 4.01179,5.31793 5.52261,8.28713 -2.4589,-6.73804 -4.79199,-13.5275 -7.51562,-20.16406 -1.35283,-2.96486 -3.52888,-5.98091 -6.66717,-7.40071 -3.99228,-2.15269 -8.23799,-4.0868 -11.44807,-7.38444 -2.10807,0.21809 -4.21614,0.43619 -6.32422,0.65429 z m 34.0293,40.70703 c 0.33733,1.39193 0.75185,2.8276 1.68359,3.94922 -0.62869,-1.93393 -1.4287,-3.80683 -2.07617,-5.73437 0.13086,0.59505 0.26172,1.1901 0.39258,1.78515 z" />
+    <path
+       id="path150"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightArm"
+       d="m 296.36719,300.26367 c 3.00839,16.89888 5.6155,33.86627 8.34628,50.81207 1.67021,10.64381 3.41996,21.27897 4.83515,31.95954 0.90504,10.36629 1.04543,20.90056 3.80906,31.00158 2.8489,10.96912 6.42309,21.7305 9.62729,32.59751 3.88457,12.74856 7.70739,25.51578 11.53456,38.28165 7.36914,-0.82227 14.73828,-1.64454 22.10742,-2.4668 -3.47208,-16.11379 -4.31953,-32.62871 -6.42467,-48.9305 -1.77321,-14.72678 -4.48393,-29.35067 -8.50131,-43.63522 -1.80788,-6.63009 -3.52879,-13.34452 -3.90262,-20.23572 -0.59566,-7.60219 -1.00646,-15.21761 -1.59475,-22.82044 -1.25797,-18.14817 -2.51594,-36.29635 -3.77391,-54.44453 -12.02084,2.62696 -24.04167,5.25391 -36.0625,7.88086 z" />
+    <path
+       id="path151"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightShoulder"
+       d="m 266.47266,191.50586 c -6.29687,3.71103 -12.90043,6.9048 -19.73633,9.49414 10.40463,10.44293 20.1423,21.74259 27.41594,34.62588 6.60034,12.1464 10.73912,25.50933 13.21553,39.07303 0.45399,2.61874 0.79523,5.25634 1.0404,7.90265 1.44917,1.60441 2.60652,3.44318 3.67969,5.3125 13.27474,-3.03776 26.54948,-6.07552 39.82422,-9.11328 -0.59117,-10.42557 -0.96313,-20.87025 -2.74873,-31.17263 -1.37631,-8.77322 -3.38663,-17.55771 -7.29424,-25.58323 -2.3497,-4.83727 -5.07861,-9.78429 -9.10522,-13.52402 -6.80039,-6.52119 -15.76273,-10.37519 -24.77325,-12.57422 -5.77538,-1.39209 -11.59743,-2.59648 -17.31344,-4.22626 -1.05934,-0.28801 -2.11797,-0.58007 -3.18895,-0.82198 -0.33854,0.20247 -0.67708,0.40495 -1.01562,0.60742 z" />
+    <path
+       id="path152"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.04765"
+       inkscape:label="right ear"
+       d="m 258.60352,62.216797 c 0.24041,6.235902 0.23664,12.484225 -0.13672,18.714844 2.43502,-5.140694 2.98099,-11.116259 1.78105,-16.657748 -0.38497,-1.663912 -0.91098,-3.321553 -1.76933,-4.805143 0.0417,0.916016 0.0833,1.832031 0.125,2.748047 z" />
+    <path
+       id="path153"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.432588;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="rightFoot"
+       d="m 266.95312,956.0625 c 0.46732,6.62826 -0.62533,13.22133 -1.67228,19.74223 -1.32004,9.33819 -2.56405,18.69387 -4.28755,27.96997 -0.35799,2.9175 -0.61951,6.08 0.72438,8.7958 1.47963,2.2271 3.92393,3.5176 6.15971,4.8512 3.14242,1.6122 6.68379,2.2634 10.16492,2.0244 3.99783,-0.1579 7.99967,-0.4838 12.00064,-0.2282 8.09588,0.073 16.15735,-0.6579 24.13181,-1.764 5.08235,-0.7598 10.23501,-1.5293 15.03619,-3.4383 0.72537,-0.3603 1.68882,-0.5982 1.88281,-1.5097 0.50606,-1.5852 0.73969,-3.4648 -0.29773,-4.8993 -1.20478,-1.4163 -2.70019,-2.5658 -4.0883,-3.8003 -2.34813,-1.9732 -4.60623,-4.24474 -5.67064,-7.18874 -0.92193,-2.24273 -1.7545,-4.4998 -3.26682,-6.44747 -5.81005,-8.67528 -13.41354,-16.09664 -18.29309,-25.40864 -1.48721,-2.80726 -2.39249,-5.90927 -2.66272,-9.07395 -9.96419,0 -19.92838,0 -29.89257,0 0.0104,0.125 0.0208,0.25 0.0312,0.375 z" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer24"
+     inkscape:label="Colliders"
+     style="display:inline;stroke-width:0;stroke-dasharray:none"
+     transform="matrix(4.3258817,0,0,4.3258817,4.358568e-4,0)">
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 84.7588 129.484 L 83.5555 132.537 L 81.9345 139.958 L 81.4537 148.438 L 83.0317 169.403 L 84.1695 184.498 L 82.2002 191.049 L 80.6085 199.881 L 81.2825 220.808 L 82.0061 243.349 L 80.9552 247.972 L 81.0216 248.889 L 90.3066 248.889 L 90.7157 246.481 L 90.5931 243.318 L 91.1844 234.033 L 92.4117 225.77 L 94.9056 210.939 L 95.512 200.775 L 96.9336 194.659 L 97.9291 189.205 L 98.3762 184.518 L 99.0243 180.061 L 101.071 164.226 L 102.261 155.104 L 102.7 151.292 L 103.355 149.578 L 104.457 148.843 L 104.457 129.484 Z"
+       id="right_leg"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_leg.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right femur"
+       sodipodi:nodetypes="ccsssssccssssscsscccc"
+       transform="translate(-59.14301,-30.00592)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 66.5994 143.371 L 63.6875 145.352 L 61.5564 148.25 L 59.216 154.704 L 59.2251 155.728 L 59.8398 156.293 L 61.3787 155.078 L 61.8412 153.373 L 63.4731 150.903 L 64.1832 150.4 L 64.131 151.285 L 63.3284 155.708 L 61.142 164.834 L 61.1226 165.708 L 61.6939 166.272 L 62.9889 165.542 L 65.797 156.302 L 66.3355 156.024 L 66.6517 156.551 L 65.5025 166.971 L 66.4425 168.2 L 67.6336 167.22 L 68.9953 156.964 L 69.3482 156.551 L 69.7229 156.867 L 70.0169 166.979 L 71.237 167.876 L 71.9718 166.91 L 72.1207 156.964 L 72.3982 156.551 L 72.7578 156.867 L 74.2404 165.274 L 75.3205 166.016 L 76.0228 164.834 L 74.997 156.502 L 74.8854 147.232 L 74.1066 145.015 L 73.9151 144.109 Z"
+       id="right_hand"
+       inkscape:label="rightHand"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_hand.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccsscc"
+       transform="translate(-59.14301,-30.00592)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 72.8833 96.323 L 71.561 115.435 L 69.8191 123.361 L 68.2931 133.711 L 66.9665 142.434 L 74.1028 143.232 L 79.7046 123.801 L 80.2539 117.805 L 82.9903 100.741 L 83.3856 98.6162 Z"
+       id="right_arm"
+       inkscape:label="rightArm"
+       sodipodi:nodetypes="cssccssscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_arm.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="translate(-59.14301,-30.00592)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 89.0065 73.0079 L 84.3909 74.1632 L 79.5682 76.0023 L 77.5232 77.5881 L 75.9612 79.6895 L 74.4921 82.981 L 73.1515 90.2624 L 72.8679 95.2759 L 83.6825 97.7494 L 85.0234 95.8066 L 85.9178 90.8216 L 88.299 84.8186 L 92.1827 79.5332 L 95.5688 76.0445 L 89.0065 73.0079 Z"
+       id="right_shoulder"
+       inkscape:label="rightShoulder"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_shoulder.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cssccccscc"
+       transform="translate(-59.14301,-30.00592)" />
+    <path
+       id="Waist"
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="utility"
+       d="M 87.0522 121.943 L 85.9384 125.764 L 85.1361 128.484 L 124.692 128.484 L 123.889 125.764 L 122.776 121.943 Z"
+       transform="translate(-59.14301,-30.00592)"
+       sodipodi:nodetypes="csccccc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Waist.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="Torso"
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="torso"
+       d="M 96.698 76.3612 L 93.4661 79.6127 L 89.1698 85.3085 L 86.7013 91.681 L 85.9271 96.2058 L 86.6224 100.929 L 87.6672 106.556 L 88.348 113.215 L 87.1985 120.943 L 122.629 120.943 L 121.48 113.215 L 122.161 106.556 L 123.205 100.929 L 123.901 96.2058 L 123.127 91.681 L 120.658 85.3085 L 116.362 79.6127 L 113.13 76.3612 L 104.94 77.4771 L 96.698 76.3612 Z"
+       transform="translate(-59.14301,-30.00592)"
+       sodipodi:nodetypes="cscsssccssscscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Torso.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="Jaw"
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="jaws"
+       d="M 93.175 51.1915 L 94.8329 56.8744 L 96.787 59.8996 L 100.175 62.5008 L 104.914 64.3843 L 109.653 62.5008 L 113.041 59.8996 L 114.995 56.8744 L 116.653 51.1915 Z"
+       transform="translate(-59.14301,-30.00592)"
+       sodipodi:nodetypes="cscscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Jaw.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="Eye"
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="eyes"
+       d="M 92.9465 44.4069 L 92.8499 47.7042 L 93.0228 50.2384 L 116.805 50.2384 L 116.978 47.7042 L 116.881 44.4069 Z"
+       transform="translate(-59.14301,-30.00592)"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Eye.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke-width:0.99999999;stroke:#ff0000;stroke-opacity:1;stroke-dasharray:none"
+       d="M 142.584 51.6637 L 137.814 53.155 L 134.626 55.7434 L 132.606 59.2256 L 131.338 63.3981 L 130.637 68.5961 L 130.854 73.8192 L 131.922 78.864 L 133.774 83.527 L 138.175 89.5147 L 143.319 93.8785 L 142.584 89.2457 L 141.684 74.6178 L 142.584 51.6637 Z"
+       id="right_ear"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_ear.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right ear"
+       sodipodi:nodetypes="cssccccc"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+    <path
+       id="Head"
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="head"
+       d="M 93.6793 37.3057 L 92.9876 43.368 L 116.84 43.368 L 116.149 37.3057 L 114.635 34.1208 L 112.011 31.8459 L 108.648 30.481 L 104.914 30.026 L 101.18 30.481 L 97.8167 31.8459 L 95.193 34.1208 L 93.6793 37.3057 Z"
+       transform="translate(-59.14301,-30.00592)"
+       sodipodi:nodetypes="sccss"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Head.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="Neck"
+       style="display:inline;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       inkscape:label="neck"
+       d="M 97.9144 62.1729 L 97.7776 68.6708 L 96.9234 69.9023 L 95.2293 70.9256 L 90.3193 72.6368 L 97.3402 75.5098 L 104.914 76.4676 L 112.487 75.5099 L 119.509 72.6368 L 114.599 70.9256 L 112.904 69.9023 L 112.05 68.6708 L 111.913 62.1729 L 110.777 63.0456 L 109.075 64.0822 L 104.914 65.3848 L 100.752 64.0822 L 99.0512 63.0456 L 97.9144 62.1729 Z"
+       transform="translate(-59.14301,-30.00592)"
+       sodipodi:nodetypes="ccccccsscssc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\Neck.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 81.0938 249.889 L 80.9553 251.393 L 78.3632 255.682 L 75.5995 259.778 L 73.7782 261.875 L 73.0631 262.965 L 73.2808 264.7 L 74.9494 265.651 L 78.2104 266.29 L 84.3602 266.642 L 87.1758 266.704 L 88.8368 266.315 L 90.6994 265.102 L 91.436 263.413 L 91.2234 260.939 L 90.1485 253.828 L 90.1516 249.889 Z"
+       id="right_foot"
+       inkscape:label="rightFoot"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\right_foot.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="translate(-59.14301,-30.00592)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.99999999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 285.189 430.332 L 290.394 443.536 L 294.589 459.793 L 297.406 475.64 L 298.99 492.632 L 299.486 512.324 L 298.877 531.896 L 297.294 554.579 L 292.66 603.016 L 288.503 645.104 L 287.514 659.852 L 287.738 668.314 L 291.265 680.964 L 296.257 696.655 L 300.841 714.813 L 302.394 724.637 L 303.143 734.861 L 303.238 755.865 L 302.631 778.139 L 300.227 825.388 L 297.769 874.382 L 297.097 922.895 L 297.979 929.65 L 299.695 934.984 L 301.248 939.273 L 301.643 942.895 L 301.356 946.861 L 261.189 946.861 L 259.936 941.028 L 259.42 936.445 L 259.95 922.762 L 259.142 902.033 L 257.392 882.596 L 252.083 846.853 L 246.044 814.048 L 241.295 782.697 L 239.808 758.93 L 238.672 738.728 L 236.673 726.085 L 232.522 712.268 L 229.603 700.179 L 228.216 688.674 L 227.421 678 L 226.281 668.402 L 223.478 649.12 L 220.276 619.438 L 214.626 580.621 L 209.478 541.158 L 208.983 533.556 L 207.576 524.668 L 204.745 517.255 L 202.635 514.963 L 199.977 514.074 L 199.977 430.332 Z"
+       id="left_leg"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_leg.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right femur"
+       sodipodi:nodetypes="ccsssssccssssscsscccc"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.99999999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 363.744 490.404 L 366.011 492.879 L 369.177 495.12 L 376.341 498.973 L 379.164 500.984 L 381.66 503.856 L 385.559 511.512 L 395.684 539.428 L 395.644 543.859 L 394.635 545.669 L 392.986 546.304 L 388.889 544.427 L 386.328 541.049 L 384.328 533.669 L 380.22 526.991 L 377.268 522.986 L 375.901 521.17 L 374.197 520.809 L 373.951 522.204 L 374.422 524.64 L 377.894 543.774 L 387.352 583.252 L 387.436 587.03 L 386.59 588.571 L 384.965 589.469 L 381.706 589 L 380.272 587.928 L 379.363 586.315 L 367.215 546.34 L 366.364 545.274 L 364.886 545.14 L 363.727 545.963 L 363.518 547.42 L 368.489 592.493 L 367.447 595.936 L 364.423 597.809 L 362.539 597.691 L 360.992 596.817 L 359.27 593.573 L 353.38 549.206 L 352.935 547.846 L 351.853 547.42 L 350.561 548.141 L 350.232 548.786 L 348.96 592.529 L 347.336 595.108 L 343.682 596.408 L 342.072 596.034 L 341.099 595.02 L 340.504 592.23 L 339.86 549.206 L 339.726 547.942 L 338.659 547.42 L 337.48 547.684 L 337.103 548.786 L 330.69 585.152 L 328.987 587.531 L 326.018 588.362 L 324.609 587.717 L 323.596 586.433 L 322.98 583.252 L 327.417 547.207 L 327.059 530.174 L 327.15 516.767 L 327.9 507.108 L 331.269 497.516 L 332.097 493.595 Z"
+       id="left_hand"
+       inkscape:label="rightHand"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_hand.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccsscc"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.99999999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 336.561 286.88 L 342.281 369.554 L 343.169 377 L 344.676 383.595 L 349.816 403.844 L 353.887 426.87 L 356.417 448.615 L 358.732 468.601 L 362.156 486.349 L 331.285 489.803 L 312.67 428.181 L 308.945 415.086 L 307.052 405.748 L 305.68 391.54 L 304.677 379.809 L 292.839 305.99 L 291.129 296.8 Z"
+       id="left_arm"
+       inkscape:label="rightArm"
+       sodipodi:nodetypes="cssccssscc"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_arm.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.99999999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 266.814 186.022 L 286.78 191.019 L 297.481 194.113 L 307.642 198.975 L 316.489 205.835 L 320.177 210.087 L 323.246 214.925 L 326.339 220.889 L 329.601 229.164 L 332.725 241.754 L 335.401 260.662 L 336.627 282.35 L 289.845 293.05 L 286.981 288.149 L 284.044 284.646 L 282.92 275.213 L 280.175 263.081 L 275.822 249.849 L 269.874 237.113 L 261.976 225.147 L 253.074 214.249 L 238.426 199.157 L 254.276 192.914 L 266.814 186.022 Z"
+       id="left_shoulder"
+       inkscape:label="rightShoulder"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_shoulder.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="cssccccscc"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.99999999;stroke-opacity:1;stroke-dasharray:none"
+       d="M 253.416 51.6637 L 258.186 53.155 L 261.374 55.7434 L 263.395 59.2256 L 264.662 63.398 L 265.363 68.5961 L 265.146 73.8192 L 264.078 78.864 L 262.226 83.527 L 257.825 89.5147 L 252.681 93.8785 L 253.416 89.2457 L 254.316 74.6178 L 253.416 51.6637 Z"
+       id="left_ear"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_ear.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       inkscape:label="right ear"
+       sodipodi:nodetypes="cssccccc"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.99999999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 301.043 951.187 L 301.642 957.694 L 303.042 961.895 L 305.632 966.485 L 312.855 976.246 L 320.265 985.8 L 323.086 990.13 L 324.811 993.967 L 326.178 996.813 L 328.164 999.107 L 332.69 1003.04 L 334.578 1005.17 L 335.783 1007.75 L 335.979 1011.03 L 334.841 1015.26 L 332.441 1017.49 L 327.623 1019.37 L 313.516 1022.14 L 298.09 1023.56 L 286.913 1023.66 L 274.733 1023.93 L 267.548 1022.24 L 263.635 1020.18 L 259.491 1017 L 257.297 1013.86 L 256.304 1009.69 L 256.338 1004.67 L 257.224 998.99 L 261.874 968.227 L 262.558 958.937 L 261.86 951.187 Z"
+       id="left_foot"
+       inkscape:label="rightFoot"
+       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\None\Filled\left_foot.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="matrix(0.23116675,0,0,0.23116675,-1.007556e-4,0)" />
+  </g>
+</svg>

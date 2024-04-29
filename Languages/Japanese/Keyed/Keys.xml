@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <CYO.NoApparels>このパーツに合う服が無い</CYO.NoApparels>
+  <CYO.AllLayers>全てのレイヤー</CYO.AllLayers>
+  <CYO.LoadFilter>フィルター読込</CYO.LoadFilter>
+  <CYO.ApplyFilter>フィルター適用</CYO.ApplyFilter>
+  
+  <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする</CYO.Settings.DisableAddedUI>
+  <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる</CYO.Settings.CollapseByLayer>
+  <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する)</CYO.Settings.SyncFilter>
+</LanguageData>
