@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
@@ -12,6 +13,7 @@ using static UnityEngine.Scripting.GarbageCollector;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace ChooseYourOutfit
 {
@@ -51,7 +53,7 @@ namespace ChooseYourOutfit
                 this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
             }
 
-            existPartButtons = GetExistPartsAndButtons(this.buttonColliders);
+            existParts = GetExistPartsAndButtons(this.buttonColliders);
             this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null).Where(a => a.apparel.PawnCanWear(this.SelectedPawn));
             this.layerListToShow = this.ListingLayerToShow();
 
@@ -283,7 +285,7 @@ namespace ChooseYourOutfit
                         {
                             this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
                         }
-                        existPartButtons = GetExistPartsAndButtons(this.buttonColliders);
+                        existParts = GetExistPartsAndButtons(this.buttonColliders);
                         foreach (var apparel in preApparelsApparel)
                         {
                             AccessTools.Field(typeof(ThingOwner), "owner").SetValue(apparel.holdingOwner, this.SelectedPawn.apparel);
@@ -365,7 +367,6 @@ namespace ChooseYourOutfit
                 this.apparelListToShow = ListingApparelToShow(this.allApparels);
             }
 
-            Text.Font = GameFont.Small;
             foreach (var layer in layerListToShow)
             {
                 if (Mouse.IsOver(itemRect))
@@ -389,6 +390,7 @@ namespace ChooseYourOutfit
         //pawnが着られる選択中のレイヤーかつ選択中のボディパーツの服のリストを描画
         public void DoApparelList(Rect outerRect)
         {
+            var drawApparels = new ConcurrentBag<Action>();
             Rect viewRect = outerRect;
             viewRect.height = Text.LineHeight * this.apparelListToShow.Select(g => g.Count()).Sum();
             this.mouseovered = null;
@@ -407,11 +409,8 @@ namespace ChooseYourOutfit
                         this.applyFilter(canWearAllowed);
                     }
                 }
-
                 outerRect.height -= 27f;
             }
-
-
 
             Widgets.AdjustRectsForScrollView(outerRect, ref outerRect, ref viewRect);
             Rect itemRect = outerRect;
@@ -420,114 +419,129 @@ namespace ChooseYourOutfit
             Rect infoButtonRect = new Rect(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
             Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax + 5f, itemRect.height);
             infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
+            var apparelCountTrue = apparelListToShow.FirstOrDefault(a => a.Key == true)?.Count() ?? 0f;
+            Rect mouseOverRect = Rect.zero;
 
             Widgets.BeginScrollView(outerRect, ref this.apparelsScrollPosition, viewRect, true);
+
             foreach (var group in apparelListToShow)
             {
-                foreach(var apparel in group)
+                Parallel.ForEach(group, apparel =>
                 {
-                    var curY = apparelListToShow.FirstIndexOf(g => g.Key == group.Key) * apparelListToShow.ElementAt(0).Count() + group.FirstIndexOf(a => a == apparel) * itemRect.height;
+                    var curY = group.FirstIndexOf(a => a == apparel) * itemRect.height;
+                    if (group.Key == false) curY += apparelCountTrue * itemRect.height;
                     var curItemRect = new Rect(itemRect.x, itemRect.y + curY, itemRect.width, itemRect.height);
                     var curIconRect = new Rect(iconRect.x, iconRect.y + curY, iconRect.width, iconRect.height);
                     var curLabelRect = new Rect(labelRect.x, labelRect.y + curY, labelRect.width, labelRect.height);
                     var curInfoButtonRect = new Rect(infoButtonRect.x, infoButtonRect.y + curY, infoButtonRect.width, infoButtonRect.height);
-
-                    if (!group.Key) GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
-                    if (this.SelectedApparels.Contains(apparel)) Widgets.DrawHighlightSelected(curItemRect);
+                    bool drawHighlight = false;
 
                     if (Mouse.IsOver(curItemRect))
                     {
                         this.mouseovered = this.statsDrawn = apparel;
+                        drawHighlight = true;
+                    }
+                    
+                    drawApparels.Add(() =>
+                    {
+                        if (!group.Key) GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
+                        if (this.SelectedApparels.Contains(apparel)) Widgets.DrawHighlightSelected(curItemRect);
 
-                        Widgets.DrawHighlight(curItemRect);
-                        if (Widgets.ButtonInvisible(curItemRect, true))
+                        if (drawHighlight)
                         {
-                            if (this.SelectedApparels.Contains(apparel))
+                            TooltipHandler.TipRegion(curItemRect, apparel.DescriptionDetailed);
+                            Widgets.DrawHighlight(curItemRect);
+                            if (Widgets.ButtonInvisible(curItemRect, true))
                             {
-                                this.SelectedApparels.Remove(apparel);
-                                this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
-                            }
-                            else
-                            {
-                                this.SelectedApparels.Add(apparel);
-                                if (!this.PreviewedApparels.Any(p => apparel != p && !ApparelUtility.CanWearTogether(apparel, p, this.SelectedPawn.RaceProps.body)))
+                                if (this.SelectedApparels.Contains(apparel))
                                 {
-                                    this.PreviewedApparels.Add(apparel);
-                                    this.preApparelsApparel.TryAddOrTransfer(this.GetApparel(apparel, this.SelectedPawn));
+                                    this.SelectedApparels.Remove(apparel);
+                                    this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
                                 }
-                                this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+                                else
+                                {
+                                    this.SelectedApparels.Add(apparel);
+                                    if (!this.PreviewedApparels.Any(p => apparel != p && !ApparelUtility.CanWearTogether(apparel, p, this.SelectedPawn.RaceProps.body)))
+                                    {
+                                        this.PreviewedApparels.Add(apparel);
+                                        this.preApparelsApparel.TryAddOrTransfer(this.GetApparel(apparel, this.SelectedPawn));
+                                    }
+                                    this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+                                }
                             }
                         }
-                        TooltipHandler.TipRegion(curItemRect, apparel.DescriptionDetailed);
-                    }
-
-                    Widgets.DefIcon(curIconRect, apparel);
-                    Widgets.Label(labelRect, apparel.label);
-                    Log.Message(apparel.label);
-                    this.TinyInfoButton(curInfoButtonRect, apparel, GenStuff.DefaultStuffFor(apparel));
-                }
+                        Widgets.DefIcon(curIconRect, apparel);
+                        Widgets.Label(curLabelRect, apparel.label);
+                        this.TinyInfoButton(curInfoButtonRect, apparel, GenStuff.DefaultStuffFor(apparel));
+                    });
+                });
             }
+            foreach (var d in drawApparels) d();
             Widgets.EndScrollView();
         }
 
         //パーツで分かれたポーンの体を描画
         public void DoPawnBodySeparatedByParts(Rect rect)
         {
+            var drawBody = new ConcurrentBag<Action>();
             var mousePosition = Event.current.mousePosition;
             var isInAnyPolygon = false;
-
-            foreach (var (part, groups, id, polygons) in this.existPartButtons)
+            Parallel.ForEach(this.existParts, (KeyValuePair<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef> groups)> part) =>
             {
-
-                if (polygons.Count() == 0) Log.Error("[ChooseYourOutfit]Path does not contain any polygons. Path may not be closed.");
-                var pos = new Vector2(polygons.Min(p => p.Min(v => v.x)), polygons.Min(p => p.Min(v => v.y)));
-                var size = new Vector2(polygons.Max(p => p.Max(v => v.x)), polygons.Max(p => p.Max(v => v.y))) - pos;
+                if (buttonColliders[part.Key].Count() == 0) Log.Error("[ChooseYourOutfit]Path does not contain any polygons. Path may not be closed.");
+                var pos = new Vector2(buttonColliders[part.Key].Min(p => p.Min(v => v.x)), buttonColliders[part.Key].Min(p => p.Min(v => v.y)));
+                var size = new Vector2(buttonColliders[part.Key].Max(p => p.Max(v => v.x)), buttonColliders[part.Key].Max(p => p.Max(v => v.y))) - pos;
 
                 var isInPolygon = false;
 
                 if (Mouse.IsOver(rect))
                 {
-                    isInPolygon = polygons.Any(p => PolygonCollider.IsInPolygon(p, mousePosition));
+                    isInPolygon = buttonColliders[part.Key].Any(p => PolygonCollider.IsInPolygon(p, mousePosition));
                     if (isInPolygon)
                     {
                         isInAnyPolygon = true;
-                        this.highlightedGroups = groups;
+                        this.highlightedGroups = part.Value.groups;
                         if (Input.GetMouseButtonDown(0))
                         {
-                            this.SelectedBodypartGroups = groups;
+                            this.SelectedBodypartGroups = part.Value.groups;
                             this.apparelListToShow = ListingApparelToShow(this.allApparels);
                             this.layerListToShow = ListingLayerToShow();
                         }
                     }
                 }
-                var partHasSelGroups = this.SelectedBodypartGroups?.All(p => groups.Contains(p)) ?? false;
-                var partHasHlGroups = this.highlightedGroups?.All(p => groups.Contains(p)) ?? false;
-                var partHasHlApGroups = this.mouseovered == null ? false : this.mouseovered.apparel.bodyPartGroups.Intersect(part.groups).Count() != 0;
+                var partHasSelGroups = this.SelectedBodypartGroups?.All(p => part.Value.groups.Contains(p)) ?? false;
+                var partHasHlGroups = this.highlightedGroups?.All(p => part.Value.groups.Contains(p)) ?? false;
+                var partHasHlApGroups = this.mouseovered == null ? false : this.mouseovered.apparel.bodyPartGroups.Intersect(part.Value.groups).Count() != 0;
                 var color = partHasSelGroups ? new Color(0f, 0.5f, 1f, 1f) : Color.white;
 
                 //このパーツが着ることのできる衣服がある全てのレイヤー
                 var allLayers = this.SelectedLayers
                     .Where(l => allApparels
                     .Where(a => a.apparel.layers.Contains(l))
-                    .Any(a => groups.Any(g => a.apparel.bodyPartGroups.Contains(g))));
+                    .Any(a => part.Value.groups.Any(g => a.apparel.bodyPartGroups.Contains(g))));
                 //このパーツが衣服を着ているレイヤー
                 var wearLayers = this.SelectedLayers
                     .Where(l => this.SelectedApparels
                     .Where(a => a.apparel.layers.Contains(l))
-                    .Any(a => groups.Any(g => a.apparel.bodyPartGroups.Contains(g))));
+                    .Any(a => part.Value.groups.Any(g => a.apparel.bodyPartGroups.Contains(g))));
 
                 var alpha = new Color(1f, 1f, 1f, allLayers.Count() != 0 ? (float)wearLayers.Count() / (float)allLayers.Count() : 0f);
 
-                GUI.DrawTexture(new Rect(pos, size), filledPart[id], ScaleMode.ScaleToFit, true, 0f, color * alpha, 0f, 0f);
+                drawBody.Add(() =>
+                {
+                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha, 0f, 0f);
 
-                GUI.DrawTexture(new Rect(pos, size), unfilledPart[id], ScaleMode.ScaleToFit, true, 0f, color, 0f, 0f);
+                    GUI.DrawTexture(new Rect(pos, size), unfilledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color, 0f, 0f);
 
-                if (!partHasHlGroups)
-                    GUI.DrawTexture(new Rect(pos, size), filledPart[id], ScaleMode.ScaleToFit, true, 0f, Widgets.WindowBGFillColor * new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                    if (!partHasHlGroups)
+                        GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, Widgets.WindowBGFillColor * new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
 
-                if (partHasHlApGroups)
-                    GUI.DrawTexture(new Rect(pos, size), filledPart[id], ScaleMode.ScaleToFit, true, 0f, new Color(1f, 1f, 0.5f, 0.3f), 0f, 0f);
-            }
+                    if (partHasHlApGroups)
+                        GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, new Color(1f, 1f, 0.5f, 0.3f), 0f, 0f);
+                });
+            });
+
+            foreach (var d in drawBody) d();
 
             if (!isInAnyPolygon)
             {
@@ -757,8 +771,9 @@ namespace ChooseYourOutfit
             return (Apparel)apparelThingWithComps;
         }
 
-        private IEnumerable<(BodyPartRecord part, IEnumerable<BodyPartGroupDef> groups, string id, IEnumerable<IEnumerable<Vector2>> polygons)> GetExistPartsAndButtons(IEnumerable<(string id, IEnumerable<IEnumerable<Vector2>> polygons)> buttonColliders)
+        private ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef>)> GetExistPartsAndButtons(ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> buttonColliders)
         {
+            var result = new ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef> groups)>();
             foreach (var (id, button) in this.buttonColliders)
             {
                 var folder = SelectedPawn.gender == Gender.Female || SelectedPawn.gender == Gender.Male ? SelectedPawn.gender : Gender.None;
@@ -770,8 +785,9 @@ namespace ChooseYourOutfit
                 if (part == null) continue;
                 var groups = part.groups;
                 groups.AddRange(DefDatabase<BodyPartGroupDef>.AllDefs.Where(g => part.Label.Replace(" ", "").EqualsIgnoreCase(g.defName)));
-                yield return (part, groups, id, button);
+                result[id] = (part, groups);
             }
+            return result;
         }
         
         private void loadFilter(IEnumerable<ThingDef> canWearAllowed)
@@ -821,7 +837,7 @@ namespace ChooseYourOutfit
 
         private Pawn selPawnInt;
 
-        private IEnumerable<(BodyPartRecord part, IEnumerable<BodyPartGroupDef> groups, string id, IEnumerable<IEnumerable<Vector2>> polygons)> existPartButtons;
+        private ConcurrentDictionary<string, (BodyPartRecord, IEnumerable<BodyPartGroupDef>)> existParts;
 
         private string selPawnButtonLabel = "AnyColonist".Translate();
 
@@ -873,7 +889,7 @@ namespace ChooseYourOutfit
 
         private Dictionary<Gender, XDocument> svg = new Dictionary<Gender, XDocument>();
 
-        private IEnumerable<(string id, IEnumerable<IEnumerable<Vector2>> polygons)> buttonColliders;
+        private ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> buttonColliders;
 
         private Rect rect5;
 
@@ -886,5 +902,8 @@ namespace ChooseYourOutfit
         private ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         private SynchronizationContext mainThread = SynchronizationContext.Current;
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetActiveWindow();
     }
 }
