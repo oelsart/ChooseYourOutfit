@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Net;
 
 namespace ChooseYourOutfit
 {
@@ -47,14 +48,16 @@ namespace ChooseYourOutfit
             if (this.SelectedPawn.gender == Gender.Female || this.SelectedPawn.gender == Gender.Male)
             {
                 this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[this.SelectedPawn.gender], this.rect6);
+                this.svgViewBox = SVGInterpreter.GetViewBox(this.svg[this.SelectedPawn.gender]);
             }
             else
             {
                 this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
+                this.svgViewBox = SVGInterpreter.GetViewBox(this.svg[this.SelectedPawn.gender]);
             }
 
             existParts = GetExistPartsAndButtons(this.buttonColliders);
-            this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null).Where(a => a.apparel.PawnCanWear(this.SelectedPawn));
+            this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null).Where(a => a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
             this.layerListToShow = this.ListingLayerToShow();
 
             foreach (var apparel in allApparels)
@@ -88,7 +91,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private IEnumerable<ApparelLayerDef> SelectedLayers
+        private HashSet<ApparelLayerDef> SelectedLayers
         {
             get
             {
@@ -99,7 +102,7 @@ namespace ChooseYourOutfit
                 this.selLayersInt = value;
             }
         }
-        private List<ThingDef> SelectedApparels
+        private HashSet<ThingDef> SelectedApparels
         {
             get
             {
@@ -111,7 +114,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private List<ThingDef> PreviewedApparels
+        private HashSet<ThingDef> PreviewedApparels
         {
             get
             {
@@ -197,7 +200,7 @@ namespace ChooseYourOutfit
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
             if (SelectedPolicy == null) return;
 
-            this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false);
+            this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (ChooseYourOutfit.settings.syncFilter)
             {
                 if (!canWearAllowed.SequenceEqual(SelectedApparels)) loadFilter(canWearAllowed);
@@ -210,9 +213,8 @@ namespace ChooseYourOutfit
             this.DoApparelList(new Rect(0f, layerViewHeight + 50f, 200f, rect5.height - layerViewHeight - 65f));
             Widgets.EndGroup();
 
-            var viewBox = SVGInterpreter.GetViewBox(this.svg[this.SelectedPawn?.gender ?? Gender.None]);
-            var scale = this.rect6.height / viewBox.height;
-            Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - viewBox.width * scale - 10f, this.rect6.height);
+            var scale = this.rect6.height / this.svgViewBox.height;
+            Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
             Widgets.BeginGroup(rect8);
             //実際のポーンの見た目プレビュー
             this.DoOutfitPreview(new Rect(0f, 0f, rect8.width, rect8.width));
@@ -290,7 +292,7 @@ namespace ChooseYourOutfit
                         {
                             AccessTools.Field(typeof(ThingOwner), "owner").SetValue(apparel.holdingOwner, this.SelectedPawn.apparel);
                         }
-                        this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null).Where(a => a.apparel.PawnCanWear(this.SelectedPawn));
+                        this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null).Where(a => a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = pawn
                 };
@@ -354,7 +356,7 @@ namespace ChooseYourOutfit
             {
                 if (Widgets.ButtonInvisible(itemRect, true))
                 {
-                    this.SelectedLayers = DefDatabase<ApparelLayerDef>.AllDefs;
+                    this.SelectedLayers = DefDatabase<ApparelLayerDef>.AllDefs.ToHashSet();
                     this.apparelListToShow = ListingApparelToShow(this.allApparels);
                 }
                 Widgets.DrawHighlight(itemRect);
@@ -363,7 +365,7 @@ namespace ChooseYourOutfit
 
             if (!this.SelectedLayers.Any(l => layerListToShow.Contains(l)))
             {
-                this.SelectedLayers = new List<ApparelLayerDef> { layerListToShow.Last() };
+                this.SelectedLayers = new HashSet<ApparelLayerDef> { layerListToShow.Last() };
                 this.apparelListToShow = ListingApparelToShow(this.allApparels);
             }
 
@@ -373,10 +375,10 @@ namespace ChooseYourOutfit
                 {
                     if (Widgets.ButtonInvisible(itemRect, true))
                     {
-                        this.SelectedLayers = new List<ApparelLayerDef> { layer };
+                        this.SelectedLayers = new HashSet<ApparelLayerDef> { layer };
                         this.apparelListToShow = ListingApparelToShow(this.allApparels);
                     }
-                    Widgets.DrawHighlightIfMouseover(itemRect);
+                    Widgets.DrawHighlight(itemRect);
                 }
                 if (this.SelectedLayers.Contains(layer)) Widgets.DrawHighlightSelected(itemRect);
                 Rect offsetRect = itemRect;
@@ -430,6 +432,8 @@ namespace ChooseYourOutfit
                 {
                     var curY = group.FirstIndexOf(a => a == apparel) * itemRect.height;
                     if (group.Key == false) curY += apparelCountTrue * itemRect.height;
+                    if (curY < this.apparelsScrollPosition.y - itemRect.height || curY > this.apparelsScrollPosition.y + outerRect.height) return;
+
                     var curItemRect = new Rect(itemRect.x, itemRect.y + curY, itemRect.width, itemRect.height);
                     var curIconRect = new Rect(iconRect.x, iconRect.y + curY, iconRect.width, iconRect.height);
                     var curLabelRect = new Rect(labelRect.x, labelRect.y + curY, labelRect.width, labelRect.height);
@@ -512,7 +516,7 @@ namespace ChooseYourOutfit
                 var partHasSelGroups = this.SelectedBodypartGroups?.All(p => part.Value.groups.Contains(p)) ?? false;
                 var partHasHlGroups = this.highlightedGroups?.All(p => part.Value.groups.Contains(p)) ?? false;
                 var partHasHlApGroups = this.mouseovered == null ? false : this.mouseovered.apparel.bodyPartGroups.Intersect(part.Value.groups).Count() != 0;
-                var color = partHasSelGroups ? new Color(0f, 0.5f, 1f, 1f) : Color.white;
+                var color = partHasSelGroups ? new Color(0.5f, 0.75f, 1f, 1f) : Color.white;
 
                 //このパーツが着ることのできる衣服がある全てのレイヤー
                 var allLayers = this.SelectedLayers
@@ -527,17 +531,15 @@ namespace ChooseYourOutfit
 
                 var alpha = new Color(1f, 1f, 1f, allLayers.Count() != 0 ? (float)wearLayers.Count() / (float)allLayers.Count() : 0f);
 
+                var unhighlight = !partHasHlGroups ? new Color(0.7f, 0.7f, 0.7f, 1f) : Color.white;
+
+                var covered = partHasHlApGroups ? new Color(0.3f, 0.3f, 0.15f, 1f) : Color.clear;
+
                 drawBody.Add(() =>
                 {
-                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha, 0f, 0f);
+                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
 
-                    GUI.DrawTexture(new Rect(pos, size), unfilledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color, 0f, 0f);
-
-                    if (!partHasHlGroups)
-                        GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, Widgets.WindowBGFillColor * new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
-
-                    if (partHasHlApGroups)
-                        GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, new Color(1f, 1f, 0.5f, 0.3f), 0f, 0f);
+                    GUI.DrawTexture(new Rect(pos, size), unfilledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * unhighlight + covered, 0f, 0f);
                 });
             });
 
@@ -626,50 +628,47 @@ namespace ChooseYourOutfit
             {
                 foreach (var apparels in apparelsInLayer.list)
                 {
-                    if (collapse[apparelsInLayer.layer]) continue; 
+                    if (collapse[apparelsInLayer.layer]) continue;
 
                     itemRect.y -= itemRect.height;
                     checkBoxRect.y -= itemRect.height;
 
                     foreach (var apparel in apparels)
                     {
-                        Widgets.Label(itemRect, apparel.label.Truncate(itemRect.width - itemRect.height));
-
-                        var isPreviewed = this.PreviewedApparels.Contains(apparel);
-                        if (isPreviewed)
+                        if (itemRect.y - itemRect.height > this.listScrollPosition.y || itemRect.y < this.listScrollPosition.y + outerRect.height)
                         {
-                            this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
-                            this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
-                        }
-                       
-                        Widgets.CheckboxDraw(checkBoxRect.x, checkBoxRect.y, isPreviewed, !isPreviewed, 20f);
+                            var isPreviewed = this.PreviewedApparels.Contains(apparel);
 
-                        if(Mouse.IsOver(itemRect)){
-                            Widgets.DrawHighlight(itemRect);
-                            if (Widgets.ButtonInvisible(new Rect(itemRect.x, itemRect.y, itemRect.width - 20f, itemRect.height)))
+                            Widgets.Label(itemRect, apparel.label.Truncate(itemRect.width - itemRect.height));
+                            Widgets.CheckboxDraw(checkBoxRect.x, checkBoxRect.y, isPreviewed, !isPreviewed, 20f);
+
+                            if (Mouse.IsOver(itemRect))
                             {
-                                this.SelectedApparels.Remove(apparel);
-                                this.apparelListToShow = ListingApparelToShow(this.allApparels);
-                            }
-
-                            if (Widgets.ButtonInvisible(checkBoxRect))
-                            {
-                                if (isPreviewed)
+                                Widgets.DrawHighlight(itemRect);
+                                if (Widgets.ButtonInvisible(new Rect(itemRect.x, itemRect.y, itemRect.width - 20f, itemRect.height)))
                                 {
-                                    this.PreviewedApparels.Remove(apparel);
-                                    this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
-                                    this.PreviewedApparels.ForEach(p => this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn)));
+                                    this.SelectedApparels.Remove(apparel);
+                                    this.apparelListToShow = ListingApparelToShow(this.allApparels);
                                 }
-                                else
+
+                                if (Widgets.ButtonInvisible(checkBoxRect))
                                 {
-                                    this.PreviewedApparels.Add(apparel);
-                                    this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel, SelectedPawn));
-                                    this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
-                                    this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                    if (isPreviewed)
+                                    {
+                                        this.PreviewedApparels.Remove(apparel);
+                                        this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
+                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                                    }
+                                    else
+                                    {
+                                        this.PreviewedApparels.Add(apparel);
+                                        this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel, SelectedPawn));
+                                        this.PreviewedApparels.RemoveWhere(p => p != apparel && cantWearTogether[apparel].Contains(p));
+                                        this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                    }
                                 }
                             }
                         }
-
                         if (apparel == apparels.ElementAt(apparels.Count() - 1)) continue;
 
                         orRect.y = itemRect.y - 14f;
@@ -719,15 +718,16 @@ namespace ChooseYourOutfit
             AccessTools.Field(typeof(Pawn), "drawer").SetValue(this.SelectedPawn, tmpDrawer);
         }
 
-        private IEnumerable<IGrouping<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
+        private HashSet<IGrouping<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
         {
             return apparels
+                .AsParallel()
                 .Where(a => this.SelectedLayers.Any(l => a.apparel.layers.Contains(l)))
                 .Where(a => a.apparel.bodyPartGroups.Any(g => this.SelectedBodypartGroups?.Contains(g) ?? true))
                 .GroupBy(a => this.SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
                 this.SelectedApparels.All(s => ApparelUtility.CanWearTogether(a, s, this.SelectedPawn.RaceProps.body)) && //その服が選択されている全ての服と一緒に着られるならtrue
                 a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
-                .OrderByDescending(g => g.Key is true);
+                .OrderByDescending(g => g.Key is true).ToHashSet();
         }
 
         private IEnumerable<(ApparelLayerDef, IEnumerable<IEnumerable<ThingDef>>)> ListingSelectedApparelToShow(IEnumerable<ThingDef> selectedApparels)
@@ -750,13 +750,13 @@ namespace ChooseYourOutfit
             }
         }
 
-        private IEnumerable<ApparelLayerDef> ListingLayerToShow()
+        private HashSet<ApparelLayerDef> ListingLayerToShow()
         {
             return DefDatabase<ApparelLayerDef>.AllDefs
                 .Where(l => allApparels
                 .Where(a => a.apparel.bodyPartGroups.Any(g => this.SelectedBodypartGroups?.Contains(g) ?? true)) //選択したbodypartgroupが着られるapparelを持つlayerに限定
                 .Any(a => a.apparel.layers.Contains(l))).ToList()
-                .OrderByDescending(l => l.drawOrder);
+                .OrderByDescending(l => l.drawOrder).ToHashSet();
         }
 
         private Apparel GetApparel(ThingDef tDef, Pawn pawn)
@@ -792,17 +792,17 @@ namespace ChooseYourOutfit
         
         private void loadFilter(IEnumerable<ThingDef> canWearAllowed)
         {
-            this.SelectedApparels.RemoveAll(a => !canWearAllowed.Contains(a));
+            this.SelectedApparels.RemoveWhere(a => !canWearAllowed.Contains(a));
 
-            var addedApparels = canWearAllowed.Where(a => !this.SelectedApparels.Contains(a)).ToList();
-            if (addedApparels.Count != 0)
+            var addedApparels = canWearAllowed.Where(a => !this.SelectedApparels.Contains(a));
+            if (addedApparels.Count() != 0)
             {
                 this.SelectedApparels.AddRange(addedApparels);
                 this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
                 this.PreviewedApparels.AddRange(addedApparels.Where(a => this.PreviewedApparels.All(p => a != p && !this.cantWearTogether[a].Contains(p))));
                 this.preApparelsApparel.TryAddRangeOrTransfer(addedApparels.Select(a => this.GetApparel(a, this.SelectedPawn)));
             }
-            this.PreviewedApparels.RemoveAll(a => !this.SelectedApparels.Contains(a));
+            this.PreviewedApparels.RemoveWhere(a => !this.SelectedApparels.Contains(a));
             this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
         }
 
@@ -857,25 +857,25 @@ namespace ChooseYourOutfit
 
         private Rect apparelListViewRect = Rect.zero;
 
-        private IEnumerable<ApparelLayerDef> selLayersInt = new List<ApparelLayerDef>();
+        private HashSet<ApparelLayerDef> selLayersInt = new HashSet<ApparelLayerDef>();
 
-        private IEnumerable<ApparelLayerDef> layerListToShow;
+        private HashSet<ApparelLayerDef> layerListToShow;
 
         private ThingDef statsDrawn;
 
         private ThingDef mouseovered;
 
-        private List<ThingDef> selApparelsInt = new List<ThingDef>();
+        private HashSet<ThingDef> selApparelsInt = new HashSet<ThingDef>();
 
         private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
 
-        private IEnumerable<IGrouping<bool, ThingDef>> apparelListToShow;
+        private HashSet<IGrouping<bool, ThingDef>> apparelListToShow;
 
         private IEnumerable<(ApparelLayerDef layer, IEnumerable<IEnumerable<ThingDef>> list)> selectedApparelListToShow;
 
         private Dictionary<ApparelLayerDef, bool> collapse = new Dictionary<ApparelLayerDef, bool>();
 
-        private List<ThingDef> preApparelsInt = new List<ThingDef>();
+        private HashSet<ThingDef> preApparelsInt = new HashSet<ThingDef>();
 
         private ThingOwner<Apparel> preApparelsApparel = new ThingOwner<Apparel>();
 
@@ -889,21 +889,16 @@ namespace ChooseYourOutfit
 
         private Dictionary<Gender, XDocument> svg = new Dictionary<Gender, XDocument>();
 
+        private Rect svgViewBox;
+
         private ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> buttonColliders;
 
         private Rect rect5;
 
         private Rect rect6;
 
-        private IEnumerable<ThingDef> allApparels;
+        private HashSet<ThingDef> allApparels;
 
-        private IEnumerable<ThingDef> canWearAllowed;
-
-        private ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
-
-        private SynchronizationContext mainThread = SynchronizationContext.Current;
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetActiveWindow();
+        private HashSet<ThingDef> canWearAllowed;
     }
 }
