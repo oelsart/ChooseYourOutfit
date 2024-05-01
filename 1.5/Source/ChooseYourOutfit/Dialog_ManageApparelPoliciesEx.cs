@@ -102,7 +102,7 @@ namespace ChooseYourOutfit
                 this.selLayersInt = value;
             }
         }
-        private List<ThingDef> SelectedApparels
+        private ConcurrentBag<ThingDef> SelectedApparels
         {
             get
             {
@@ -186,9 +186,9 @@ namespace ChooseYourOutfit
             yield break;
         }
 
-        public override async void DoWindowContents(Rect inRect)
+        public override void DoWindowContents(Rect inRect)
         {
-            List<Task<ConcurrentQueue<Action>>> tasks = new List<Task<ConcurrentQueue<Action>>>();
+            Task<ConcurrentQueue<Action>>[] tasks = new Task<ConcurrentQueue<Action>>[4];
 
             if(Current.Game.outfitDatabase.AllOutfits.Any(outfit => outfit == null))
             {
@@ -216,20 +216,20 @@ namespace ChooseYourOutfit
             }
             else
             {
-                tasks.Add(Task.Run(() => this.DoLayerList(layersRect)));
+                tasks[0] = (Task.Run(() => this.DoLayerList(layersRect)));
             }
 
             //apparelのリストを描画
-            tasks.Add(Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
+            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
             Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
-            Widgets.BeginGroup(rect8);
-            //実際のポーンの見た目プレビュー
-            this.DoOutfitPreview(new Rect(0f, 0f, rect8.width, rect8.width));
-            Widgets.EndGroup();
+
             //選択したapparelのリストを描画
-            this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width));
+            tasks[2] = (Task.Run(() => this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
+
+            //実際のポーンの見た目プレビュー
+            this.DoOutfitPreview(new Rect(rect8.x, rect8.y, rect8.width, rect8.width));
 
             //ポーンの体を描画するとこ
             //入植者選択ボタン
@@ -249,14 +249,12 @@ namespace ChooseYourOutfit
 
             //右のインフォカード描画
             Rect rect7 = new Rect(inRect.xMax - 300f, rect5.y, 300f, rect5.height - 15f);
-            Widgets.BeginGroup(rect7);
-            this.DoInfoCard(rect7.AtZero());
-            Widgets.EndGroup();
 
-            await Task.WhenAll(tasks);
+            tasks[3] = Task.Run(() => this.DoInfoCard(rect7));
 
             foreach(var task in tasks)
             {
+                if (task == null) continue;
                 foreach (var drawer in task.Result) drawer();
             }
 
@@ -363,10 +361,11 @@ namespace ChooseYourOutfit
                 Widgets.Label(new Rect(itemRect.position + new Vector2(20f, 0f), itemRect.size), "CYO.AllLayers".Translate());
                 if (Mouse.IsOver(itemRect))
                 {
-                    if (Widgets.ButtonInvisible(itemRect, true))
+                    if (Input.GetMouseButtonUp(0))
                     {
                         this.SelectedLayers = DefDatabase<ApparelLayerDef>.AllDefs.ToHashSet();
                         this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                        Input.ResetInputAxes();
                     }
                     Widgets.DrawHighlight(itemRect);
                 }
@@ -382,20 +381,19 @@ namespace ChooseYourOutfit
             {
                 var curRect = itemRect;
                 curRect.y += itemRect.height * i + itemRect.height; 
-                drawer.Enqueue(() =>
+
+                if (Mouse.IsOver(curRect))
                 {
-                    if (Mouse.IsOver(curRect))
+                    if (Input.GetMouseButtonUp(0))
                     {
-                        if (Widgets.ButtonInvisible(curRect, true))
-                        {
-                            this.SelectedLayers = new HashSet<ApparelLayerDef> { layer };
-                            this.apparelListToShow = ListingApparelToShow(this.allApparels);
-                        }
-                        Widgets.DrawHighlight(curRect);
+                        this.SelectedLayers = new HashSet<ApparelLayerDef> { layer };
+                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                        Input.ResetInputAxes();
                     }
-                    if (this.SelectedLayers.Contains(layer)) Widgets.DrawHighlightSelected(curRect);
-                    Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layer.label.Truncate(curRect.width - 40f));
-                });
+                    drawer.Enqueue(() => Widgets.DrawHighlight(curRect)); ;
+                }
+                if (this.SelectedLayers.Contains(layer)) drawer.Enqueue(() => Widgets.DrawHighlightSelected(curRect));
+                drawer.Enqueue(() => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layer.label.Truncate(curRect.width - 40f)));
             }
             return drawer;
         }
@@ -407,7 +405,7 @@ namespace ChooseYourOutfit
 
             var drawer = new ConcurrentQueue<Action>();
             Rect viewRect = outerRect;
-            viewRect.height = Text.LineHeight * this.apparelListToShow.Select(g => g.Count()).Sum();
+            viewRect.height = Text.LineHeight * this.apparelListToShow?.Select(g => g.Count()).Sum() ?? 0f;
             this.mouseovered = null;
 
             var parentRect = outerRect;
@@ -439,7 +437,7 @@ namespace ChooseYourOutfit
             Rect infoButtonRect = new Rect(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
             Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax + 5f, itemRect.height);
             infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
-            var apparelCountTrue = apparelListToShow.FirstOrDefault(a => a.Key == true)?.Count() ?? 0f;
+            var apparelCountTrue = apparelListToShow?.FirstOrDefault(a => a.Key == true)?.Count() ?? 0f;
 
             drawer.Enqueue(() => Widgets.BeginScrollView(outerRect, ref this.apparelsScrollPosition, viewRect, true));
             foreach (var group in apparelListToShow)
@@ -465,11 +463,14 @@ namespace ChooseYourOutfit
                             this.mouseovered = this.statsDrawn = apparel;
                             TooltipHandler.TipRegion(curItemRect, apparel.DescriptionDetailed);
                             Widgets.DrawHighlight(curItemRect);
-                            if (Event.current.type == EventType.MouseDown)  //Widgets.ButtonInvisibleだとクリックできないことがあったのでより直接的にマウスダウンを取得
+                            if (Input.GetMouseButtonUp(0))
                             {
+                                Input.ResetInputAxes();
                                 if (this.SelectedApparels.Contains(apparel))
                                 {
-                                    this.SelectedApparels.Remove(apparel);
+                                    var tmp = SelectedApparels.Where(a => a != apparel);
+                                    this.SelectedApparels = new ConcurrentBag<ThingDef>();
+                                    foreach (var a in tmp) SelectedApparels.Add(a);
                                     this.PreviewedApparels.Remove(apparel);
                                     this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
                                     this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
@@ -499,7 +500,7 @@ namespace ChooseYourOutfit
         }
 
         //パーツで分かれたポーンの体を描画
-        public ConcurrentQueue<Action> DoPawnBodySeparatedByParts(Rect rect)
+        public void DoPawnBodySeparatedByParts(Rect rect)
         {
             var drawer = new ConcurrentQueue<Action>();
             var mousePosition = Event.current.mousePosition;
@@ -519,7 +520,7 @@ namespace ChooseYourOutfit
                     {
                         isInAnyPolygon = true;
                         this.highlightedGroups = part.Value.groups;
-                        if (Event.current.type == EventType.MouseDown)
+                        if (Input.GetMouseButtonUp(0))
                         {
                             this.SelectedBodypartGroups = part.Value.groups;
                             this.apparelListToShow = ListingApparelToShow(this.allApparels);
@@ -560,36 +561,39 @@ namespace ChooseYourOutfit
             if (!isInAnyPolygon)
             {
                 this.highlightedGroups = null;
-                drawer.Enqueue(() =>
-                { if (Widgets.ButtonInvisible(rect))
-                    {
-                        this.SelectedBodypartGroups = null;
-                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
-                        this.layerListToShow = ListingLayerToShow();
-                    }
-                });
+                if (Mouse.IsOver(rect) && Input.GetMouseButtonUp(0))
+                {
+                    this.SelectedBodypartGroups = null;
+                    this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                    this.layerListToShow = ListingLayerToShow();
+                }
             }
             foreach (var d in drawer) d();
-            return drawer;
         }
 
-        public void DoInfoCard(Rect rect)
+        //情報カードを描画
+        public ConcurrentQueue<Action> DoInfoCard(Rect rect)
         {
-            Widgets.Dropdown(new Rect(0f, 0f, 145f, 35f),
-                this.selQualityInt,
-                null,
-                (QualityCategory q) => this.GenerateQualityList(q),
-                this.selQualityButtonLabel,
-                null,
-                null,
-                null,
-                null,
-                true);
+            var drawer = new ConcurrentQueue<Action>();
+
+            drawer.Enqueue(() =>
+            {
+                Widgets.Dropdown(new Rect(rect.x, rect.y, 145f, 35f),
+                    this.selQualityInt,
+                    null,
+                    (QualityCategory q) => this.GenerateQualityList(q),
+                    this.selQualityButtonLabel,
+                    null,
+                    null,
+                    null,
+                    null,
+                    true);
+            });
 
             StatsReporter.Reset();
 
-            Rect rect2 = new Rect(0f, 40f, rect.width, rect.height - 40f);
-            Widgets.DrawMenuSection(rect2);
+            Rect rect2 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
+            drawer.Enqueue(() => Widgets.DrawMenuSection(rect2));
             if (this.statsDrawn != null)
             {
                 var selStuffInthisThing = GenStuff.AllowedStuffsFor(this.statsDrawn)?.Intersect(this.selStuffList)?.FirstOrDefault();
@@ -607,29 +611,35 @@ namespace ChooseYourOutfit
                         this.selStuffList.Add(this.selStuffInt);
                         this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
                     }
-                    Widgets.Dropdown(new Rect(155f, 0f, 145f, 35f),
-                        null,
-                        null,
-                        (ThingDef s) => this.GenerateStuffList(s),
-                        this.selStuffButtonLabel,
-                        null,
-                        null,
-                        null,
-                        null,
-                        true);
+                    drawer.Enqueue(() =>
+                    {
+                        Widgets.Dropdown(new Rect(rect.x + 155f, rect.y, 145f, 35f),
+                            null,
+                            null,
+                            (ThingDef s) => this.GenerateStuffList(s),
+                            this.selStuffButtonLabel,
+                            null,
+                            null,
+                            null,
+                            null,
+                            true);
+                    });
                 }
-
-                StatsReporter.DrawStatsReport(rect2.ContractedBy(10f), this.statsDrawn, this.selStuffInt, this.selQualityInt);
+                drawer.Enqueue(() => StatsReporter.DrawStatsReport(rect2.ContractedBy(10f), this.statsDrawn, this.selStuffInt, this.selQualityInt));
             }
-        }
 
-        public void DoSelectedApparelList(Rect outerRect)
+            return drawer;
+        }
+        
+        //選択した服のリストを描画
+        public ConcurrentQueue<Action> DoSelectedApparelList(Rect outerRect)
         {
-            if (this.SelectedApparels.Count == 0) return;
+            var drawer = new ConcurrentQueue<Action>();
+            if (this.SelectedApparels.Count == 0) return drawer;
 
             this.apparelListViewRect.x = outerRect.x;
             this.apparelListViewRect.width = outerRect.width - GenUI.ScrollBarWidth;
-            this.apparelListViewRect.yMin = Math.Min(outerRect.yMin, outerRect.yMin + outerRect.yMax - this.apparelListViewRect.yMax);
+            this.apparelListViewRect.yMin = Math.Min(apparelListViewRect.yMin, outerRect.yMin);
             this.apparelListViewRect.yMax = outerRect.yMax;
             Rect itemRect = this.apparelListViewRect;
             itemRect.y = outerRect.yMax;
@@ -638,83 +648,104 @@ namespace ChooseYourOutfit
             orRect.xMin += 10f;
             Rect checkBoxRect = new Rect(itemRect.xMax - itemRect.height, itemRect.y, itemRect.height, itemRect.height);
             checkBoxRect.ContractedBy(2f);
+            var curY = itemRect.y;
 
-            Widgets.BeginScrollView(outerRect, ref this.listScrollPosition, this.apparelListViewRect, true);
+            drawer.Enqueue(() => Widgets.BeginScrollView(outerRect, ref this.listScrollPosition, this.apparelListViewRect, true));
             foreach (var apparelsInLayer in selectedApparelListToShow)
             {
+                curY -= itemRect.height;
                 foreach (var apparels in apparelsInLayer.list)
                 {
                     if (collapse[apparelsInLayer.layer]) continue;
 
-                    itemRect.y -= itemRect.height;
-                    checkBoxRect.y -= itemRect.height;
-
-                    foreach (var apparel in apparels)
+                    Parallel.ForEach(apparels, (apparel, state, index) =>
                     {
-                        if (itemRect.y - itemRect.height > this.listScrollPosition.y || itemRect.y < this.listScrollPosition.y + outerRect.height)
+                        var curApparelY = curY - (itemRect.height + 8f) * index;
+                        if (curApparelY - itemRect.height > this.listScrollPosition.y || curApparelY < this.listScrollPosition.y + outerRect.height)
                         {
+                            var curItemRect = new Rect(itemRect.x, curApparelY, itemRect.width, itemRect.height);
+                            var curOrRect = new Rect(orRect.x, curApparelY - 14f, orRect.width, orRect.height);
+                            var curCheckBoxRect = new Rect(checkBoxRect.x, curApparelY + 2f, checkBoxRect.width, checkBoxRect.height);
+
                             var isPreviewed = this.PreviewedApparels.Contains(apparel);
 
-                            Widgets.Label(itemRect, apparel.label.Truncate(itemRect.width - itemRect.height));
-                            Widgets.CheckboxDraw(checkBoxRect.x, checkBoxRect.y, isPreviewed, !isPreviewed, 20f);
-                            if (Mouse.IsOver(itemRect))
+                            drawer.Enqueue(() =>
                             {
-                                Widgets.DrawHighlight(itemRect);
-                                if (Widgets.ButtonInvisible(new Rect(itemRect.x, itemRect.y, itemRect.width - 20f, itemRect.height)))
+                                Widgets.Label(curItemRect, apparel.label.Truncate(curItemRect.width - curItemRect.height));
+                                Widgets.CheckboxDraw(curCheckBoxRect.x, curCheckBoxRect.y, isPreviewed, !isPreviewed, 20f);
+                                if (Mouse.IsOver(curItemRect))
                                 {
-                                    this.SelectedApparels.Remove(apparel);
-                                    this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                                    Widgets.DrawHighlight(curItemRect);
+                                    if (Mouse.IsOver(curCheckBoxRect) && Input.GetMouseButtonUp(0))
+                                    {
+                                        if (isPreviewed)
+                                        {
+                                            this.PreviewedApparels.Remove(apparel);
+                                            this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
+                                            foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                                        }
+                                        else
+                                        {
+                                            this.PreviewedApparels.Add(apparel);
+                                            this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel, SelectedPawn));
+                                            this.PreviewedApparels.RemoveWhere(p => p != apparel && cantWearTogether[apparel].Contains(p));
+                                            this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                        }
+                                        Input.ResetInputAxes();
+                                    }
+                                    else if (Input.GetMouseButtonUp(0))
+                                    {
+                                        Input.ResetInputAxes();
+                                        var tmp = SelectedApparels.Where(a => a != apparel);
+                                        this.SelectedApparels = new ConcurrentBag<ThingDef>();
+                                        foreach (var a in tmp) SelectedApparels.Add(a);
+                                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                                    }
                                 }
+                            });
 
-                                if (Widgets.ButtonInvisible(checkBoxRect))
-                                {
-                                    if (isPreviewed)
-                                    {
-                                        this.PreviewedApparels.Remove(apparel);
-                                        this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
-                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
-                                    }
-                                    else
-                                    {
-                                        this.PreviewedApparels.Add(apparel);
-                                        this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel, SelectedPawn));
-                                        this.PreviewedApparels.RemoveWhere(p => p != apparel && cantWearTogether[apparel].Contains(p));
-                                        this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
-                                    }
-                                }
-                            }
+                            if (index == apparels.Count() - 1) return;
+
+                            drawer.Enqueue(() =>
+                            {
+                                using (new TextBlock(GameFont.Tiny)) Widgets.Label(curOrRect, "or");
+                            });
                         }
-                        if (apparel == apparels.ElementAt(apparels.Count() - 1)) continue;
-
-                        orRect.y = itemRect.y - 14f;
-                        using (new TextBlock(GameFont.Tiny)) Widgets.Label(orRect, "or");
-                        itemRect.y -= itemRect.height + 8f;
-                        checkBoxRect.y -= itemRect.height + 8f;
-                    }
-                    Widgets.DrawLineHorizontal(itemRect.x, itemRect.y, itemRect.width);
+                    });
+                    curY -= (itemRect.height + 8f) * apparels.Count() - 8f;
+                    var curApparelsY = curY;
+                    drawer.Enqueue(() => Widgets.DrawLineHorizontal(itemRect.x, curApparelsY + itemRect.height, itemRect.width));
                 }
-                itemRect.y -= itemRect.height;
-                checkBoxRect.y -= itemRect.height;
 
-                Rect butRect = new Rect(itemRect.x, itemRect.y, itemRect.height, itemRect.height);
+                var curLayerY = curY;
+                Rect curLayerItemRect = new Rect(itemRect.x, curLayerY, itemRect.width, itemRect.height);
+                Rect butRect = new Rect(itemRect.x, curLayerY, itemRect.height, itemRect.height);
                 butRect.ContractedBy(3f);
                 Texture2D tex = collapse[apparelsInLayer.layer] ? TexButton.Reveal : TexButton.Collapse;
-                if (Widgets.ButtonImage(butRect, tex, true, null))
-                {
-                    collapse[apparelsInLayer.layer] = !collapse[apparelsInLayer.layer];
-                }
-                Widgets.DrawTitleBG(itemRect);
-                Widgets.Label(new Rect(itemRect.x + itemRect.height, itemRect.y, itemRect.width - itemRect.height, itemRect.height), apparelsInLayer.layer.label);
-                Widgets.DrawLineHorizontal(itemRect.x, itemRect.y, itemRect.width);
-            }
-            Widgets.EndScrollView();
 
-            this.apparelListViewRect.yMax = Math.Max(outerRect.yMax, outerRect.yMax - (itemRect.y - outerRect.yMin));
+                drawer.Enqueue(() =>
+                {
+                    if (Mouse.IsOver(butRect) && Input.GetMouseButtonUp(0))
+                    {
+                        Input.ResetInputAxes();
+                        collapse[apparelsInLayer.layer] = !collapse[apparelsInLayer.layer];
+                    }
+                    Widgets.DrawTextureFitted(butRect, tex, 1f);
+                    Widgets.DrawTitleBG(curLayerItemRect);
+                    Widgets.Label(new Rect(curLayerItemRect.x + curLayerItemRect.height, curLayerItemRect.y, curLayerItemRect.width - curLayerItemRect.height, curLayerItemRect.height), apparelsInLayer.layer.label);
+                    Widgets.DrawLineHorizontal(curLayerItemRect.x, curLayerItemRect.y, curLayerItemRect.width);
+                });
+            }
+            drawer.Enqueue(() => Widgets.EndScrollView());
+
+            this.apparelListViewRect.yMin = curY;
+
+            return drawer;
         }
 
+        //ポーンの見た目プレビュー
         public void DoOutfitPreview(Rect rect)
         {
-            if (this.SelectedPawn == null) return;
             rect = rect.ContractedBy(10f);
 
             //現在着ている服とDrawerを保存しておく
@@ -752,7 +783,7 @@ namespace ChooseYourOutfit
             {
                 var list = new List<List<ThingDef>>();
 
-                foreach (var apparel in apparels)
+                foreach (var apparel in apparels.ToArray())
                 {
                     var cantWearSelected = cantWearTogether[apparel].Intersect(SelectedApparels).ToList();
                     cantWearSelected.Remove(apparel);
@@ -769,14 +800,14 @@ namespace ChooseYourOutfit
             return DefDatabase<ApparelLayerDef>.AllDefs
                 .Where(l => allApparels
                 .Where(a => a.apparel.bodyPartGroups.Any(g => this.SelectedBodypartGroups?.Contains(g) ?? true)) //選択したbodypartgroupが着られるapparelを持つlayerに限定
-                .Any(a => a.apparel.layers.Contains(l))).ToList()
+                .Any(a => a.apparel.layers.Contains(l)))
                 .OrderByDescending(l => l.drawOrder).ToHashSet();
         }
 
         private Apparel GetApparel(ThingDef tDef, Pawn pawn)
         {
             var apparelThing = tDef.GetConcreteExample(tDef.defaultStuff);
-            var thingOwner = new ThingOwner<Thing>(this.SelectedPawn.apparel);
+            var thingOwner = new ThingOwner<Thing>(pawn.apparel);
             thingOwner.TryAddOrTransfer(apparelThing);
             apparelThing.holdingOwner = thingOwner;
             var apparelThingWithComps = (ThingWithComps)apparelThing;
@@ -806,12 +837,12 @@ namespace ChooseYourOutfit
         
         private void loadFilter(IEnumerable<ThingDef> canWearAllowed)
         {
-            this.SelectedApparels.RemoveWhere(a => !canWearAllowed.Contains(a));
-
             HashSet<ThingDef> addedApparels = canWearAllowed.Where(a => !this.SelectedApparels.Contains(a)).ToHashSet();
+            this.SelectedApparels = new ConcurrentBag<ThingDef>();
+            foreach (var a in canWearAllowed) SelectedApparels.Add(a);
+
             if (addedApparels.Count() != 0)
             {
-                this.SelectedApparels.AddRange(addedApparels);
                 this.PreviewedApparels.AddRange(addedApparels.Where(a => this.PreviewedApparels.All(p => !cantWearTogether[a].Contains(p))));
                 this.preApparelsApparel.TryAddRangeOrTransfer(addedApparels.Select(a => this.GetApparel(a, this.SelectedPawn)));
             }
@@ -880,7 +911,7 @@ namespace ChooseYourOutfit
 
         private ThingDef mouseovered;
 
-        private List<ThingDef> selApparelsInt = new List<ThingDef>();
+        private ConcurrentBag<ThingDef> selApparelsInt = new ConcurrentBag<ThingDef>();
 
         private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
 
