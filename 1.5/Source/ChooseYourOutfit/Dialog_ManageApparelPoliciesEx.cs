@@ -226,7 +226,8 @@ namespace ChooseYourOutfit
             Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale + 10f, this.rect6.height);
 
             //選択したapparelのリストを描画
-            tasks[2] = (Task.Run(() => this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
+            if(ChooseYourOutfit.settings.drawSelectedApparelList)
+                tasks[2] = (Task.Run(() => this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
 
             //実際のポーンの見た目プレビュー
             this.DoOutfitPreview(new Rect(rect8.x, rect8.y, rect8.width, rect8.width));

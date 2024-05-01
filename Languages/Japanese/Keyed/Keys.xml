@@ -5,7 +5,8 @@
   <CYO.LoadFilter>フィルター読込</CYO.LoadFilter>
   <CYO.ApplyFilter>フィルター適用</CYO.ApplyFilter>
   
-  <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする</CYO.Settings.DisableAddedUI>
-  <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる</CYO.Settings.CollapseByLayer>
-  <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する)</CYO.Settings.SyncFilter>
+  <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
+  <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>
+  <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する).</CYO.Settings.SyncFilter>
+  <CYO.Settings.DrawSelectedApparelList>選択した衣服のリストを表示する.</CYO.Settings.DrawSelectedApparelList>
 </LanguageData>

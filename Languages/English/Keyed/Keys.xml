@@ -5,7 +5,8 @@
   <CYO.LoadFilter>Load Filter</CYO.LoadFilter>
   <CYO.ApplyFilter>Apply Filter</CYO.ApplyFilter>
   
-  <CYO.Settings.DisableAddedUI>Disable UI added by mod</CYO.Settings.DisableAddedUI>
-  <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default</CYO.Settings.CollapseByLayer>
-  <CYO.Settings.SyncFilter>Sync selected apparels to filters in real time (If this is off, sync with button)</CYO.Settings.SyncFilter>
+  <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
+  <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>
+  <CYO.Settings.SyncFilter>Sync selected apparels to filters in real time (If this is off, sync with button).</CYO.Settings.SyncFilter>
+  <CYO.Settings.DrawSelectedApparelList>Draw selected apparel list.</CYO.Settings.DrawSelectedApparelList>
 </LanguageData>
