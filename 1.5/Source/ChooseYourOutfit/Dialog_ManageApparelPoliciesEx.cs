@@ -223,7 +223,7 @@ namespace ChooseYourOutfit
             tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
-            Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
+            Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale + 10f, this.rect6.height);
 
             //選択したapparelのリストを描画
             tasks[2] = (Task.Run(() => this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
@@ -522,9 +522,9 @@ namespace ChooseYourOutfit
                         this.highlightedGroups = part.Value.groups;
                         if (Input.GetMouseButtonUp(0))
                         {
-                            this.SelectedBodypartGroups = part.Value.groups;
-                            this.apparelListToShow = ListingApparelToShow(this.allApparels);
-                            this.layerListToShow = ListingLayerToShow();
+                        this.SelectedBodypartGroups = part.Value.groups;
+                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                        this.layerListToShow = ListingLayerToShow();
                         }
                     }
                 }
@@ -561,7 +561,8 @@ namespace ChooseYourOutfit
             if (!isInAnyPolygon)
             {
                 this.highlightedGroups = null;
-                if (Mouse.IsOver(rect) && Input.GetMouseButtonUp(0))
+                var width = this.svgViewBox.width * this.rect6.height / this.svgViewBox.height;
+                if (Mouse.IsOver(new Rect(rect.width - width, rect.y, width, rect.height)) && Input.GetMouseButtonUp(0) && SelectedBodypartGroups != null)
                 {
                     this.SelectedBodypartGroups = null;
                     this.apparelListToShow = ListingApparelToShow(this.allApparels);
@@ -785,10 +786,11 @@ namespace ChooseYourOutfit
 
                 foreach (var apparel in apparels.ToArray())
                 {
-                    var cantWearSelected = cantWearTogether[apparel].Intersect(SelectedApparels).ToList();
+                    var cantWearSelected = cantWearTogether[apparel];
                     cantWearSelected.Remove(apparel);
                     cantWearSelected.Add(apparel);
 
+                    cantWearSelected = cantWearSelected.Where(a => SelectedApparels.Any(s => a == s)).ToList();
                     if (list.All(l => !l.OrderBy(a => a.label).SequenceEqual(cantWearSelected.OrderBy(a => a.label)))) list.Add(cantWearSelected);
                 }
                 yield return (apparels.Key, list);
