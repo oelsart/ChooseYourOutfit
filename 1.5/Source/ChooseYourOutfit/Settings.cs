@@ -1,5 +1,6 @@
 ﻿using Verse;
 using UnityEngine;
+using RimWorld;
 
 namespace ChooseYourOutfit
 {
@@ -10,7 +11,7 @@ namespace ChooseYourOutfit
         /// </summary>
         public bool disableAddedUI = false;
         public bool collapseByLayer = true;
-        public bool syncFilter = true;
+        public bool syncFilter = false;
 
         /// <summary>
         /// The part that writes our settings to file. Note that saving is by ref.
