@@ -8,5 +8,5 @@
   <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する).</CYO.Settings.SyncFilter>
-  <CYO.Settings.DrawSelectedApparelList>選択した衣服のリストを表示する.</CYO.Settings.DrawSelectedApparelList>
+  <CYO.Settings.SelectedApparelListMode>選択した衣服のリストで一緒に着られないものは"or"で併記する.\n(この設定をONにした時, 選択する衣服が多いと組み合わせ爆発によりパフォーマンスに大きな影響があります)</CYO.Settings.SelectedApparelListMode>
 </LanguageData>

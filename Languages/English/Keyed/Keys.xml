@@ -8,5 +8,5 @@
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>Sync selected apparels to filters in real time (If this is off, sync with button).</CYO.Settings.SyncFilter>
-  <CYO.Settings.DrawSelectedApparelList>Draw selected apparel list.</CYO.Settings.DrawSelectedApparelList>
+  <CYO.Settings.SelectedApparelListMode>If you have selected apparel that cannot be worn together, it will be put down with small "or".\n(When this setting is turned on, if there are many apparels to choose from, the combination explosion can have a significant impact on performance)</CYO.Settings.SelectedApparelListMode>
 </LanguageData>

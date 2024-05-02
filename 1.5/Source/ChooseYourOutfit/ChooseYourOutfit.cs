@@ -35,7 +35,7 @@ namespace ChooseYourOutfit
             {
                 listingStandard.CheckboxLabeled("CYO.Settings.CollapseByLayer".Translate(), ref settings.collapseByLayer);
                 listingStandard.CheckboxLabeled("CYO.Settings.SyncFilter".Translate(), ref settings.syncFilter);
-                listingStandard.CheckboxLabeled("CYO.Settings.DrawSelectedApparelList".Translate(), ref settings.drawSelectedApparelList);
+                listingStandard.CheckboxLabeled("CYO.Settings.SelectedApparelListMode".Translate(), ref settings.selectedApparelListMode);
             }
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);

@@ -224,11 +224,10 @@ namespace ChooseYourOutfit
             tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
-            Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale + 10f, this.rect6.height);
+            Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
 
             //選択したapparelのリストを描画
-            if(ChooseYourOutfit.settings.drawSelectedApparelList)
-                tasks[2] = (Task.Run(() => this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
+            tasks[2] = (Task.Run(() => this.DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
 
             //実際のポーンの見た目プレビュー
             this.DoOutfitPreview(new Rect(rect8.x, rect8.y, rect8.width, rect8.width));
@@ -722,7 +721,8 @@ namespace ChooseYourOutfit
                         });
                         curY -= (itemRect.height + 8f) * apparels.Count() - 8f;
                         var curApparelsY = curY;
-                        drawer.Enqueue(() => Widgets.DrawLineHorizontal(itemRect.x, curApparelsY + itemRect.height, itemRect.width));
+                        var color = ChooseYourOutfit.settings.selectedApparelListMode ? Color.white : Color.gray;
+                        drawer.Enqueue(() => Widgets.DrawLineHorizontal(itemRect.x, curApparelsY + itemRect.height, itemRect.width, color));
                     }
                 }
 
@@ -790,18 +790,23 @@ namespace ChooseYourOutfit
 
             foreach (var apparels in listByLayer)
             {
-                var list = new List<List<ThingDef>>();
-
-                foreach (var apparel in apparels.ToArray())
+                if (ChooseYourOutfit.settings.selectedApparelListMode)
                 {
-                    var cantWearSelected = cantWearTogether[apparel];
-                    cantWearSelected.Remove(apparel);
-                    cantWearSelected.Add(apparel);
+                    var list = new List<List<ThingDef>>();
 
-                    cantWearSelected = cantWearSelected.Where(a => SelectedApparels.Any(s => a == s)).ToList();
-                    if (list.All(l => !l.OrderBy(a => a.label).SequenceEqual(cantWearSelected.OrderBy(a => a.label)))) list.Add(cantWearSelected);
+                    foreach (var apparel in apparels.ToArray())
+                    {
+                        var cantWearSelected = cantWearTogether[apparel];
+                        cantWearSelected.Remove(apparel);
+                        cantWearSelected.Add(apparel);
+
+                        cantWearSelected = cantWearSelected.Where(a => SelectedApparels.Any(s => a == s)).ToList();
+                        if (list.All(l => !l.OrderBy(a => a.label).SequenceEqual(cantWearSelected.OrderBy(a => a.label)))) list.Add(cantWearSelected);
+                    }
+                    yield return (apparels.Key, list);
                 }
-                yield return (apparels.Key, list);
+
+                else yield return (apparels.Key, apparels.Select(a => new ThingDef[1] { a }));
             }
         }
 

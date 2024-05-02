@@ -11,8 +11,8 @@ namespace ChooseYourOutfit
         /// </summary>
         public bool disableAddedUI = false;
         public bool collapseByLayer = true;
-        public bool syncFilter = false;
-        public bool drawSelectedApparelList = true;
+        public bool syncFilter = true;
+        public bool selectedApparelListMode = false;
 
         /// <summary>
         /// The part that writes our settings to file. Note that saving is by ref.
@@ -22,7 +22,7 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref disableAddedUI, "disableAddedUI", true);
             Scribe_Values.Look(ref collapseByLayer, "collapseByLayer", true);
             Scribe_Values.Look(ref syncFilter, "syncFilter", true);
-            Scribe_Values.Look(ref drawSelectedApparelList, "drawSelectedApparelList", true);
+            Scribe_Values.Look(ref selectedApparelListMode, "selectedApparelListMode", true);
             base.ExposeData();
         }
     }
