@@ -23,6 +23,7 @@ namespace ChooseYourOutfit
         //選択されたポーンを受け取ってOutfit情報だけをDialog_ManageOutfitsのコンストラクタに渡す
         public Dialog_ManageApparelPoliciesEx(Pawn selectedPawn) : base(selectedPawn?.outfits.CurrentApparelPolicy)
         {
+            this.statsReporter = new StatsReporter();
             this.apparelsScrollPosition = default;
             this.listScrollPosition = default;
             this.SelectedPawn = selectedPawn;
@@ -324,7 +325,7 @@ namespace ChooseYourOutfit
                     {
                         this.selQualityInt = cat;
                         this.selQualityButtonLabel = cat.GetLabel();
-                        StatsReporter.Reset();
+                        statsReporter.Reset();
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = quality
                 };
@@ -343,7 +344,7 @@ namespace ChooseYourOutfit
                         this.selStuffList.Replace(this.selStuffInt, stuff);
                         this.selStuffInt = stuff;
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
-                        StatsReporter.Reset();
+                        statsReporter.Reset();
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = tDef
                 };
@@ -461,7 +462,7 @@ namespace ChooseYourOutfit
 
                         if (Mouse.IsOver(curItemRect))
                         {
-                            this.mouseovered = this.statsDrawn = apparel;
+                            this.lastMouseovered = this.mouseovered = apparel;
                             TooltipHandler.TipRegion(curItemRect, apparel.DescriptionDetailed);
                             Widgets.DrawHighlight(curItemRect);
                             if (Input.GetMouseButtonUp(0))
@@ -592,9 +593,13 @@ namespace ChooseYourOutfit
                     true);
             });
 
-            StatsReporter.Reset();
+            if (this.statsDrawn != this.lastMouseovered)
+            {
+                this.statsDrawn = this.lastMouseovered;
+                statsReporter.Reset();
+            }
 
-            Rect rect2 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
+                Rect rect2 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
             drawer.Enqueue(() => Widgets.DrawMenuSection(rect2));
             if (this.statsDrawn != null)
             {
@@ -627,7 +632,7 @@ namespace ChooseYourOutfit
                             true);
                     });
                 }
-                drawer.Enqueue(() => StatsReporter.DrawStatsReport(rect2.ContractedBy(10f), this.statsDrawn, this.selStuffInt, this.selQualityInt));
+                drawer.Enqueue(() => statsReporter.DrawStatsReport(rect2.ContractedBy(10f), this.statsDrawn, this.selStuffInt, this.selQualityInt));
             }
 
             return drawer;
@@ -916,6 +921,8 @@ namespace ChooseYourOutfit
 
         private ThingDef mouseovered;
 
+        private ThingDef lastMouseovered;
+
         private ConcurrentBag<ThingDef> selApparelsInt = new ConcurrentBag<ThingDef>();
 
         private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
@@ -951,5 +958,7 @@ namespace ChooseYourOutfit
         private HashSet<ThingDef> allApparels;
 
         private HashSet<ThingDef> canWearAllowed;
+
+        private StatsReporter statsReporter;
     }
 }

@@ -7,41 +7,41 @@ using RimWorld;
 
 namespace ChooseYourOutfit
 {
-    public static class StatsReporter
+    public class StatsReporter
     {
-        public static void Reset()
+        public void Reset()
         {
-            StatsReporter.scrollPosition = default(Vector2);
-            StatsReporter.selectedEntry = null;
-            StatsReporter.scrollPositioner.Arm(false);
-            StatsReporter.mousedOverEntry = null;
-            StatsReporter.cachedDrawEntries.Clear();
-            StatsReporter.cachedEntryValues.Clear();
+            this.scrollPosition = default(Vector2);
+            this.selectedEntry = null;
+            this.scrollPositioner.Arm(false);
+            this.mousedOverEntry = null;
+            this.cachedDrawEntries.Clear();
+            this.cachedEntryValues.Clear();
         }
 
-        public static void DrawStatsReport(Rect rect, ThingDef def, ThingDef stuff, QualityCategory quality)
+        public void DrawStatsReport(Rect rect, ThingDef def, ThingDef stuff, QualityCategory quality)
         {
-            if (StatsReporter.cachedDrawEntries.NullOrEmpty<StatDrawEntry>())
+            if (this.cachedDrawEntries.NullOrEmpty<StatDrawEntry>())
             {
                 BuildableDef buildableDef = def as BuildableDef;
                 StatRequest req = (buildableDef != null) ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
                 ThingWithComps thing = def.GetConcreteExample(stuff) as ThingWithComps;
                 CompQuality compQuality = thing.GetComp<CompQuality>();
                 compQuality?.SetQuality(quality, ArtGenerationContext.Colony);
-                StatsReporter.cachedDrawEntries.AddRange(def.SpecialDisplayStats(req));
-                StatsReporter.cachedDrawEntries.AddRange(from r in StatsReporter.StatsToDraw(thing)
+                this.cachedDrawEntries.AddRange(def.SpecialDisplayStats(req));
+                this.cachedDrawEntries.AddRange(from r in this.StatsToDraw(thing)
                                                               where r.ShouldDisplay()
                                                               select r);
-                StatsReporter.FinalizeCachedDrawEntries(StatsReporter.cachedDrawEntries);
+                this.FinalizeCachedDrawEntries(this.cachedDrawEntries);
             }
             Text.Font = GameFont.Medium;
             Widgets.Label(rect, def.label.Truncate(rect.width));
             rect.yMin += Text.LineHeight;
 
-            StatsReporter.DrawStatsWorker(rect);
+            this.DrawStatsWorker(rect);
         }
 
-        private static IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
+        private IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
         {
             IEnumerable<StatDef> allDefs = DefDatabase<StatDef>.AllDefs.Where(s => s.Worker.ShouldShowFor(StatRequest.For(thing)));
 
@@ -53,102 +53,102 @@ namespace ChooseYourOutfit
             yield break;
         }
 
-        private static void SelectEntry(StatDrawEntry rec, bool playSound = true)
+        private void SelectEntry(StatDrawEntry rec, bool playSound = true)
         {
-            StatsReporter.selectedEntry = rec;
+            this.selectedEntry = rec;
             if (playSound)
             {
                 SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
             }
         }
 
-        private static void DrawStatsWorker(Rect rect)
+        private void DrawStatsWorker(Rect rect)
         {
             Rect rect2 = new Rect(rect);
             Text.Font = GameFont.Small;
-            Rect viewRect = new Rect(0f, 0f, rect2.width - 16f, StatsReporter.listHeight);
-            Widgets.BeginScrollView(rect2, ref StatsReporter.scrollPosition, viewRect, true);
+            Rect viewRect = new Rect(0f, 0f, rect2.width - 24f, this.listHeight);
+            Widgets.BeginScrollView(rect2, ref this.scrollPosition, viewRect, true);
             float num = 0f;
             string b = null;
-            StatsReporter.mousedOverEntry = null;
-            for (int i = 0; i < StatsReporter.cachedDrawEntries.Count; i++)
+            this.mousedOverEntry = null;
+            for (int i = 0; i < this.cachedDrawEntries.Count; i++)
             {
-                StatDrawEntry ent = StatsReporter.cachedDrawEntries[i];
+                StatDrawEntry ent = this.cachedDrawEntries[i];
                 if (ent.category.LabelCap != b)
                 {
                     Widgets.ListSeparator(ref num, viewRect.width, ent.category.LabelCap);
                     b = ent.category.LabelCap;
                 }
 
-                num += ent.Draw(8f, num, viewRect.width, StatsReporter.selectedEntry == ent, false, false, delegate
+                num += ent.Draw(8f, num, viewRect.width, this.selectedEntry == ent, false, false, delegate
                 {
-                    StatsReporter.SelectEntry(ent, true);
+                    this.SelectEntry(ent, true);
                 }, delegate
                 {
-                    StatsReporter.mousedOverEntry = ent;
-                }, StatsReporter.scrollPosition, rect2, StatsReporter.cachedEntryValues[i]);
+                    this.mousedOverEntry = ent;
+                }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
             }
 
-            StatsReporter.listHeight = num + 100f;
+            this.listHeight = num + 100f;
             Widgets.EndScrollView();
         }
 
-        private static void FinalizeCachedDrawEntries(IEnumerable<StatDrawEntry> original)
+        private void FinalizeCachedDrawEntries(IEnumerable<StatDrawEntry> original)
         {
-            StatsReporter.cachedDrawEntries = (from sd in original
+            this.cachedDrawEntries = (from sd in original
                                  orderby sd.category.displayOrder, sd.DisplayPriorityWithinCategory descending, sd.LabelCap
                                  select sd).ToList<StatDrawEntry>();
-            StatsReporter.quickSearchWidget.noResultsMatched = !StatsReporter.cachedDrawEntries.Any<StatDrawEntry>();
-            foreach (StatDrawEntry statDrawEntry in StatsReporter.cachedDrawEntries)
+            this.quickSearchWidget.noResultsMatched = !this.cachedDrawEntries.Any<StatDrawEntry>();
+            foreach (StatDrawEntry statDrawEntry in this.cachedDrawEntries)
             {
-                StatsReporter.cachedEntryValues.Add(statDrawEntry.ValueString);
+                this.cachedEntryValues.Add(statDrawEntry.ValueString);
             }
-            if (StatsReporter.selectedEntry != null)
+            if (this.selectedEntry != null)
             {
-                StatsReporter.selectedEntry = StatsReporter.cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(StatsReporter.selectedEntry));
+                this.selectedEntry = this.cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(this.selectedEntry));
             }
-            if (StatsReporter.quickSearchWidget.filter.Active)
+            if (this.quickSearchWidget.filter.Active)
             {
-                foreach (StatDrawEntry sd2 in StatsReporter.cachedDrawEntries)
+                foreach (StatDrawEntry sd2 in this.cachedDrawEntries)
                 {
-                    if (StatsReporter.Matches(sd2))
+                    if (this.Matches(sd2))
                     {
-                        StatsReporter.selectedEntry = sd2;
-                        StatsReporter.scrollPositioner.Arm(true);
+                        this.selectedEntry = sd2;
+                        this.scrollPositioner.Arm(true);
                         break;
                     }
                 }
             }
         }
 
-        private static bool Matches(StatDrawEntry sd)
+        private bool Matches(StatDrawEntry sd)
         {
-            return StatsReporter.quickSearchWidget.filter.Matches(sd.LabelCap);
+            return this.quickSearchWidget.filter.Matches(sd.LabelCap);
         }
 
-        public static void SelectEntry(int index)
+        public void SelectEntry(int index)
         {
-            if (index < 0 || index > StatsReporter.cachedDrawEntries.Count)
+            if (index < 0 || index > this.cachedDrawEntries.Count)
             {
                 return;
             }
-            StatsReporter.SelectEntry(StatsReporter.cachedDrawEntries[index], true);
+            this.SelectEntry(this.cachedDrawEntries[index], true);
         }
 
-        private static StatDrawEntry selectedEntry;
+        private StatDrawEntry selectedEntry;
 
-        private static StatDrawEntry mousedOverEntry;
+        private StatDrawEntry mousedOverEntry;
 
-        private static Vector2 scrollPosition;
+        private Vector2 scrollPosition;
 
-        private static ScrollPositioner scrollPositioner = new ScrollPositioner();
+        private ScrollPositioner scrollPositioner = new ScrollPositioner();
 
-        private static QuickSearchWidget quickSearchWidget = new QuickSearchWidget();
+        private QuickSearchWidget quickSearchWidget = new QuickSearchWidget();
 
-        private static float listHeight;
+        private float listHeight;
 
-        private static List<StatDrawEntry> cachedDrawEntries = new List<StatDrawEntry>();
+        private List<StatDrawEntry> cachedDrawEntries = new List<StatDrawEntry>();
 
-        private static List<string> cachedEntryValues = new List<string>();
+        private List<string> cachedEntryValues = new List<string>();
     }
 }
