@@ -436,7 +436,7 @@ namespace ChooseYourOutfit
             itemRect.height = Text.LineHeight;
             Rect iconRect = new Rect(itemRect.x + 15f, itemRect.y, itemRect.height, itemRect.height);
             Rect infoButtonRect = new Rect(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
-            Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax + 5f, itemRect.height);
+            Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 10f, itemRect.height);
             infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
             var apparelCountTrue = apparelListToShow?.FirstOrDefault(a => a.Key == true)?.Count() ?? 0f;
 
@@ -491,7 +491,7 @@ namespace ChooseYourOutfit
                             }
                         }
                         Widgets.DefIcon(curIconRect, apparel);
-                        Widgets.Label(curLabelRect, apparel.label);
+                        Widgets.Label(curLabelRect, apparel.label.Truncate(labelRect.width));
                         this.TinyInfoButton(curInfoButtonRect, apparel, GenStuff.DefaultStuffFor(apparel));
                     });
                 });
@@ -655,6 +655,7 @@ namespace ChooseYourOutfit
             Rect checkBoxRect = new Rect(itemRect.xMax - itemRect.height, itemRect.y, itemRect.height, itemRect.height);
             checkBoxRect.ContractedBy(2f);
             var curY = itemRect.y;
+            var anyMouseOvered = false;
 
             drawer.Enqueue(() => Widgets.BeginScrollView(outerRect, ref this.listScrollPosition, this.apparelListViewRect, true));
             foreach (var apparelsInLayer in selectedApparelListToShow)
@@ -675,14 +676,22 @@ namespace ChooseYourOutfit
                                 var curCheckBoxRect = new Rect(checkBoxRect.x, curApparelY + 2f, checkBoxRect.width, checkBoxRect.height);
 
                                 var isPreviewed = this.PreviewedApparels.Contains(apparel);
+                                if(mouseoveredSelectedApparel != null)
+                                {
+                                    if (mouseoveredSelectedApparel != apparel && cantWearTogether[mouseoveredSelectedApparel].Contains(apparel) && !ChooseYourOutfit.settings.selectedApparelListMode)
+                                        drawer.Enqueue(() => Widgets.DrawRectFast(curItemRect, new Color(0.5f, 0f, 0f, 0.15f)));
+                                }
 
                                 drawer.Enqueue(() =>
                                 {
+
                                     Widgets.Label(curItemRect, apparel.label.Truncate(curItemRect.width - curItemRect.height));
                                     Widgets.CheckboxDraw(curCheckBoxRect.x, curCheckBoxRect.y, isPreviewed, !isPreviewed, 20f);
                                     if (Mouse.IsOver(curItemRect))
                                     {
-                                        Widgets.DrawHighlight(curItemRect);
+                                        anyMouseOvered = true;
+                                        mouseoveredSelectedApparel = apparel;
+                                        Widgets.DrawRectFast(curItemRect, new Color(0.7f, 0.7f, 1f, 0.3f));
                                         if (Mouse.IsOver(curCheckBoxRect) && Input.GetMouseButtonUp(0))
                                         {
                                             if (isPreviewed)
@@ -748,6 +757,7 @@ namespace ChooseYourOutfit
             drawer.Enqueue(() => Widgets.EndScrollView());
 
             this.apparelListViewRect.yMin = curY;
+            if (anyMouseOvered is false) mouseoveredSelectedApparel = null;
 
             return drawer;
         }
@@ -786,11 +796,10 @@ namespace ChooseYourOutfit
 
         private IEnumerable<(ApparelLayerDef, IEnumerable<IEnumerable<ThingDef>>)> ListingSelectedApparelToShow(IEnumerable<ThingDef> selectedApparels)
         {
-            var listByLayer = selectedApparels.GroupBy(a => a.apparel.LastLayer).OrderBy(g => g.Key.drawOrder);
-
-            foreach (var apparels in listByLayer)
+            if (ChooseYourOutfit.settings.selectedApparelListMode)
             {
-                if (ChooseYourOutfit.settings.selectedApparelListMode)
+                var listByLayer = selectedApparels.GroupBy(a => a.apparel.LastLayer).OrderBy(g => g.Key.drawOrder);
+                foreach (var apparels in listByLayer)
                 {
                     var list = new List<List<ThingDef>>();
 
@@ -805,8 +814,15 @@ namespace ChooseYourOutfit
                     }
                     yield return (apparels.Key, list);
                 }
+            }
 
-                else yield return (apparels.Key, apparels.Select(a => new ThingDef[1] { a }));
+            else
+            {
+                foreach(var layer in DefDatabase<ApparelLayerDef>.AllDefs.OrderBy(l => l.drawOrder))
+                {
+                    var list = SelectedApparels.Where(a => a.apparel.layers.Contains(layer)).Select(a => new ThingDef[1] { a });
+                    if(list.Count() != 0) yield return (layer, list);
+                }
             }
         }
 
@@ -927,6 +943,8 @@ namespace ChooseYourOutfit
         private ThingDef mouseovered;
 
         private ThingDef lastMouseovered;
+
+        private ThingDef mouseoveredSelectedApparel;
 
         private ConcurrentBag<ThingDef> selApparelsInt = new ConcurrentBag<ThingDef>();
 
