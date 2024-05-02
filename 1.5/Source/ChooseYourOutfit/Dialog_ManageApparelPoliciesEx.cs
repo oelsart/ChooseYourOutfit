@@ -349,16 +349,18 @@ namespace ChooseYourOutfit
                 };
             }
         }
-        
+
         //服のレイヤーリストを描画
         public ConcurrentQueue<Action> DoLayerList(Rect outerRect)
         {
             var drawer = new ConcurrentQueue<Action>();
-            var itemRect = new Rect(outerRect.x, outerRect.y, outerRect.width, Text.LineHeight);
+
+            drawer.Enqueue(() => Widgets.BeginGroup(outerRect));
+            var itemRect = new Rect(0f, 0f, outerRect.width, Text.LineHeight);
 
             drawer.Enqueue(() =>
             {
-                Widgets.DrawMenuSection(outerRect);
+                Widgets.DrawMenuSection(outerRect.AtZero());
                 Widgets.Label(new Rect(itemRect.position + new Vector2(20f, 0f), itemRect.size), "CYO.AllLayers".Translate());
                 if (Mouse.IsOver(itemRect))
                 {
@@ -380,22 +382,26 @@ namespace ChooseYourOutfit
 
             foreach (var (layer, i) in layerListToShow.Select((l, i) => (l, i)))
             {
-                var curRect = itemRect;
-                curRect.y += itemRect.height * i + itemRect.height; 
+                var curRect = new Rect(itemRect.x, itemRect.y + (i + 1) * itemRect.height, itemRect.width, itemRect.height);
 
-                if (Mouse.IsOver(curRect))
+                drawer.Enqueue(() =>
                 {
-                    if (Input.GetMouseButtonUp(0))
+                    if (Mouse.IsOver(curRect))
                     {
-                        this.SelectedLayers = new HashSet<ApparelLayerDef> { layer };
-                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
-                        Input.ResetInputAxes();
+                        if (Input.GetMouseButtonUp(0))
+                        {
+                            this.SelectedLayers = new HashSet<ApparelLayerDef> { layer };
+                            this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                            Input.ResetInputAxes();
+                        }
+                        Widgets.DrawHighlight(curRect);
                     }
-                    drawer.Enqueue(() => Widgets.DrawHighlight(curRect)); ;
-                }
+                });
+
                 if (this.SelectedLayers.Contains(layer)) drawer.Enqueue(() => Widgets.DrawHighlightSelected(curRect));
                 drawer.Enqueue(() => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layer.label.Truncate(curRect.width - 40f)));
             }
+            drawer.Enqueue(() => Widgets.EndGroup());
             return drawer;
         }
 
@@ -432,7 +438,7 @@ namespace ChooseYourOutfit
             }
 
             Widgets.AdjustRectsForScrollView(parentRect, ref outerRect, ref viewRect);
-            Rect itemRect = outerRect;
+            Rect itemRect = parentRect;
             itemRect.height = Text.LineHeight;
             Rect iconRect = new Rect(itemRect.x + 15f, itemRect.y, itemRect.height, itemRect.height);
             Rect infoButtonRect = new Rect(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
@@ -788,6 +794,7 @@ namespace ChooseYourOutfit
             return apparels
                 .Where(a => this.SelectedLayers.Any(l => a.apparel.layers.Contains(l)))
                 .Where(a => a.apparel.bodyPartGroups.Any(g => this.SelectedBodypartGroups?.Contains(g) ?? true))
+                .OrderBy(a => a.label)
                 .GroupBy(a => this.SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
                 this.SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
                 a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
@@ -821,7 +828,7 @@ namespace ChooseYourOutfit
                 foreach(var layer in DefDatabase<ApparelLayerDef>.AllDefs.OrderBy(l => l.drawOrder))
                 {
                     var list = SelectedApparels.Where(a => a.apparel.layers.Contains(layer)).Select(a => new ThingDef[1] { a });
-                    if(list.Count() != 0) yield return (layer, list);
+                    if(list.Count() != 0) yield return (layer, list.OrderByDescending(a => a[0].label));
                 }
             }
         }
