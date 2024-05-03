@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
@@ -9,8 +10,9 @@ namespace ChooseYourOutfit
 {
     public static class SVGInterpreter
     {
-        public static IEnumerable<(string id, IEnumerable<IEnumerable<Vector2>> polygons)> SVGToPolygons(XDocument svg, Rect rect)
+        public static ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> SVGToPolygons(XDocument svg, Rect rect)
         {
+            var result = new ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>>();
             XNamespace nspace = svg.Root.Name.Namespace;
             IEnumerable<XElement> paths = svg.Descendants(nspace + "path");
             Rect viewBox = SVGInterpreter.GetViewBox(svg);            
@@ -19,8 +21,9 @@ namespace ChooseYourOutfit
             {
                 var id = path.Attribute("id").Value;
                 var polygons = SVGInterpreter.PathToPolygons(path.Attribute("d").Value, viewBox, rect);
-                yield return (id, polygons);
+                result[id] = polygons;
             }
+            return result;
         }
 
         public static Rect GetViewBox(XDocument svg)

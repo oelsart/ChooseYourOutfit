@@ -26,9 +26,9 @@
      borderopacity="0.3"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.25000001"
-     inkscape:cx="-621.99998"
-     inkscape:cy="765.99998"
+     inkscape:zoom="0.50000002"
+     inkscape:cx="-198.99999"
+     inkscape:cy="384.99998"
      inkscape:document-units="px"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
@@ -40,7 +40,7 @@
      inkscape:window-maximized="1"
      inkscape:export-bgcolor="#00000000"
      inkscape:clip-to-page="false"
-     inkscape:current-layer="layer24" />
+     inkscape:current-layer="svg1" />
   <defs
      id="defs1">
     <inkscape:path-effect
@@ -357,189 +357,182 @@
        inkscape:label="rightShoulder"
        d="m 266.72266,191.57422 c -6.26757,3.69137 -12.84412,6.86075 -19.64844,9.43359 10.61049,10.66429 20.67991,22.13262 27.84527,35.44643 5.63053,10.54985 8.16864,22.4404 9.3953,34.24993 0.35525,3.5532 0.58704,7.11744 0.77896,10.68255 1.38525,1.82855 2.26725,3.96334 3.18359,6.04883 12.79167,-2.61784 25.58334,-5.23568 38.375,-7.85352 -2.11638,-14.55893 -3.29213,-29.25249 -6.44531,-43.64062 -1.3728,-5.69666 -3.18525,-11.46006 -5.53477,-16.91368 -1.58046,-3.63999 -3.38677,-7.30527 -5.57421,-10.6642 -3.55302,-4.86368 -8.84132,-8.37667 -14.46328,-10.53736 -4.5081,-1.71054 -9.31469,-2.53663 -14.02696,-3.675 -4.27116,-0.97881 -8.48958,-2.16749 -12.725,-3.28789 -0.38672,0.23698 -0.77344,0.47396 -1.16015,0.71094 z" />
   </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer24"
-     inkscape:label="Colliders"
-     style="display:inline;stroke-width:0;stroke-dasharray:none"
-     transform="matrix(4.3258817,0,0,4.3258817,4.358568e-4,0)">
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 81.0938 249.889 L 80.9553 251.393 L 78.3632 255.682 L 75.5995 259.778 L 73.7782 261.875 L 73.0631 262.965 L 73.2808 264.7 L 74.9494 265.651 L 78.2104 266.29 L 84.3602 266.642 L 87.1758 266.704 L 88.8368 266.315 L 90.6994 265.102 L 91.436 263.413 L 91.2234 260.939 L 90.1485 253.828 L 90.1516 249.889 Z"
-       id="right_foot"
-       inkscape:label="rightFoot"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_foot.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 84.4409 129.484 L 83.0931 132.479 L 81.3855 139.9 L 80.818 148.38 L 81.4848 158.156 L 82.9232 169.372 L 84.7416 184.518 L 82.7788 191.623 L 80.9552 199.795 L 81.1946 209.857 L 82.1525 220.889 L 82.8307 232.257 L 82.2308 243.328 L 80.9552 247.972 L 81.0216 248.889 L 90.3066 248.889 L 90.7157 246.481 L 90.7157 243.328 L 92.7021 225.72 L 94.4969 210.96 L 95.2663 200.775 L 96.7458 194.63 L 97.8352 189.19 L 98.3762 184.518 L 98.8405 180.071 L 100.811 164.14 L 101.914 155.133 L 102.353 151.382 L 103.032 149.627 L 104.457 148.843 L 104.457 129.484 Z"
-       id="right_leg"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Male\Filled\right_leg.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       inkscape:label="right femur"
-       sodipodi:nodetypes="ccsssssccssssscsscccc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 66.8821 143.369 L 63.6586 145.428 L 61.5564 148.25 L 59.216 154.704 L 59.2251 155.728 L 59.8398 156.293 L 61.3787 155.078 L 61.8412 153.373 L 63.4731 150.903 L 64.1832 150.4 L 64.131 151.285 L 63.3284 155.708 L 61.142 164.834 L 61.1226 165.708 L 61.6939 166.272 L 62.9889 165.542 L 65.797 156.302 L 66.3355 156.024 L 66.6517 156.551 L 65.5025 166.971 L 66.4425 168.2 L 67.6336 167.22 L 68.9953 156.964 L 69.3482 156.551 L 69.7229 156.867 L 70.0169 166.979 L 71.237 167.876 L 71.9718 166.91 L 72.1207 156.964 L 72.3982 156.551 L 72.7578 156.867 L 74.2404 165.274 L 75.3205 166.016 L 76.0228 164.834 L 74.997 156.502 L 74.8854 147.232 L 73.6676 144.07 Z"
-       id="right_hand"
-       inkscape:label="rightHand"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_hand.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccscc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 73.9669 96.5614 L 72.6301 115.088 L 70.686 123.275 L 67.2051 142.444 L 73.7555 143.196 L 79.5096 123.816 L 80.2947 118.05 L 82.1316 107.684 L 83.8688 100.802 L 84.4042 98.6523 Z"
-       id="right_arm"
-       inkscape:label="rightArm"
-       sodipodi:nodetypes="cssccssscc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_arm.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 89.0065 73.0079 L 84.3909 74.1632 L 80.1423 75.9029 L 77.3482 79.6028 L 76.0787 82.9785 L 74.7861 90.3441 L 74.0888 95.4598 L 84.7227 97.6338 L 85.8903 95.4598 L 86.3512 90.6482 L 88.299 84.8186 L 92.1827 79.5332 L 95.5688 76.0445 L 89.0065 73.0079 Z"
-       id="right_shoulder"
-       inkscape:label="rightShoulder"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_shoulder.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       sodipodi:nodetypes="cssccccscc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       id="Waist"
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       inkscape:label="utility"
-       d="M 87.0522 121.943 L 85.6521 124.987 L 84.7275 128.484 L 125.186 128.484 L 124.261 124.987 L 122.861 121.943 Z"
-       sodipodi:nodetypes="csccscc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Waist.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       id="Torso"
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       inkscape:label="torso"
-       d="M 96.698 76.3612 L 93.4661 79.6127 L 89.1698 85.3085 L 87.2431 91.327 L 87.0107 95.4979 L 87.6916 100.149 L 89.1698 105.111 L 89.7928 112.984 L 88.6886 117.273 L 87.343 120.943 L 122.571 120.943 L 121.225 117.273 L 120.121 112.984 L 120.744 105.111 L 122.222 100.149 L 122.903 95.4979 L 122.67 91.327 L 120.744 85.3085 L 116.448 79.6127 L 113.216 76.3612 L 104.989 77.4818 L 96.698 76.3612 Z"
-       sodipodi:nodetypes="cscsssccssscscc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Torso.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       id="Jaw"
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-opacity:1;stroke-dashoffset:0;stroke-linejoin:round"
-       inkscape:label="jaws"
-       d="M 93.3917 51.6828 L 94.9412 57.055 L 96.787 59.7695 L 100.195 62.3836 L 104.957 64.2619 L 109.719 62.3836 L 113.127 59.7695 L 114.972 57.055 L 116.522 51.6828 Z"
-       sodipodi:nodetypes="cscscc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Jaw.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       id="Eye"
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-opacity:1;stroke-dashoffset:0;stroke-linejoin:round"
-       inkscape:label="eyes"
-       d="M 92.9416 44.5857 L 92.9827 47.7146 L 93.2098 50.5725 L 116.704 50.5725 L 116.931 47.7146 L 116.972 44.5857 Z"
-       sodipodi:nodetypes="ccccccc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Eye.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-opacity:1;stroke-dashoffset:0;stroke-linejoin:round"
-       d="M 92.165 42.1864 L 90.3252 43.1295 L 89.5653 44.899 L 89.4533 47.308 L 90.1283 49.5522 L 92.3348 51.9451 L 92.165 50.8741 L 91.9568 47.4926 L 92.165 42.1864 Z"
-       id="right_ear"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_ear.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       inkscape:label="right ear"
-       sodipodi:nodetypes="cssccccc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       id="Head"
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-opacity:1;stroke-dashoffset:0;stroke-linejoin:round"
-       inkscape:label="head"
-       d="M 93.7443 37.2479 L 92.9827 43.4754 L 116.931 43.4754 L 116.169 37.2479 L 114.692 34.0766 L 112.078 31.8113 L 108.707 30.4522 L 104.957 29.9991 L 101.207 30.4522 L 97.8356 31.8113 L 95.2219 34.0766 L 93.7443 37.2479 Z"
-       sodipodi:nodetypes="sccss"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Head.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 128.82 249.889 L 128.958 251.393 L 131.55 255.682 L 134.314 259.778 L 136.135 261.875 L 136.851 262.965 L 136.633 264.7 L 134.964 265.651 L 131.703 266.29 L 125.553 266.642 L 122.738 266.704 L 121.077 266.315 L 119.214 265.102 L 118.478 263.413 L 118.69 260.939 L 119.765 253.828 L 119.762 249.889 Z"
-       id="left_foot"
-       inkscape:label="rightFoot"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Male\Filled\left_foot.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 143.032 143.369 L 146.255 145.428 L 148.357 148.25 L 150.698 154.704 L 150.689 155.728 L 150.074 156.293 L 148.535 155.078 L 148.072 153.373 L 146.441 150.903 L 145.73 150.4 L 145.783 151.285 L 146.585 155.708 L 148.772 164.834 L 148.791 165.708 L 148.22 166.272 L 146.925 165.542 L 144.117 156.302 L 143.578 156.024 L 143.262 156.551 L 144.411 166.971 L 143.471 168.2 L 142.28 167.22 L 140.918 156.964 L 140.565 156.551 L 140.191 156.867 L 139.897 166.979 L 138.677 167.876 L 137.942 166.91 L 137.793 156.964 L 137.515 156.551 L 137.156 156.867 L 135.673 165.274 L 134.593 166.016 L 133.891 164.834 L 134.917 156.502 L 135.028 147.232 L 136.246 144.07 Z"
-       id="left_hand"
-       inkscape:label="rightHand"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_hand.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccscc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 135.947 96.5614 L 137.284 115.088 L 139.228 123.275 L 142.709 142.444 L 136.158 143.196 L 130.404 123.816 L 129.619 118.05 L 127.782 107.684 L 126.045 100.802 L 125.509 98.6523 Z"
-       id="left_arm"
-       inkscape:label="rightArm"
-       sodipodi:nodetypes="cssccssscc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_arm.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       id="Neck"
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       inkscape:label="neck"
-       d="M 98.1595 62.2343 L 98.5532 65.4134 L 98.3907 68.6708 L 97.4407 69.9023 L 95.5358 70.9256 L 90.3193 72.6368 L 97.3605 75.517 L 104.958 76.4768 L 112.555 75.5165 L 119.594 72.6368 L 114.378 70.9256 L 112.473 69.9023 L 111.523 68.6708 L 111.36 65.4134 L 111.754 62.2343 L 110.862 62.8578 L 109.161 63.9233 L 104.957 65.2611 L 100.752 63.9233 L 99.0512 62.8578 L 98.1595 62.2343 Z"
-       sodipodi:nodetypes="ccccccsscssc"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Neck.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-opacity:1;stroke-dashoffset:0;stroke-linejoin:round"
-       d="M 117.749 42.1864 L 119.588 43.1295 L 120.348 44.899 L 120.46 47.308 L 119.785 49.5522 L 117.579 51.9451 L 117.749 50.8741 L 117.957 47.4926 L 117.749 42.1864 Z"
-       id="left_ear"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_ear.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       inkscape:label="right ear"
-       sodipodi:nodetypes="cssccccc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 125.473 129.484 L 126.82 132.479 L 128.528 139.9 L 129.096 148.38 L 128.429 158.156 L 126.99 169.372 L 125.172 184.518 L 127.135 191.623 L 128.958 199.795 L 128.719 209.857 L 127.761 220.889 L 127.083 232.257 L 127.683 243.328 L 128.958 247.972 L 128.892 248.889 L 119.607 248.889 L 119.198 246.481 L 119.198 243.328 L 117.212 225.72 L 115.417 210.96 L 114.647 200.775 L 113.168 194.63 L 112.078 189.19 L 111.537 184.518 L 111.073 180.071 L 109.103 164.14 L 108 155.133 L 107.56 151.382 L 106.881 149.627 L 105.457 148.843 L 105.457 129.484 Z"
-       id="left_leg"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Male\Filled\left_leg.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       inkscape:label="right femur"
-       sodipodi:nodetypes="ccsssssccssssscsscccc"
-       transform="translate(-59.14301,-30.00592)" />
-    <path
-       style="display:inline;stroke-width:0.23116675;stroke-dasharray:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;stroke-dashoffset:0"
-       d="M 120.907 73.0079 L 125.523 74.1632 L 129.771 75.9029 L 132.565 79.6028 L 133.835 82.9785 L 135.128 90.3441 L 135.825 95.4598 L 125.191 97.6338 L 124.023 95.4598 L 123.562 90.6482 L 121.615 84.8186 L 117.731 79.5332 L 114.345 76.0445 L 120.907 73.0079 Z"
-       id="left_shoulder"
-       inkscape:label="rightShoulder"
-       inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_shoulder.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       sodipodi:nodetypes="cssccccscc"
-       transform="translate(-59.14301,-30.00592)" />
-  </g>
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 81.0938 249.889 L 80.9553 251.393 L 75.5995 259.778 L 73.7782 261.875 L 73.2808 264.7 L 84.3602 266.642 L 87.1758 266.704 L 90.6994 265.102 L 91.2234 260.939 L 90.1485 253.828 L 90.1516 249.889 Z"
+     id="right_foot"
+     inkscape:label="rightFoot"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_foot.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 84.4409 129.484 L 83.0931 132.479 L 80.818 148.38 L 84.7416 184.518 L 80.9552 199.795 L 82.1525 220.889 L 82.2308 243.328 L 80.9552 247.972 L 81.0216 248.889 L 90.3066 248.889 L 90.7157 246.481 L 90.7157 243.328 L 94.4969 210.96 L 95.2663 200.775 L 96.7458 194.63 L 98.3762 184.518 L 98.8405 180.071 L 100.811 164.14 L 101.914 155.133 L 102.353 151.382 L 104.457 148.843 L 104.457 129.484 Z"
+     id="right_leg"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Male\Filled\right_leg.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     inkscape:label="right femur"
+     sodipodi:nodetypes="ccsssssccssssscsscccc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 66.8821 143.369 L 63.6586 145.428 L 61.5564 148.25 L 59.216 154.704 L 59.8398 156.293 L 61.3787 155.078 L 61.8412 153.373 L 63.4731 150.903 L 64.1832 150.4 L 64.131 151.285 L 63.3284 155.708 L 61.142 164.834 L 61.6939 166.272 L 62.9889 165.542 L 65.797 156.302 L 66.3355 156.024 L 66.6517 156.551 L 65.5025 166.971 L 66.4425 168.2 L 67.6336 167.22 L 68.9953 156.964 L 69.3482 156.551 L 69.7229 156.867 L 70.0169 166.979 L 71.237 167.876 L 71.9718 166.91 L 72.1207 156.964 L 72.3982 156.551 L 72.7578 156.867 L 74.2404 165.274 L 75.3205 166.016 L 76.0228 164.834 L 74.997 156.502 L 74.8854 147.232 L 73.6676 144.07 Z"
+     id="right_hand"
+     inkscape:label="rightHand"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_hand.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccscc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 73.9669 96.5614 L 72.6301 115.088 L 70.686 123.275 L 67.2051 142.444 L 73.7555 143.196 L 79.5096 123.816 L 80.2947 118.05 L 83.8688 100.802 L 84.4042 98.6523 Z"
+     id="right_arm"
+     inkscape:label="rightArm"
+     sodipodi:nodetypes="cssccssscc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_arm.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 89.0065 73.0079 L 84.3909 74.1632 L 80.1423 75.9029 L 77.3482 79.6028 L 74.7861 90.3441 L 74.0888 95.4598 L 84.7227 97.6338 L 85.8903 95.4598 L 88.299 84.8186 L 95.5688 76.0445 L 89.0065 73.0079 Z"
+     id="right_shoulder"
+     inkscape:label="rightShoulder"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_shoulder.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     sodipodi:nodetypes="cssccccscc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     id="Waist"
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     inkscape:label="utility"
+     d="M 87.0522 121.943 L 85.6521 124.987 L 84.7275 128.484 L 125.186 128.484 L 124.261 124.987 L 122.861 121.943 Z"
+     sodipodi:nodetypes="csccscc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Waist.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     id="Torso"
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     inkscape:label="torso"
+     d="M 96.698 76.3612 L 89.1698 85.3085 L 87.0107 95.4979 L 87.6916 100.149 L 89.1698 105.111 L 89.7928 112.984 L 87.343 120.943 L 122.571 120.943 L 120.121 112.984 L 120.744 105.111 L 122.222 100.149 L 122.903 95.4979 L 120.744 85.3085 L 113.216 76.3612 L 104.989 77.4818 L 96.698 76.3612 Z"
+     sodipodi:nodetypes="cscsssccssscscc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Torso.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     id="Jaw"
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke-width:0.23116675;stroke-dasharray:none;stroke:#ff0000;stroke-opacity:1"
+     inkscape:label="jaws"
+     d="M 93.3917 51.6828 L 96.787 59.7695 L 104.957 64.2619 L 113.127 59.7695 L 116.522 51.6828 Z"
+     sodipodi:nodetypes="cscscc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Jaw.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     id="Eye"
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke-width:0.23116675;stroke-dasharray:none;stroke:#ff0000;stroke-opacity:1"
+     inkscape:label="eyes"
+     d="M 92.9416 44.5857 L 92.9827 47.7146 L 93.2098 50.5725 L 116.704 50.5725 L 116.931 47.7146 L 116.972 44.5857 Z"
+     sodipodi:nodetypes="ccccccc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Eye.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke-width:0.23116675;stroke:#ff0000;stroke-opacity:1;stroke-dasharray:none"
+     d="M 92.165 42.1864 L 89.5653 44.899 L 90.1283 49.5522 L 92.3348 51.9451 L 92.165 50.8741 L 91.9568 47.4926 L 92.165 42.1864 Z"
+     id="right_ear"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\right_ear.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     inkscape:label="right ear"
+     sodipodi:nodetypes="cssccccc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     id="Head"
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke-width:0.23116675;stroke-dasharray:none;stroke:#ff0000;stroke-opacity:1"
+     inkscape:label="head"
+     d="M 93.7443 37.2479 L 92.9827 43.4754 L 116.931 43.4754 L 116.169 37.2479 L 112.078 31.8113 L 104.957 29.9991 L 97.8356 31.8113 L 93.7443 37.2479 Z"
+     sodipodi:nodetypes="sccss"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Head.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 128.82 249.889 L 128.958 251.393 L 134.314 259.778 L 136.135 261.875 L 136.633 264.7 L 125.553 266.642 L 122.738 266.704 L 119.214 265.102 L 118.69 260.939 L 119.765 253.828 L 119.762 249.889 Z"
+     id="left_foot"
+     inkscape:label="rightFoot"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Male\Filled\left_foot.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 143.032 143.369 L 146.255 145.428 L 148.357 148.25 L 150.698 154.704 L 150.074 156.293 L 148.535 155.078 L 148.072 153.373 L 146.441 150.903 L 145.73 150.4 L 145.783 151.285 L 146.585 155.708 L 148.772 164.834 L 148.22 166.272 L 146.925 165.542 L 144.117 156.302 L 143.578 156.024 L 143.262 156.551 L 144.411 166.971 L 143.471 168.2 L 142.28 167.22 L 140.918 156.964 L 140.565 156.551 L 140.191 156.867 L 139.897 166.979 L 138.677 167.876 L 137.942 166.91 L 137.793 156.964 L 137.515 156.551 L 137.156 156.867 L 135.673 165.274 L 134.593 166.016 L 133.891 164.834 L 134.917 156.502 L 135.028 147.232 L 136.246 144.07 Z"
+     id="left_hand"
+     inkscape:label="rightHand"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_hand.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     sodipodi:nodetypes="cccccsscscccsccccccccccscccscscccscc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 135.947 96.5614 L 137.284 115.088 L 139.228 123.275 L 142.709 142.444 L 136.158 143.196 L 130.404 123.816 L 129.619 118.05 L 126.045 100.802 L 125.509 98.6523 Z"
+     id="left_arm"
+     inkscape:label="rightArm"
+     sodipodi:nodetypes="cssccssscc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_arm.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     id="Neck"
+     style="display:inline;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     inkscape:label="neck"
+     d="M 98.1595 62.2343 L 98.3907 68.6708 L 90.3193 72.6368 L 104.958 76.4768 L 119.594 72.6368 L 111.523 68.6708 L 111.754 62.2343 L 110.862 62.8578 L 109.161 63.9233 L 104.957 65.2611 L 100.752 63.9233 L 99.0512 62.8578 L 98.1595 62.2343 Z"
+     sodipodi:nodetypes="ccccccsscssc"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\Neck.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke-width:0.23116675;stroke:#ff0000;stroke-opacity:1;stroke-dasharray:none"
+     d="M 117.749 42.1864 L 120.348 44.899 L 119.785 49.5522 L 117.579 51.9451 L 117.749 50.8741 L 117.957 47.4926 L 117.749 42.1864 Z"
+     id="left_ear"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_ear.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     inkscape:label="right ear"
+     sodipodi:nodetypes="cssccccc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 125.473 129.484 L 126.82 132.479 L 129.096 148.38 L 125.172 184.518 L 128.958 199.795 L 127.761 220.889 L 127.683 243.328 L 128.958 247.972 L 128.892 248.889 L 119.607 248.889 L 119.198 246.481 L 119.198 243.328 L 115.417 210.96 L 114.647 200.775 L 113.168 194.63 L 111.537 184.518 L 111.073 180.071 L 109.103 164.14 L 108 155.133 L 107.56 151.382 L 105.457 148.843 L 105.457 129.484 Z"
+     id="left_leg"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Male\Filled\left_leg.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     inkscape:label="right femur"
+     sodipodi:nodetypes="ccsssssccssssscsscccc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
+  <path
+     style="display:inline;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.23116675;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+     d="M 120.907 73.0079 L 125.523 74.1632 L 129.771 75.9029 L 132.565 79.6028 L 135.128 90.3441 L 135.825 95.4598 L 125.191 97.6338 L 124.023 95.4598 L 121.615 84.8186 L 114.345 76.0445 L 120.907 73.0079 Z"
+     id="left_shoulder"
+     inkscape:label="rightShoulder"
+     inkscape:export-filename="..\..\..\Textures\ChooseYourOutfit\Body\Female\Filled\left_shoulder.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     sodipodi:nodetypes="cssccccscc"
+     transform="matrix(4.3258817,0,0,4.3258817,-255.84523,-129.80206)" />
 </svg>
