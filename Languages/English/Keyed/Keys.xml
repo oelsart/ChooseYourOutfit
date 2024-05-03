@@ -4,6 +4,8 @@
   <CYO.AllLayers>All Layers</CYO.AllLayers>
   <CYO.LoadFilter>Load Filter</CYO.LoadFilter>
   <CYO.ApplyFilter>Apply Filter</CYO.ApplyFilter>
+  <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
+  <CYO.Preview>Preview</CYO.Preview>
   
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>
