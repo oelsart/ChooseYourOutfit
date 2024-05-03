@@ -486,6 +486,7 @@ namespace ChooseYourOutfit
                                 if (!this.PreviewedApparels.Any(p => apparel.Value != p && !ApparelUtility.CanWearTogether(apparel.Value, p, this.SelectedPawn.RaceProps.body)))
                                 {
                                     this.PreviewedApparels.Add(apparel.Value);
+                                    this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
                                     this.preApparelsApparel.TryAddOrTransfer(this.GetApparel(apparel.Value, this.SelectedPawn));
                                 }
                                 this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
@@ -704,7 +705,9 @@ namespace ChooseYourOutfit
                                             else
                                             {
                                                 this.PreviewedApparels.Add(apparel);
-                                                this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel, SelectedPawn));
+                                                this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
+                                                this.preApparelsApparel.Clear();
+                                                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
                                                 this.PreviewedApparels.RemoveWhere(p => p != apparel && cantWearTogether[apparel].Contains(p));
                                                 this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
                                             }
@@ -883,7 +886,8 @@ namespace ChooseYourOutfit
             if (addedApparels.Count() != 0)
             {
                 this.PreviewedApparels.AddRange(addedApparels.Where(a => this.PreviewedApparels.All(p => !cantWearTogether[a].Contains(p))));
-                this.preApparelsApparel.TryAddRangeOrTransfer(addedApparels.Select(a => this.GetApparel(a, this.SelectedPawn)));
+                this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
+                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
             }
             this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
             this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
