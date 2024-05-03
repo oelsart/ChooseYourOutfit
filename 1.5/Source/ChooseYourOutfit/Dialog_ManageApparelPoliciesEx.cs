@@ -414,7 +414,7 @@ namespace ChooseYourOutfit
 
             var drawer = new ConcurrentQueue<Action>();
             Rect viewRect = outerRect;
-            viewRect.height = Text.LineHeight * this.apparelListToShow?.Select(g => g.Count()).Sum() ?? 0f;
+            viewRect.height = Text.LineHeight * this.apparelListToShow?.Count() ?? 0f;
             this.mouseovered = null;
 
             drawer.Enqueue(() => Widgets.DrawMenuSection(parentRect));
@@ -444,64 +444,60 @@ namespace ChooseYourOutfit
             Rect infoButtonRect = new Rect(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
             Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 10f, itemRect.height);
             infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
-            var apparelCountTrue = apparelListToShow?.FirstOrDefault(a => a.Key == true)?.Count() ?? 0f;
 
             drawer.Enqueue(() => Widgets.BeginScrollView(outerRect, ref this.apparelsScrollPosition, viewRect, true));
-            foreach (var group in apparelListToShow)
+
+            Parallel.ForEach(apparelListToShow, (apparel, state, index) =>
             {
-                Parallel.ForEach(group, apparel =>
+                var curY = index * itemRect.height;
+                if (curY < this.apparelsScrollPosition.y - itemRect.height || curY > this.apparelsScrollPosition.y + outerRect.height) return;
+
+                var curItemRect = new Rect(itemRect.x, itemRect.y + curY, itemRect.width, itemRect.height);
+                var curIconRect = new Rect(iconRect.x, iconRect.y + curY, iconRect.width, iconRect.height);
+                var curLabelRect = new Rect(labelRect.x, labelRect.y + curY, labelRect.width, labelRect.height);
+                var curInfoButtonRect = new Rect(infoButtonRect.x, infoButtonRect.y + curY, infoButtonRect.width, infoButtonRect.height);
+
+                drawer.Enqueue(() =>
                 {
-                    var curY = group.FirstIndexOf(a => a == apparel) * itemRect.height;
-                    if (group.Key == false) curY += apparelCountTrue * itemRect.height;
-                    if (curY < this.apparelsScrollPosition.y - itemRect.height || curY > this.apparelsScrollPosition.y + outerRect.height) return;
+                    if (!apparel.Key) GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
+                    if (this.SelectedApparels.Contains(apparel.Value)) Widgets.DrawHighlightSelected(curItemRect);
 
-                    var curItemRect = new Rect(itemRect.x, itemRect.y + curY, itemRect.width, itemRect.height);
-                    var curIconRect = new Rect(iconRect.x, iconRect.y + curY, iconRect.width, iconRect.height);
-                    var curLabelRect = new Rect(labelRect.x, labelRect.y + curY, labelRect.width, labelRect.height);
-                    var curInfoButtonRect = new Rect(infoButtonRect.x, infoButtonRect.y + curY, infoButtonRect.width, infoButtonRect.height);
-
-                    drawer.Enqueue(() =>
+                    if (Mouse.IsOver(curItemRect))
                     {
-                        if (!group.Key) GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
-                        if (this.SelectedApparels.Contains(apparel)) Widgets.DrawHighlightSelected(curItemRect);
-
-                        if (Mouse.IsOver(curItemRect))
+                        this.lastMouseovered = this.mouseovered = apparel.Value;
+                        TooltipHandler.TipRegion(curItemRect, apparel.Value.DescriptionDetailed);
+                        Widgets.DrawHighlight(curItemRect);
+                        if (Input.GetMouseButtonUp(0))
                         {
-                            this.lastMouseovered = this.mouseovered = apparel;
-                            TooltipHandler.TipRegion(curItemRect, apparel.DescriptionDetailed);
-                            Widgets.DrawHighlight(curItemRect);
-                            if (Input.GetMouseButtonUp(0))
+                            Input.ResetInputAxes();
+                            if (this.SelectedApparels.Contains(apparel.Value))
                             {
-                                Input.ResetInputAxes();
-                                if (this.SelectedApparels.Contains(apparel))
+                                var tmp = SelectedApparels.Where(a => a != apparel.Value);
+                                this.SelectedApparels = new ConcurrentBag<ThingDef>();
+                                foreach (var a in tmp) SelectedApparels.Add(a);
+                                this.PreviewedApparels.Remove(apparel.Value);
+                                this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
+                                this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+                            }
+                            else
+                            {
+                                this.SelectedApparels.Add(apparel.Value); 
+                                if (!this.PreviewedApparels.Any(p => apparel.Value != p && !ApparelUtility.CanWearTogether(apparel.Value, p, this.SelectedPawn.RaceProps.body)))
                                 {
-                                    var tmp = SelectedApparels.Where(a => a != apparel);
-                                    this.SelectedApparels = new ConcurrentBag<ThingDef>();
-                                    foreach (var a in tmp) SelectedApparels.Add(a);
-                                    this.PreviewedApparels.Remove(apparel);
-                                    this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
-                                    this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
-                                    this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+                                    this.PreviewedApparels.Add(apparel.Value);
+                                    this.preApparelsApparel.TryAddOrTransfer(this.GetApparel(apparel.Value, this.SelectedPawn));
                                 }
-                                else
-                                {
-                                    this.SelectedApparels.Add(apparel); 
-                                    if (!this.PreviewedApparels.Any(p => apparel != p && !ApparelUtility.CanWearTogether(apparel, p, this.SelectedPawn.RaceProps.body)))
-                                    {
-                                        this.PreviewedApparels.Add(apparel);
-                                        this.preApparelsApparel.TryAddOrTransfer(this.GetApparel(apparel, this.SelectedPawn));
-                                    }
-                                    this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
-                                    this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
-                                }
+                                this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
+                                this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
                             }
                         }
-                        Widgets.DefIcon(curIconRect, apparel);
-                        Widgets.Label(curLabelRect, apparel.label.Truncate(labelRect.width));
-                        this.TinyInfoButton(curInfoButtonRect, apparel, GenStuff.DefaultStuffFor(apparel));
-                    });
+                    }
+                    Widgets.DefIcon(curIconRect, apparel.Value);
+                    Widgets.Label(curLabelRect, apparel.Value.label.Truncate(labelRect.width));
+                    this.TinyInfoButton(curInfoButtonRect, apparel.Value, GenStuff.DefaultStuffFor(apparel.Value));
                 });
-            }
+            });
             drawer.Enqueue(() => Widgets.EndScrollView());
             return drawer;
         }
@@ -669,20 +665,19 @@ namespace ChooseYourOutfit
                 curY -= itemRect.height;
                 if (!collapse[apparelsInLayer.layer])
                 {
-                    foreach (var apparels in apparelsInLayer.list)
+                    Parallel.ForEach(apparelsInLayer.list, (apparels, state, index) =>
                     {
-
-                        Parallel.ForEach(apparels, (apparel, state, index) =>
+                        var curApparelsY = curY - apparelsInLayer.list.Skip((int)index + 1).Select(list => (itemRect.height + 8f) * list.Count() - 8f).Sum();
+                        foreach (var (apparel, i) in apparels.Select((a, i) => (a, i)))
                         {
-                            var curApparelY = curY - (itemRect.height + 8f) * index;
+                            var curApparelY = curApparelsY - (itemRect.height + 8f) * i;
                             if (curApparelY - itemRect.height > this.listScrollPosition.y || curApparelY < this.listScrollPosition.y + outerRect.height)
                             {
                                 var curItemRect = new Rect(itemRect.x, curApparelY, itemRect.width, itemRect.height);
-                                var curOrRect = new Rect(orRect.x, curApparelY - 14f, orRect.width, orRect.height);
                                 var curCheckBoxRect = new Rect(checkBoxRect.x, curApparelY + 2f, checkBoxRect.width, checkBoxRect.height);
 
                                 var isPreviewed = this.PreviewedApparels.Contains(apparel);
-                                if(mouseoveredSelectedApparel != null)
+                                if (mouseoveredSelectedApparel != null)
                                 {
                                     if (mouseoveredSelectedApparel != apparel && cantWearTogether[mouseoveredSelectedApparel].Contains(apparel) && !ChooseYourOutfit.settings.selectedApparelListMode)
                                         drawer.Enqueue(() => Widgets.DrawRectFast(curItemRect, new Color(0.5f, 0f, 0f, 0.15f)));
@@ -726,19 +721,19 @@ namespace ChooseYourOutfit
                                     }
                                 });
 
-                                if (index == apparels.Count() - 1) return;
+                                if (i == apparels.Count() - 1) return;
 
+                                var curOrRect = new Rect(orRect.x, curApparelY - 14f, orRect.width, orRect.height);
                                 drawer.Enqueue(() =>
                                 {
                                     using (new TextBlock(GameFont.Tiny)) Widgets.Label(curOrRect, "or");
                                 });
                             }
-                        });
-                        curY -= (itemRect.height + 8f) * apparels.Count() - 8f;
-                        var curApparelsY = curY;
+                        }
                         var color = ChooseYourOutfit.settings.selectedApparelListMode ? Color.white : Color.gray;
                         drawer.Enqueue(() => Widgets.DrawLineHorizontal(itemRect.x, curApparelsY + itemRect.height, itemRect.width, color));
-                    }
+                    });
+                    curY -= apparelsInLayer.list.Select(apparels => (itemRect.height + 8f) * apparels.Count() - 8f).Sum();
                 }
 
                 var curLayerY = curY;
@@ -789,16 +784,22 @@ namespace ChooseYourOutfit
             AccessTools.Field(typeof(Pawn), "drawer").SetValue(this.SelectedPawn, tmpDrawer);
         }
 
-        private HashSet<IGrouping<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
+        private HashSet<KeyValuePair<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
         {
-            return apparels
+            var group = apparels
                 .Where(a => this.SelectedLayers.Any(l => a.apparel.layers.Contains(l)))
                 .Where(a => a.apparel.bodyPartGroups.Any(g => this.SelectedBodypartGroups?.Contains(g) ?? true))
                 .OrderBy(a => a.label)
                 .GroupBy(a => this.SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
                 this.SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
                 a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
-                .OrderByDescending(g => g.Key is true).ToHashSet();
+                .OrderByDescending(g => g.Key is true)
+                .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)));
+
+            IEnumerable<KeyValuePair<bool, ThingDef>> list;
+            if (ChooseYourOutfit.settings.apparelListMode) list = group;
+            else list = group.OrderByDescending(a => a.Value.label);
+            return list.ToHashSet();
         }
 
         private IEnumerable<(ApparelLayerDef, IEnumerable<IEnumerable<ThingDef>>)> ListingSelectedApparelToShow(IEnumerable<ThingDef> selectedApparels)
@@ -957,7 +958,7 @@ namespace ChooseYourOutfit
 
         private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
 
-        private HashSet<IGrouping<bool, ThingDef>> apparelListToShow = new HashSet<IGrouping<bool, ThingDef>>();
+        private HashSet<KeyValuePair<bool, ThingDef>> apparelListToShow = new HashSet<KeyValuePair<bool, ThingDef>>();
 
         private IEnumerable<(ApparelLayerDef layer, IEnumerable<IEnumerable<ThingDef>> list)> selectedApparelListToShow;
 
