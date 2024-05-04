@@ -51,13 +51,18 @@ namespace ChooseYourOutfit
 
             this.InitializeByPawn(this.SelectedPawn);
 
-            foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null))
+            foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
             {
                 //this.apparelDatabase.Add(apparel, GetApparel(apparel, SelectedPawn));
                 //this.overrideApparelColors.Add(apparelDatabase[apparel], Color.white);
                 var defaultStuff = GenStuff.DefaultStuffFor(apparel);
-                if (defaultStuff != null) this.previewApparelStuff.Add(apparel, defaultStuff);
+                if (defaultStuff != null)
+                {
+                    defaultStuff.stuffProps.allowColorGenerators = false;
+                    this.previewApparelStuff.Add(apparel, defaultStuff);
+                }
                 else this.previewApparelStuff.Add(apparel, null);
+
             }
         }
 
@@ -346,6 +351,7 @@ namespace ChooseYourOutfit
                     option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
                     {
                         this.previewApparelStuff[apparel] = stuff;
+                        this.previewApparelStuff[apparel].stuffProps.allowColorGenerators = false;
                         this.preApparelsApparel.Clear();
                         foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
 
@@ -963,7 +969,7 @@ namespace ChooseYourOutfit
         {
             this.SelectedPawn = pawn;
             this.selPawnButtonLabel = pawn.LabelShortCap;
-            this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.apparel != null).Where(a => a.apparel.PawnCanWear(pawn)).ToHashSet();
+            this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel).Where(a => a.apparel.PawnCanWear(pawn)).ToHashSet();
             this.cantWearTogether.Clear();
             foreach (var apparel in allApparels)
             {
