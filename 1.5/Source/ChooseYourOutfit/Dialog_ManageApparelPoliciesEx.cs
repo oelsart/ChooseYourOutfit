@@ -287,10 +287,10 @@ namespace ChooseYourOutfit
                     {
                         InitializeByPawn(entry.pawn);
 
-                        foreach (var apparel in preApparelsApparel)
+                        /*foreach (var apparel in preApparelsApparel)
                         {
                             AccessTools.Field(typeof(ThingOwner), "owner").SetValue(apparel.holdingOwner, pawn.apparel);
-                        }
+                        }*/
 
                         /*foreach (var apparel in allApparels)
                         {
