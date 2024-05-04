@@ -837,7 +837,7 @@ namespace ChooseYourOutfit
             AccessTools.Field(typeof(Pawn), "drawer").SetValue(this.SelectedPawn, new Pawn_DrawTracker(this.SelectedPawn));
             AccessTools.Field(typeof(Pawn_ApparelTracker), "wornApparel").SetValue(this.SelectedPawn.apparel, preApparelsApparel);
 
-            bool renderClothes = this.SelectedApparels.Count != 0;
+            bool renderClothes = this.PreviewedApparels.Count != 0;
 
             GUI.DrawTexture(rect, PortraitsCache.Get(this.SelectedPawn, rect.size, Rot4.South, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, renderClothes, null, null, false, null));
 
@@ -941,8 +941,8 @@ namespace ChooseYourOutfit
             }
             this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
             this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
-            this.PreviewedApparels.RemoveWhere(a => !this.SelectedApparels.Contains(a));
-            this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+            this.PreviewedApparels.RemoveAll(a => !this.SelectedApparels.Contains(a));
+            this.preApparelsApparel.RemoveAll(a => !this.SelectedApparels.Contains(a.def));
         }
 
         private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
