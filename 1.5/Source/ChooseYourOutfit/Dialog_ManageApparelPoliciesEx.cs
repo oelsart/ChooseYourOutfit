@@ -546,7 +546,7 @@ namespace ChooseYourOutfit
 
                 if (Mouse.IsOver(rect))
                 {
-                    isInPolygon = buttonColliders[part.Key].Any(p => PolygonCollider.IsInPolygon(p, mousePosition));
+                    isInPolygon = buttonColliders[part.Key].Any(p => polygonCollider.IsInPolygon(p, mousePosition));
                     if (isInPolygon)
                     {
                         isInAnyPolygon = true;
@@ -996,13 +996,13 @@ namespace ChooseYourOutfit
             this.layerListToShow = ListingLayerToShow();
             if (pawn.gender == Gender.Female || pawn.gender == Gender.Male)
             {
-                this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[pawn.gender], this.rect6);
-                this.svgViewBox = SVGInterpreter.GetViewBox(this.svg[pawn.gender]);
+                this.buttonColliders = svgInterpreter.SVGToPolygons(this.svg[pawn.gender], this.rect6);
+                this.svgViewBox = svgInterpreter.GetViewBox(this.svg[pawn.gender]);
             }
             else
             {
-                this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
-                this.svgViewBox = SVGInterpreter.GetViewBox(this.svg[Gender.None]);
+                this.buttonColliders = svgInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
+                this.svgViewBox = svgInterpreter.GetViewBox(this.svg[Gender.None]);
             }
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
         }
@@ -1099,5 +1099,9 @@ namespace ChooseYourOutfit
         private Dictionary<ThingDef, ThingDef> previewApparelStuff = new Dictionary<ThingDef, ThingDef>();
 
         private bool filterByCurrentlyResearched = false;
+
+        private SVGInterpreter svgInterpreter = new SVGInterpreter();
+
+        private PolygonCollider polygonCollider = new PolygonCollider();
     }
 }
