@@ -799,6 +799,8 @@ namespace ChooseYourOutfit
                                         this.SelectedApparels = new ConcurrentBag<ThingDef>();
                                         foreach (var a in tmp) SelectedApparels.Add(a);
                                         this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                                        this.PreviewedApparels.Remove(apparel);
+                                        this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
                                     }
                                 }
                             });
