@@ -62,7 +62,6 @@ namespace ChooseYourOutfit
                     this.previewApparelStuff.Add(apparel, defaultStuff);
                 }
                 else this.previewApparelStuff.Add(apparel, null);
-
             }
         }
 
@@ -447,6 +446,20 @@ namespace ChooseYourOutfit
                     }
                 });
             }
+
+            var filterLabelRect = new Rect(outerRect.x + 3f, outerRect.yMax - Text.LineHeight, outerRect.width - Text.LineHeight - 6f, Text.LineHeight);
+            var checkBoxPosition = new Vector2(outerRect.xMax - Text.LineHeight - 3f, outerRect.yMax - Text.LineHeight);
+            drawer.Enqueue(() =>
+            {
+                Widgets.Label(filterLabelRect, "CYO.CurrentlyResearched".Translate());
+                Widgets.Checkbox(checkBoxPosition, ref filterByCurrentlyResearched, 20f);
+                if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
+                {
+                    ListingApparelToShow(allApparels);
+                }
+            });
+
+            outerRect.height -= 24f;
 
             Widgets.AdjustRectsForScrollView(parentRect, ref outerRect, ref viewRect);
             Rect itemRect = parentRect;
@@ -851,6 +864,11 @@ namespace ChooseYourOutfit
                 a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
                 .OrderByDescending(g => g.Key is true)
                 .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)));
+            if (this.filterByCurrentlyResearched)
+            {
+                //そのapparelを含むレシピが存在しないか、あるいは研究済みのレシピに含まれているapparelに限定
+                group = group.Where(a => DefDatabase<RecipeDef>.AllDefs.All(r => r.ProducedThingDef != a.Value) || DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a.Value));
+            }
 
             IEnumerable<KeyValuePair<bool, ThingDef>> list;
             if (ChooseYourOutfit.settings.apparelListMode) list = group;
@@ -1079,5 +1097,7 @@ namespace ChooseYourOutfit
         //private Dictionary<Apparel, Color> overrideApparelColors = new Dictionary<Apparel, Color>();
 
         private Dictionary<ThingDef, ThingDef> previewApparelStuff = new Dictionary<ThingDef, ThingDef>();
+
+        private bool filterByCurrentlyResearched = false;
     }
 }
