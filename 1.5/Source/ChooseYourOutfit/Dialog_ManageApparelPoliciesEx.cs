@@ -425,7 +425,6 @@ namespace ChooseYourOutfit
             var drawer = new ConcurrentQueue<Action>();
             Rect viewRect = outerRect;
             viewRect.height = Text.LineHeight * this.apparelListToShow?.Count() ?? 0f;
-            this.mouseovered = null;
 
             drawer.Enqueue(() => Widgets.DrawMenuSection(parentRect));
 
@@ -451,6 +450,7 @@ namespace ChooseYourOutfit
             var checkBoxPosition = new Vector2(outerRect.xMax - Text.LineHeight - 3f, outerRect.yMax - Text.LineHeight);
             drawer.Enqueue(() =>
             {
+                this.mouseovered = null;
                 Widgets.Label(filterLabelRect, "CYO.CurrentlyResearched".Translate());
                 Widgets.Checkbox(checkBoxPosition, ref filterByCurrentlyResearched, 20f);
                 if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
