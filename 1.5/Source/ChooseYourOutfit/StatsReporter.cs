@@ -12,23 +12,29 @@ namespace ChooseYourOutfit
         public void Reset()
         {
             this.scrollPosition = default(Vector2);
-            this.selectedEntry = null;
             this.scrollPositioner.Arm(false);
             this.mousedOverEntry = null;
             this.cachedDrawEntries.Clear();
             this.cachedEntryValues.Clear();
         }
 
+        public StatsReporter(Dialog_ManageApparelPoliciesEx dialog)
+        {
+            this.dialog = dialog;
+        }
+
         public void DrawStatsReport(Rect rect, ThingDef def, ThingDef stuff, QualityCategory quality)
         {
+            BuildableDef buildableDef = def as BuildableDef;
+            StatRequest req = (buildableDef != null) ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
+            var specialDisplayStats = def.SpecialDisplayStats(req);
+
             if (this.cachedDrawEntries.NullOrEmpty<StatDrawEntry>())
             {
-                BuildableDef buildableDef = def as BuildableDef;
-                StatRequest req = (buildableDef != null) ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
                 ThingWithComps thing = def.GetConcreteExample(stuff) as ThingWithComps;
                 CompQuality compQuality = thing.GetComp<CompQuality>();
                 compQuality?.SetQuality(quality, ArtGenerationContext.Colony);
-                this.cachedDrawEntries.AddRange(def.SpecialDisplayStats(req));
+                this.cachedDrawEntries.AddRange(specialDisplayStats);
                 this.cachedDrawEntries.AddRange(from r in this.StatsToDraw(thing)
                                                               where r.ShouldDisplay()
                                                               select r);
@@ -38,8 +44,10 @@ namespace ChooseYourOutfit
             Widgets.Label(rect, def.label.Truncate(rect.width));
             rect.yMin += Text.LineHeight;
 
-            this.DrawStatsWorker(rect);
+            this.DrawStatsWorker(rect, specialDisplayStats);
         }
+
+        public StatDrawEntry SelectedEntry { get { return this.selectedEntry; } }
 
         private IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
         {
@@ -55,22 +63,26 @@ namespace ChooseYourOutfit
 
         private void SelectEntry(StatDrawEntry rec, bool playSound = true)
         {
-            this.selectedEntry = rec;
+            if (this.selectedEntry == this.mousedOverEntry && this.selectedEntry != null) this.selectedEntry = null;
+            else this.selectedEntry = rec;
             if (playSound)
             {
                 SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
             }
+            dialog.apparelListToShow = dialog.ListingApparelToShow(dialog.allApparels);
         }
 
-        private void DrawStatsWorker(Rect rect)
+        private void DrawStatsWorker(Rect rect, IEnumerable<StatDrawEntry> specialDisplayStats)
         {
             Rect rect2 = new Rect(rect);
             Text.Font = GameFont.Small;
             Rect viewRect = new Rect(0f, 0f, rect2.width - 24f, this.listHeight);
+            var anyMouseOvered = false;
+
             Widgets.BeginScrollView(rect2, ref this.scrollPosition, viewRect, true);
             float num = 0f;
             string b = null;
-            this.mousedOverEntry = null;
+
             for (int i = 0; i < this.cachedDrawEntries.Count; i++)
             {
                 StatDrawEntry ent = this.cachedDrawEntries[i];
@@ -82,15 +94,23 @@ namespace ChooseYourOutfit
 
                 num += ent.Draw(8f, num, viewRect.width, this.selectedEntry == ent, false, false, delegate
                 {
-                    this.SelectEntry(ent, true);
+                    if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
+                    {
+                        this.SelectEntry(ent, true);
+                    }
                 }, delegate
                 {
-                    this.mousedOverEntry = ent;
+                    if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
+                    {
+                        this.mousedOverEntry = ent;
+                    }
+                    anyMouseOvered = true;
                 }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
             }
-
             this.listHeight = num + 100f;
             Widgets.EndScrollView();
+
+            if(anyMouseOvered is false) this.mousedOverEntry = null;
         }
 
         private void FinalizeCachedDrawEntries(IEnumerable<StatDrawEntry> original)
@@ -121,7 +141,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private bool Matches(StatDrawEntry sd)
+        public bool Matches(StatDrawEntry sd)
         {
             return this.quickSearchWidget.filter.Matches(sd.LabelCap);
         }
@@ -150,5 +170,7 @@ namespace ChooseYourOutfit
         private List<StatDrawEntry> cachedDrawEntries = new List<StatDrawEntry>();
 
         private List<string> cachedEntryValues = new List<string>();
+
+        private Dialog_ManageApparelPoliciesEx dialog;
     }
 }

@@ -26,7 +26,7 @@ namespace ChooseYourOutfit
         //選択されたポーンを受け取ってOutfit情報だけをDialog_ManageOutfitsのコンストラクタに渡す
         public Dialog_ManageApparelPoliciesEx(Pawn selectedPawn) : base(selectedPawn?.outfits.CurrentApparelPolicy)
         {
-            this.statsReporter = new StatsReporter();
+            this.statsReporter = new StatsReporter(this);
             this.apparelsScrollPosition = default;
             this.listScrollPosition = default;
             this.SelectedPawn = selectedPawn;
@@ -206,7 +206,7 @@ namespace ChooseYourOutfit
             this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (ChooseYourOutfit.settings.syncFilter)
             {
-                if (!canWearAllowed.SequenceEqual(SelectedApparels)) loadFilter(canWearAllowed);
+                if (!canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
             }
 
             //apparelLayerのリストを描画
@@ -261,7 +261,7 @@ namespace ChooseYourOutfit
 
             if (ChooseYourOutfit.settings.syncFilter)
             {
-                if (!canWearAllowed.SequenceEqual(SelectedApparels)) applyFilter(canWearAllowed);
+                if (!canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) applyFilter(canWearAllowed);
             }
         }
 
@@ -455,7 +455,7 @@ namespace ChooseYourOutfit
                 Widgets.Checkbox(checkBoxPosition, ref filterByCurrentlyResearched, 20f);
                 if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
                 {
-                    ListingApparelToShow(allApparels);
+                    this.apparelListToShow = this.ListingApparelToShow(allApparels);
                 }
             });
 
@@ -853,7 +853,7 @@ namespace ChooseYourOutfit
             AccessTools.Field(typeof(Pawn), "drawer").SetValue(this.SelectedPawn, tmpDrawer);
         }
 
-        private HashSet<KeyValuePair<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
+        public HashSet<KeyValuePair<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
         {
             var group = apparels
                 .Where(a => this.SelectedLayers.Any(l => a.apparel.layers.Contains(l)))
@@ -864,10 +864,18 @@ namespace ChooseYourOutfit
                 a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
                 .OrderByDescending(g => g.Key is true)
                 .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)));
+
             if (this.filterByCurrentlyResearched)
             {
                 //そのapparelを含むレシピが存在しないか、あるいは研究済みのレシピに含まれているapparelに限定
                 group = group.Where(a => DefDatabase<RecipeDef>.AllDefs.All(r => r.ProducedThingDef != a.Value) || DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a.Value));
+            }
+
+            if(statsReporter.SelectedEntry != null)
+            {
+                if(statsReporter.SelectedEntry.LabelCap == "Source".Translate())
+                    group = group.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.ValueString == statsReporter.SelectedEntry.ValueString));
+                else group = group.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.LabelCap == statsReporter.SelectedEntry.LabelCap));
             }
 
             IEnumerable<KeyValuePair<bool, ThingDef>> list;
@@ -1058,7 +1066,7 @@ namespace ChooseYourOutfit
 
         private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
 
-        private HashSet<KeyValuePair<bool, ThingDef>> apparelListToShow = new HashSet<KeyValuePair<bool, ThingDef>>();
+        public HashSet<KeyValuePair<bool, ThingDef>> apparelListToShow = new HashSet<KeyValuePair<bool, ThingDef>>();
 
         private IEnumerable<(ApparelLayerDef layer, IEnumerable<IEnumerable<ThingDef>> list)> selectedApparelListToShow;
 
@@ -1088,7 +1096,7 @@ namespace ChooseYourOutfit
 
         private Rect rect6;
 
-        private HashSet<ThingDef> allApparels;
+        public HashSet<ThingDef> allApparels;
 
         private HashSet<ThingDef> canWearAllowed;
 
