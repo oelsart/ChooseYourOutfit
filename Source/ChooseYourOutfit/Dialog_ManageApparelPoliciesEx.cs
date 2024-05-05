@@ -21,10 +21,10 @@ using System.Security.Principal;
 
 namespace ChooseYourOutfit
 {
-    public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
+    public class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
     {
         //選択されたポーンを受け取ってOutfit情報だけをDialog_ManageOutfitsのコンストラクタに渡す
-        public Dialog_ManageApparelPoliciesEx(Pawn selectedPawn) : base(selectedPawn?.outfits.CurrentApparelPolicy)
+        public Dialog_ManageOutfitsEx(Pawn selectedPawn) : base(selectedPawn?.outfits.CurrentOutfit)
         {
             this.statsReporter = new StatsReporter(this);
             this.apparelsScrollPosition = default;
@@ -37,9 +37,8 @@ namespace ChooseYourOutfit
             this.svg.Add(Gender.Male, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.Male + ".svg"));
 
             //毎Tickボタンの当たり判定を計算するのは忍びないので先に計算するためボタン周りのrectを先に決めています
-            this.rect5 = new Rect(Margin + 400f, Margin + 52f + this.OffsetHeaderY, 200f, this.windowRect.height);
-            this.rect5.yMax = this.InitialSize.y;
-            this.rect5.yMax -= Margin + Window.CloseButSize.y + 13f;
+            this.rect5 = new Rect(Margin + 400f, Margin + 52f, 200f, this.windowRect.height);
+            this.rect5.yMax = this.InitialSize.y - Margin + Window.CloseButSize.y + 13f;
             this.rect6 = new Rect(rect5.x + this.rect5.width + 10f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - 340f - Margin, rect5.height - 15f);
 
             if (selectedPawn == null)
@@ -62,19 +61,6 @@ namespace ChooseYourOutfit
                     this.previewApparelStuff.Add(apparel, defaultStuff);
                 }
                 else this.previewApparelStuff.Add(apparel, null);
-            }
-        }
-
-        private static ThingFilter ApparelGlobalFilter
-        {
-            get
-            {
-                if (Dialog_ManageApparelPoliciesEx.apparelGlobalFilter == null)
-                {
-                    Dialog_ManageApparelPoliciesEx.apparelGlobalFilter = new ThingFilter();
-                    Dialog_ManageApparelPoliciesEx.apparelGlobalFilter.SetAllow(ThingCategoryDefOf.Apparel, true, null, null);
-                }
-                return Dialog_ManageApparelPoliciesEx.apparelGlobalFilter;
             }
         }
 
@@ -147,7 +133,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        protected override ApparelPolicy CreateNewPolicy()
+        /*protected override Outfit CreateNewOutfit()
         {
             return Current.Game.outfitDatabase.MakeNewOutfit();
         }
@@ -165,27 +151,7 @@ namespace ChooseYourOutfit
         protected override List<ApparelPolicy> GetPolicies()
         {
             return Current.Game.outfitDatabase.AllOutfits;
-        }
-
-
-        protected override void DoContentsRect(Rect rect)
-        {
-            if(!ChooseYourOutfit.settings.disableAddedUI) rect.width = 200f;
-            ThingFilterUI.DoThingFilterConfigWindow(rect, this.thingFilterState, base.SelectedPolicy.filter, Dialog_ManageApparelPoliciesEx.ApparelGlobalFilter, 16, null, this.HiddenSpecialThingFilters(), false, false, false, null, null);
-        }
-
-        private IEnumerable<SpecialThingFilterDef> HiddenSpecialThingFilters()
-        {
-            yield return SpecialThingFilterDefOf.AllowNonDeadmansApparel;
-            if (ModsConfig.IdeologyActive)
-            {
-                yield return SpecialThingFilterDefOf.AllowVegetarian;
-                yield return SpecialThingFilterDefOf.AllowCarnivore;
-                yield return SpecialThingFilterDefOf.AllowCannibal;
-                yield return SpecialThingFilterDefOf.AllowInsectMeat;
-            }
-            yield break;
-        }
+        }*/
 
         public override void DoWindowContents(Rect inRect)
         {
@@ -194,16 +160,14 @@ namespace ChooseYourOutfit
             if(Current.Game.outfitDatabase.AllOutfits.Any(outfit => outfit == null))
             {
                 Log.Error("[ChooseYourOutfit] A Null Apparel Policy has been generated. Please contact the mod author when you get this.");
-                AccessTools.Field(typeof(OutfitDatabase), "outfits").SetValue(Current.Game.outfitDatabase, Current.Game.outfitDatabase.AllOutfits.Select((o, i) => o == null ? new ApparelPolicy(i, "Delete This Policy") : o).ToList());
+                AccessTools.Field(typeof(OutfitDatabase), "outfits").SetValue(Current.Game.outfitDatabase, Current.Game.outfitDatabase.AllOutfits.Select((o, i) => o == null ? new Outfit(i, "Delete This Outfit") : o).ToList());
             }
 
             base.DoWindowContents(inRect);
             if (ChooseYourOutfit.settings.disableAddedUI) return;
 
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
-            if (SelectedPolicy == null) return;
-
-            this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+            this.canWearAllowed = SelectedPawn.outfits.CurrentOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (ChooseYourOutfit.settings.syncFilter)
             {
                 if (!canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
@@ -461,7 +425,7 @@ namespace ChooseYourOutfit
 
             outerRect.height -= 24f;
 
-            Widgets.AdjustRectsForScrollView(parentRect, ref outerRect, ref viewRect);
+            //Widgets.AdjustRectsForScrollView(parentRect, ref outerRect, ref viewRect);
             Rect itemRect = parentRect;
             itemRect.height = Text.LineHeight;
             Rect iconRect = new Rect(itemRect.x + 15f, itemRect.y, itemRect.height, itemRect.height);
@@ -778,7 +742,7 @@ namespace ChooseYourOutfit
                                             this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
                                             this.preApparelsApparel.Clear();
                                             foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
-                                            this.PreviewedApparels.RemoveWhere(p => p != apparel && cantWearTogether[apparel].Contains(p));
+                                            this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
                                             this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
                                             //this.overrideApparelColors[apparelDatabase[apparel]] = Color.white;
 
@@ -957,8 +921,8 @@ namespace ChooseYourOutfit
 
         private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
         {
-            foreach(var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) this.SelectedPolicy.filter.SetAllow(a, false);
-            foreach (var a in this.SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) this.SelectedPolicy.filter.SetAllow(a, true);
+            foreach(var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) SelectedPawn.outfits.CurrentOutfit.filter.SetAllow(a, false);
+            foreach (var a in this.SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) SelectedPawn.outfits.CurrentOutfit.filter.SetAllow(a, true);
         }
 
         private bool TinyInfoButton(Rect rect, ThingDef thingDef, ThingDef stuffDef)

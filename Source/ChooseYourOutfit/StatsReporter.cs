@@ -19,7 +19,7 @@ namespace ChooseYourOutfit
             this.cachedEntryValues.Clear();
         }
 
-        public StatsReporter(Dialog_ManageApparelPoliciesEx dialog)
+        public StatsReporter(Dialog_ManageOutfitsEx dialog)
         {
             this.dialog = dialog;
         }
@@ -37,7 +37,7 @@ namespace ChooseYourOutfit
                 compQuality?.SetQuality(quality, ArtGenerationContext.Colony);
                 this.cachedDrawEntries.AddRange(specialDisplayStats);
                 this.cachedDrawEntries.AddRange(from r in this.StatsToDraw(thing)
-                                                              where r.ShouldDisplay()
+                                                              where r.ShouldDisplay
                                                               select r);
                 this.FinalizeCachedDrawEntries(this.cachedDrawEntries);
             }
@@ -172,6 +172,6 @@ namespace ChooseYourOutfit
 
         private List<string> cachedEntryValues = new List<string>();
 
-        private Dialog_ManageApparelPoliciesEx dialog;
+        private Dialog_ManageOutfitsEx dialog;
     }
 }
