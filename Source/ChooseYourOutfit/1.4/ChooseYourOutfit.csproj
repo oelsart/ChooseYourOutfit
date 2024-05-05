@@ -80,9 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChooseYourOutfit.cs" />
+    <Compile Include="Dialog_ManageOutfitsEx.cs" />
     <Compile Include="StatsReporter.cs" />
     <Compile Include="PolygonCollider.cs" />
-    <Compile Include="Dialog_ManageApparelPoliciesEx.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
