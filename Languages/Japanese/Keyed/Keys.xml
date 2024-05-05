@@ -11,7 +11,6 @@
   <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する).</CYO.Settings.SyncFilter>
-  <CYO.Settings.ResetScrollPosition>情報カードの表示が切り替わった時スクロール位置をリセットする.</CYO.Settings.ResetScrollPosition>
   <CYO.Settings.ApparelListMode>衣服リストの内選択した衣服と一緒に着られないものを非表示にする.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• それを一番下に移動させる.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• それを移動させない.</CYO.Settings.DontMoveIt>
