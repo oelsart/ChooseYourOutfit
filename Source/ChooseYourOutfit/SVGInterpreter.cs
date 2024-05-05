@@ -8,31 +8,31 @@ using Verse;
 
 namespace ChooseYourOutfit
 {
-    public static class SVGInterpreter
+    public class SVGInterpreter
     {
-        public static ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> SVGToPolygons(XDocument svg, Rect rect)
+        public ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> SVGToPolygons(XDocument svg, Rect rect)
         {
             var result = new ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>>();
             XNamespace nspace = svg.Root.Name.Namespace;
             IEnumerable<XElement> paths = svg.Descendants(nspace + "path");
-            Rect viewBox = SVGInterpreter.GetViewBox(svg);            
+            Rect viewBox = this.GetViewBox(svg);            
 
             foreach (var path in paths)
             {
                 var id = path.Attribute("id").Value;
-                var polygons = SVGInterpreter.PathToPolygons(path.Attribute("d").Value, viewBox, rect);
+                var polygons = this.PathToPolygons(path.Attribute("d").Value, viewBox, rect);
                 result[id] = polygons;
             }
             return result;
         }
 
-        public static Rect GetViewBox(XDocument svg)
+        public Rect GetViewBox(XDocument svg)
         {
             var value = svg.Root.Attribute("viewBox").Value.Split(' ').Select(float.Parse);
             return new Rect(value.ElementAt(0), value.ElementAt(1), value.ElementAt(2), value.ElementAt(3));
         }
 
-        public static IEnumerable<IEnumerable<Vector2>> PathToPolygons(string d, Rect viewBox, Rect rect)
+        public IEnumerable<IEnumerable<Vector2>> PathToPolygons(string d, Rect viewBox, Rect rect)
         {
             IEnumerable<string> values = d.Split(' ');
             string mode = null;

@@ -4,10 +4,15 @@
   <CYO.AllLayers>全てのレイヤー</CYO.AllLayers>
   <CYO.LoadFilter>フィルター読込</CYO.LoadFilter>
   <CYO.ApplyFilter>フィルター適用</CYO.ApplyFilter>
+  <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
+  <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
+  <CYO.Preview>プレビュー</CYO.Preview>
   
   <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する).</CYO.Settings.SyncFilter>
-  <CYO.Settings.apparelListMode>衣服リストの内選択した衣服と一緒に着られないものは下の方に移動する.</CYO.Settings.apparelListMode>
-  <CYO.Settings.SelectedApparelListMode>(レガシー)選択した衣服のリストで一緒に着られないものは"or"で併記する.\n(この設定をONにした時, 選択する衣服が多いと組み合わせ爆発によりパフォーマンスに大きな影響があります)</CYO.Settings.SelectedApparelListMode>
+  <CYO.Settings.ResetScrollPosition>情報カードの表示が切り替わった時スクロール位置をリセットする.</CYO.Settings.ResetScrollPosition>
+  <CYO.Settings.ApparelListMode>衣服リストの内選択した衣服と一緒に着られないものを非表示にする.</CYO.Settings.ApparelListMode>
+  <CYO.Settings.MoveToBottom>• それを一番下に移動させる.</CYO.Settings.MoveToBottom>
+  <CYO.Settings.DontMoveIt>• それを移動させない.</CYO.Settings.DontMoveIt>
 </LanguageData>
