@@ -173,7 +173,5 @@ namespace ChooseYourOutfit
         private List<string> cachedEntryValues = new List<string>();
 
         private Dialog_ManageApparelPoliciesEx dialog;
-
-        private float scrollPositionYMax;
     }
 }

@@ -866,9 +866,15 @@ namespace ChooseYourOutfit
 
             if(statsReporter.SelectedEntry != null)
             {
-                if(statsReporter.SelectedEntry.LabelCap == "Source".Translate())
+                if (statsReporter.SelectedEntry.LabelCap == "Source".Translate() ||
+                    statsReporter.SelectedEntry.LabelCap == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate() ||
+                    statsReporter.SelectedEntry.LabelCap == "Layer".Translate() ||
+                    statsReporter.SelectedEntry.LabelCap == "Covers".Translate() ||
+                    statsReporter.SelectedEntry.LabelCap == "CreatedAt".Translate() ||
+                    statsReporter.SelectedEntry.LabelCap == "Ingredients".Translate())
                     group = group.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.ValueString == statsReporter.SelectedEntry.ValueString));
                 else group = group.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.LabelCap == statsReporter.SelectedEntry.LabelCap));
+                Log.Message(statsReporter.SelectedEntry.LabelCap);
             }
 
             IEnumerable<KeyValuePair<bool, ThingDef>> list;
