@@ -37,9 +37,9 @@ namespace ChooseYourOutfit
             this.svg.Add(Gender.Male, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.Male + ".svg"));
 
             //毎Tickボタンの当たり判定を計算するのは忍びないので先に計算するためボタン周りのrectを先に決めています
-            this.rect5 = new Rect(Margin + 400f, Margin + 52f, 200f, this.windowRect.height);
-            this.rect5.yMax = this.InitialSize.y - Margin + Window.CloseButSize.y + 13f;
-            this.rect6 = new Rect(rect5.x + this.rect5.width + 10f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - 340f - Margin, rect5.height - 15f);
+            this.rect5 = new Rect(Margin + 300f, Margin + 32f, 275f, this.windowRect.height);
+            this.rect5.yMax = this.InitialSize.y - Margin - Window.CloseButSize.y - 28f;
+            this.rect6 = new Rect(rect5.x + this.rect5.width + 10f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - 335f - Margin, rect5.height - 15f);
 
             if (selectedPawn == null)
             {
@@ -73,6 +73,14 @@ namespace ChooseYourOutfit
             set
             {
                 this.selPawnInt = value;
+            }
+        }
+
+        private Outfit SelectedOutfit
+        {
+            get
+            {
+                return (Outfit)AccessTools.Field(typeof(Dialog_ManageOutfits), "selOutfitInt").GetValue(this);
             }
         }
 
@@ -165,16 +173,17 @@ namespace ChooseYourOutfit
 
             base.DoWindowContents(inRect);
             if (ChooseYourOutfit.settings.disableAddedUI) return;
+            if (SelectedOutfit == null) return;
 
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
-            this.canWearAllowed = SelectedPawn.outfits.CurrentOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+            this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (ChooseYourOutfit.settings.syncFilter)
             {
                 if (!canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
             }
 
             //apparelLayerのリストを描画
-            var layersRect = new Rect(rect5.x, rect5.y + 40f, 200f, Text.LineHeight + Text.LineHeight * layerListToShow.Count());
+            var layersRect = new Rect(rect5.x, rect5.y + 40f, 275f, Text.LineHeight + Text.LineHeight * layerListToShow.Count());
             if (layerListToShow.Count() == 0)
             {
                 Widgets.Label(layersRect, "CYO.NoApparels".Translate());
@@ -185,7 +194,7 @@ namespace ChooseYourOutfit
             }
 
             //apparelのリストを描画
-            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
+            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 275f, rect5.height - layersRect.height - 65f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
             Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
@@ -213,7 +222,7 @@ namespace ChooseYourOutfit
             Widgets.EndGroup();
 
             //右のインフォカード描画
-            Rect rect7 = new Rect(inRect.xMax - 300f, rect5.y, 300f, rect5.height - 15f);
+            Rect rect7 = new Rect(inRect.xMax - 310f, rect5.y, 300f, rect5.height - 15f);
 
             tasks[3] = Task.Run(() => this.DoInfoCard(rect7));
 
@@ -425,6 +434,7 @@ namespace ChooseYourOutfit
 
             outerRect.height -= 24f;
 
+            viewRect.width -= GenUI.ScrollBarWidth + 1f;
             //Widgets.AdjustRectsForScrollView(parentRect, ref outerRect, ref viewRect);
             Rect itemRect = parentRect;
             itemRect.height = Text.LineHeight;
@@ -656,7 +666,7 @@ namespace ChooseYourOutfit
             outerRect.yMin += Text.LineHeight + 1f;
 
             Rect itemRect = outerRect;
-            itemRect.xMax -= GenUI.ScrollBarWidth;
+            itemRect.xMax -= GenUI.ScrollBarWidth + 1f;
             var viewRect = itemRect;
             itemRect.height = Text.LineHeight;
             viewRect.height = (selectedApparelListToShow.Count() + selectedApparelListToShow.Where(l => !collapse[l.layer]).Select(l => l.list.Count()).Sum()) * itemRect.height;
@@ -694,7 +704,7 @@ namespace ChooseYourOutfit
 
                 if (!collapse[apparels.layer])
                 {
-                    var fromInclusive = (int)Math.Max((this.listScrollPosition.y - curY + outerRect.height) / itemRect.height - 1, 0);
+                    var fromInclusive = (int)Math.Max((this.listScrollPosition.y - curY + outerRect.height) / itemRect.height, 0);
                     var toExclusive = (int)Math.Min(fromInclusive + outerRect.height / itemRect.height + 1, apparels.list.Count());
 
                     for(var index = fromInclusive; index < toExclusive; index++)
@@ -921,8 +931,8 @@ namespace ChooseYourOutfit
 
         private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
         {
-            foreach(var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) SelectedPawn.outfits.CurrentOutfit.filter.SetAllow(a, false);
-            foreach (var a in this.SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) SelectedPawn.outfits.CurrentOutfit.filter.SetAllow(a, true);
+            foreach(var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) SelectedOutfit.filter.SetAllow(a, false);
+            foreach (var a in this.SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) SelectedOutfit.filter.SetAllow(a, true);
         }
 
         private bool TinyInfoButton(Rect rect, ThingDef thingDef, ThingDef stuffDef)
