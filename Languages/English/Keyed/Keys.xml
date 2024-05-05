@@ -11,5 +11,8 @@
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>Sync selected apparels to filters in real time (If this is off, sync with button).</CYO.Settings.SyncFilter>
-  <CYO.Settings.apparelListMode>Apparel that cannot be worn together with the selected apparels in the apparel list is moved to the bottom of the list.</CYO.Settings.apparelListMode>
+  <CYO.Settings.ResetScrollPosition>Reset the scroll position when the information card display is switched.</CYO.Settings.ResetScrollPosition>
+  <CYO.Settings.ApparelListMode>Hide apparel that cannot be worn together with the selected apparels.</CYO.Settings.ApparelListMode>
+  <CYO.Settings.MoveToBottom>• Move it to the bottom.</CYO.Settings.MoveToBottom>
+  <CYO.Settings.DontMoveIt>• Don't move it.</CYO.Settings.DontMoveIt>
 </LanguageData>

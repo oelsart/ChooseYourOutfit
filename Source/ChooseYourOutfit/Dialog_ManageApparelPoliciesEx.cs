@@ -872,8 +872,12 @@ namespace ChooseYourOutfit
             }
 
             IEnumerable<KeyValuePair<bool, ThingDef>> list;
-            if (ChooseYourOutfit.settings.apparelListMode) list = group;
-            else list = group.OrderByDescending(a => a.Value.label);
+            if (ChooseYourOutfit.settings.apparelListMode) list = group.Where(a => a.Key == true);
+            else
+            {
+                if (ChooseYourOutfit.settings.moveToBottom) list = group;
+                else list = group.OrderByDescending(a => a.Value.label);
+            }
             return list.ToHashSet();
         }
 

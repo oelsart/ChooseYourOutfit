@@ -11,6 +11,7 @@ namespace ChooseYourOutfit
     {
         public void Reset()
         {
+
             this.scrollPosition = default(Vector2);
             this.scrollPositioner.Arm(false);
             this.mousedOverEntry = null;
@@ -172,5 +173,7 @@ namespace ChooseYourOutfit
         private List<string> cachedEntryValues = new List<string>();
 
         private Dialog_ManageApparelPoliciesEx dialog;
+
+        private float scrollPositionYMax;
     }
 }
