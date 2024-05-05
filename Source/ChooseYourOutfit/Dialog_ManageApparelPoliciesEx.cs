@@ -27,6 +27,7 @@ namespace ChooseYourOutfit
         public Dialog_ManageOutfitsEx(Pawn selectedPawn) : base(selectedPawn?.outfits.CurrentOutfit)
         {
             this.statsReporter = new StatsReporter(this);
+            this.layersScrollPosition = default;
             this.apparelsScrollPosition = default;
             this.listScrollPosition = default;
             this.SelectedPawn = selectedPawn;
@@ -183,7 +184,7 @@ namespace ChooseYourOutfit
             }
 
             //apparelLayerのリストを描画
-            var layersRect = new Rect(rect5.x, rect5.y + 40f, 275f, Text.LineHeight + Text.LineHeight * layerListToShow.Count());
+            var layersRect = new Rect(rect5.x, rect5.y + 40f, 275f, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count(), 240f));
             if (layerListToShow.Count() == 0)
             {
                 Widgets.Label(layersRect, "CYO.NoApparels".Translate());
@@ -337,6 +338,8 @@ namespace ChooseYourOutfit
         public ConcurrentQueue<Action> DoLayerList(Rect outerRect)
         {
             var drawer = new ConcurrentQueue<Action>();
+            var viewRect = new Rect(outerRect.x, outerRect.y, outerRect.width, Text.LineHeight + Text.LineHeight * layerListToShow.Count());
+            viewRect.width -= GenUI.ScrollBarWidth + 1f;
 
             drawer.Enqueue(() => Widgets.BeginGroup(outerRect));
             var itemRect = new Rect(0f, 0f, outerRect.width, Text.LineHeight);
@@ -344,6 +347,7 @@ namespace ChooseYourOutfit
             drawer.Enqueue(() =>
             {
                 Widgets.DrawMenuSection(outerRect.AtZero());
+                Widgets.BeginScrollView(outerRect.AtZero(), ref layersScrollPosition, viewRect.AtZero());
                 Widgets.Label(new Rect(itemRect.position + new Vector2(20f, 0f), itemRect.size), "CYO.AllLayers".Translate());
                 if (Mouse.IsOver(itemRect))
                 {
@@ -382,9 +386,12 @@ namespace ChooseYourOutfit
                 });
 
                 if (this.SelectedLayers.Contains(layer)) drawer.Enqueue(() => Widgets.DrawHighlightSelected(curRect));
-                drawer.Enqueue(() => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layer.label.Truncate(curRect.width - 40f)));
+                drawer.Enqueue(() => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layer.label.Truncate(curRect.width - 40f - GenUI.ScrollBarWidth)));
             }
-            drawer.Enqueue(() => Widgets.EndGroup());
+            drawer.Enqueue(() => {
+                Widgets.EndScrollView();
+                Widgets.EndGroup();
+                });
             return drawer;
         }
 
@@ -997,6 +1004,8 @@ namespace ChooseYourOutfit
         private List<ThingDef> selStuffList = new List<ThingDef>();
 
         private string selStuffButtonLabel;
+
+        private Vector2 layersScrollPosition;
 
         private Vector2 apparelsScrollPosition;
 
