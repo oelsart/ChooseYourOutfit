@@ -985,10 +985,6 @@ namespace ChooseYourOutfit
             return result;
         }
 
-        private readonly ThingFilterUI.UIState thingFilterState = new ThingFilterUI.UIState();
-
-        private static ThingFilter apparelGlobalFilter;
-
         private Pawn selPawnInt;
 
         private ConcurrentDictionary<string, (BodyPartRecord, IEnumerable<BodyPartGroupDef>)> existParts;
