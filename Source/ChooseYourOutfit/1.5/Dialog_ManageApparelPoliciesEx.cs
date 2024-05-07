@@ -336,7 +336,7 @@ namespace ChooseYourOutfit
                 {
                     option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
                     {
-                        if (selApparelsInt != null)
+                        if (selStuffInt != null)
                         {
                             this.selStuffList.Remove(this.selStuffInt);
                             this.selStuffList.Add(stuff);

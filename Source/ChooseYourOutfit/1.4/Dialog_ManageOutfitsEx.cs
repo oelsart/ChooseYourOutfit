@@ -309,8 +309,11 @@ namespace ChooseYourOutfit
                 {
                     option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
                     {
-                        this.selStuffList.Remove(this.selStuffInt);
-                        this.selStuffList.Add(stuff);
+                        if (selStuffInt != null)
+                        {
+                            this.selStuffList.Remove(this.selStuffInt);
+                            this.selStuffList.Add(stuff);
+                        }
                         this.selStuffInt = stuff;
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
                         statsReporter.Reset();
