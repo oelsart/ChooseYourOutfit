@@ -63,6 +63,8 @@ namespace ChooseYourOutfit
                     this.previewApparelStuff.Add(apparel, defaultStuff);
                 }
                 else this.previewApparelStuff.Add(apparel, null);
+
+                selStuffList.Add(defaultStuff);
             }
         }
 
@@ -254,7 +256,9 @@ namespace ChooseYourOutfit
 
             tasks[3] = Task.Run(() => this.DoInfoCard(rect7));
 
-            foreach(var task in tasks)
+            if (Find.UIRoot.windows.IsOpen<FloatMenu>() && Input.GetMouseButtonDown(0)) Input.ResetInputAxes(); //フロートメニューを閉じる瞬間他のボタンが反応しないようにする
+
+            foreach (var task in tasks)
             {
                 if (task == null) continue;
                 foreach (var drawer in task.Result) drawer();
@@ -332,10 +336,16 @@ namespace ChooseYourOutfit
                 {
                     option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
                     {
-                        this.selStuffList.Replace(this.selStuffInt, stuff);
+                        if (selApparelsInt != null)
+                        {
+                            this.selStuffList.Remove(this.selStuffInt);
+                            this.selStuffList.Add(stuff);
+                        }
                         this.selStuffInt = stuff;
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
                         statsReporter.Reset();
+
+                        if (statsReporter.SortingEntry.entry != null) this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = tDef
                 };
@@ -709,7 +719,6 @@ namespace ChooseYourOutfit
             stuffRect = stuffRect.ContractedBy(2f);
             var curY = itemRect.y;
             var anyMouseOvered = false;
-            var floatMenuOpened = Find.UIRoot.windows.IsOpen<FloatMenu>();
 
             drawer.Enqueue(() => Widgets.BeginScrollView(outerRect, ref this.listScrollPosition, viewRect, true));
             foreach (var apparelsInLayer in selectedApparelListToShow)
@@ -755,10 +764,6 @@ namespace ChooseYourOutfit
                                 drawer.Enqueue(() => Widgets.DrawRectFast(curItemRect, new Color(0.5f, 0f, 0f, 0.15f)));
                         }
 
-                        if (floatMenuOpened)
-                        {
-                            if (Input.GetMouseButtonDown(0)) Input.ResetInputAxes(); //フロートメニューを閉じる瞬間他のボタンが反応しないようにする
-                        }
                         else
                         {
                             drawer.Enqueue(() =>
@@ -855,20 +860,20 @@ namespace ChooseYourOutfit
 
         public HashSet<KeyValuePair<bool, ThingDef>> ListingApparelToShow(IEnumerable<ThingDef> apparels)
         {
-            var group = apparels
+            var list = (IEnumerable<KeyValuePair<bool, ThingDef>>)apparels
                 .Where(a => this.SelectedLayers.Any(l => a.apparel.layers.Contains(l)))
                 .Where(a => a.apparel.bodyPartGroups.Any(g => this.SelectedBodypartGroups?.Contains(g) ?? true))
-                .OrderBy(a => a.label)
+                .OrderByDescending(a => a.label)
                 .GroupBy(a => this.SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
                 this.SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
                 a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
-                .OrderByDescending(g => g.Key is true)
-                .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)));
+                .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)))
+                .OrderByDescending(a => a.Value.label);
 
             if (this.filterByCurrentlyResearched)
             {
                 //そのapparelを含むレシピが存在しないか、あるいは研究済みのレシピに含まれているapparelに限定
-                group = group.Where(a => DefDatabase<RecipeDef>.AllDefs.All(r => r.ProducedThingDef != a.Value) || DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a.Value));
+                list = list.Where(a => DefDatabase<RecipeDef>.AllDefs.All(r => r.ProducedThingDef != a.Value) || DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a.Value));
             }
 
             if(statsReporter.SelectedEntry != null)
@@ -879,18 +884,19 @@ namespace ChooseYourOutfit
                     statsReporter.SelectedEntry.LabelCap == "Covers".Translate() ||
                     statsReporter.SelectedEntry.LabelCap == "CreatedAt".Translate() ||
                     statsReporter.SelectedEntry.LabelCap == "Ingredients".Translate())
-                    group = group.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.ValueString == statsReporter.SelectedEntry.ValueString));
-                else group = group.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.LabelCap == statsReporter.SelectedEntry.LabelCap));
-                Log.Message(statsReporter.SelectedEntry.LabelCap);
+                    list = list.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.ValueString == statsReporter.SelectedEntry.ValueString));
+                else list = list.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.LabelCap == statsReporter.SelectedEntry.LabelCap));
             }
 
-            IEnumerable<KeyValuePair<bool, ThingDef>> list;
-            if (ChooseYourOutfit.settings.apparelListMode) list = group.Where(a => a.Key == true);
-            else
+            if (ChooseYourOutfit.settings.apparelListMode) list = list.Where(a => a.Key == true);
+            else if (ChooseYourOutfit.settings.moveToBottom) list = list.OrderByDescending(a => a.Key is true);
+
+            if (statsReporter.SortingEntry.entry != null)
             {
-                if (ChooseYourOutfit.settings.moveToBottom) list = group;
-                else list = group.OrderByDescending(a => a.Value.label);
+                if (statsReporter.SortingEntry.descending) list = list.OrderByDescending(a => a.Value.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, GenStuff.AllowedStuffsFor(a.Value)?.Intersect(this.selStuffList)?.FirstOrDefault() ?? GenStuff.DefaultStuffFor(a.Value)));
+                else list = list.OrderBy(a => a.Value.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, GenStuff.AllowedStuffsFor(a.Value)?.Intersect(this.selStuffList)?.FirstOrDefault() ?? GenStuff.DefaultStuffFor(a.Value)));
             }
+
             return list.ToHashSet();
         }
 
@@ -1027,7 +1033,7 @@ namespace ChooseYourOutfit
 
         private ThingDef selStuffInt;
 
-        private List<ThingDef> selStuffList = new List<ThingDef>();
+        private HashSet<ThingDef> selStuffList = new HashSet<ThingDef>();
 
         private string selStuffButtonLabel;
 
