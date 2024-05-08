@@ -751,60 +751,57 @@ namespace ChooseYourOutfit
                                 drawer.Enqueue(() => Widgets.DrawRectFast(curItemRect, new Color(0.5f, 0f, 0f, 0.15f)));
                         }
 
-                        else
+                        drawer.Enqueue(() =>
                         {
-                            drawer.Enqueue(() =>
+                            if (Mouse.IsOver(curItemRect))
                             {
-                                if (Mouse.IsOver(curItemRect))
+                                anyMouseOvered = true;
+                                mouseoveredSelectedApparel = apparel;
+                                Widgets.DrawRectFast(curItemRect, new Color(0.7f, 0.7f, 1f, 0.2f));
+
+                                if (Mouse.IsOver(curCheckBoxRect) && Input.GetMouseButtonDown(0))
                                 {
-                                    anyMouseOvered = true;
-                                    mouseoveredSelectedApparel = apparel;
-                                    Widgets.DrawRectFast(curItemRect, new Color(0.7f, 0.7f, 1f, 0.2f));
-
-                                    if (Mouse.IsOver(curCheckBoxRect) && Input.GetMouseButtonDown(0))
+                                    Input.ResetInputAxes();
+                                    if (isPreviewed)
                                     {
-                                        Input.ResetInputAxes();
-                                        if (isPreviewed)
-                                        {
-                                            this.PreviewedApparels.Remove(apparel);
-                                            this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
-                                            foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
-                                            //this.overrideApparelColors.Remove(apparelDatabase[apparel]);
-                                        }
-                                        else
-                                        {
-                                            this.PreviewedApparels.Add(apparel);
-                                            this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-                                            this.preApparelsApparel.Clear();
-                                            foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
-                                            this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
-                                            this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
-                                            //this.overrideApparelColors[apparelDatabase[apparel]] = Color.white;
-
-                                        }
-                                    }
-                                    else if (previewApparelStuff[apparel] != null && Mouse.IsOver(curStuffRect) && Input.GetMouseButtonUp(0)) //ここをDownにするとウィンドウが開いた瞬間閉じる
-                                    {
-                                        Input.ResetInputAxes();
-                                        List<FloatMenuOption> options = (from opt in GeneratePreviewApparelStuffList(apparel)
-                                                                         select opt.option).ToList<FloatMenuOption>();
-                                        Find.WindowStack.Add(new FloatMenu(options));
-                                        GeneratePreviewApparelStuffList(apparel);
-                                    }
-                                    else if (!Mouse.IsOver(curStuffRect) && Input.GetMouseButtonDown(0)) //上の判定がUpのためcurStuffRectの上での判定を除外する必要がある
-                                    {
-                                        Input.ResetInputAxes();
-                                        var tmp = SelectedApparels.Where(a => a != apparel);
-                                        this.SelectedApparels = new ConcurrentBag<ThingDef>();
-                                        foreach (var a in tmp) SelectedApparels.Add(a);
-                                        this.apparelListingRequest = true;
                                         this.PreviewedApparels.Remove(apparel);
+                                        this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
+                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                                        //this.overrideApparelColors.Remove(apparelDatabase[apparel]);
+                                    }
+                                    else
+                                    {
+                                        this.PreviewedApparels.Add(apparel);
+                                        this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
+                                        this.preApparelsApparel.Clear();
+                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                                        this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
                                         this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
-                                        this.selectedApparelListingRequest = true;
+                                        //this.overrideApparelColors[apparelDatabase[apparel]] = Color.white;
+
                                     }
                                 }
-                            });
-                        }
+                                else if (previewApparelStuff[apparel] != null && Mouse.IsOver(curStuffRect) && Input.GetMouseButtonUp(0)) //ここをDownにするとウィンドウが開いた瞬間閉じる
+                                {
+                                    Input.ResetInputAxes();
+                                    List<FloatMenuOption> options = (from opt in GeneratePreviewApparelStuffList(apparel)
+                                                                        select opt.option).ToList<FloatMenuOption>();
+                                    Find.WindowStack.Add(new FloatMenu(options));
+                                    GeneratePreviewApparelStuffList(apparel);
+                                }
+                                else if (!Mouse.IsOver(curStuffRect) && Input.GetMouseButtonDown(0)) //上の判定がUpのためcurStuffRectの上での判定を除外する必要がある
+                                {
+                                    Input.ResetInputAxes();
+                                    var tmp = SelectedApparels.Where(a => a != apparel);
+                                    this.SelectedApparels = new ConcurrentBag<ThingDef>();
+                                    foreach (var a in tmp) SelectedApparels.Add(a);
+                                    this.apparelListingRequest = true;
+                                    this.PreviewedApparels.Remove(apparel);
+                                    this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                    this.selectedApparelListingRequest = true;
+                                }
+                            }
+                        });
 
                         drawer.Enqueue(() =>
                         {
