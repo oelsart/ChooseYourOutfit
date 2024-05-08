@@ -14,4 +14,5 @@
   <CYO.Settings.ApparelListMode>Hide apparel that cannot be worn together with the selected apparels.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• Move it to the bottom.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• Don't move it.</CYO.Settings.DontMoveIt>
+  <CYO.Settings.FilterLoadTiming>Set the timing of filter loading to "when the mouse button is clicked".\n(This is effective when the load filter is called every tick due to invalid apparel)</CYO.Settings.FilterLoadTiming>
 </LanguageData>

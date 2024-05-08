@@ -206,10 +206,17 @@ namespace ChooseYourOutfit
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
             if (SelectedPolicy == null) return;
 
+            apparelListingRequest = false;
+            selectedApparelListingRequest = false;
+
             this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (ChooseYourOutfit.settings.syncFilter)
             {
-                if (!canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
+                if (ChooseYourOutfit.settings.filterLoadTiming)
+                {
+                    if (Input.GetMouseButtonUp(0)) loadFilter(canWearAllowed);
+                }
+                if (!ChooseYourOutfit.settings.filterLoadTiming && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
             }
 
             //apparelLayerのリストを描画
@@ -264,9 +271,12 @@ namespace ChooseYourOutfit
                 foreach (var drawer in task.Result) drawer();
             }
 
+            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
+            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+
             if (ChooseYourOutfit.settings.syncFilter)
             {
-                if (!canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) applyFilter(canWearAllowed);
+                applyFilter(canWearAllowed);
             }
         }
 
@@ -307,6 +317,7 @@ namespace ChooseYourOutfit
                     payload = pawn
                 };
             }
+            yield break;
         }
 
         //クオリティリストを生成
@@ -325,6 +336,7 @@ namespace ChooseYourOutfit
                     payload = quality
                 };
             }
+            yield break;
         }
 
         //素材リストを生成
@@ -345,11 +357,12 @@ namespace ChooseYourOutfit
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
                         statsReporter.Reset();
 
-                        if (statsReporter.SortingEntry.entry != null) this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
+                        if (statsReporter.SortingEntry.entry != null) this.apparelListingRequest = true;
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = tDef
                 };
             }
+            yield break;
         }
 
         public IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GeneratePreviewApparelStuffList(ThingDef apparel)
@@ -369,6 +382,7 @@ namespace ChooseYourOutfit
                     payload = apparel
                 };
             }
+            yield break;
         }
 
         //服のレイヤーリストを描画
@@ -391,7 +405,7 @@ namespace ChooseYourOutfit
                     if (Input.GetMouseButtonUp(0))
                     {
                         this.SelectedLayers = DefDatabase<ApparelLayerDef>.AllDefs.ToHashSet();
-                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                        this.apparelListingRequest = true;
                         Input.ResetInputAxes();
                     }
                     Widgets.DrawHighlight(itemRect);
@@ -401,7 +415,7 @@ namespace ChooseYourOutfit
             if (!this.SelectedLayers.Any(l => layerListToShow.Contains(l)))
             {
                 this.SelectedLayers = new HashSet<ApparelLayerDef> { layerListToShow.Last() };
-                this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                this.apparelListingRequest = true;
             }
 
             foreach (var (layer, i) in layerListToShow.Select((l, i) => (l, i)))
@@ -415,7 +429,7 @@ namespace ChooseYourOutfit
                         if (Input.GetMouseButtonUp(0))
                         {
                             this.SelectedLayers = new HashSet<ApparelLayerDef> { layer };
-                            this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                            this.apparelListingRequest = true;
                             Input.ResetInputAxes();
                         }
                         Widgets.DrawHighlight(curRect);
@@ -472,7 +486,7 @@ namespace ChooseYourOutfit
                 Widgets.Checkbox(checkBoxPosition, ref filterByCurrentlyResearched, 20f);
                 if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
                 {
-                    this.apparelListToShow = this.ListingApparelToShow(allApparels);
+                    this.apparelListingRequest = true;
                 }
             });
 
@@ -526,8 +540,8 @@ namespace ChooseYourOutfit
                                 this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
                                 //this.overrideApparelColors.RemoveAll(a => !preApparelsApparel.Contains(a.Key));
                                 //this.apparelDatabase.RemoveAll(a => a.Key == apparel.Value);
-                                this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
-                                this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+                                this.apparelListingRequest = true;
+                                this.selectedApparelListingRequest = true;
                             }
                             else
                             {
@@ -539,8 +553,8 @@ namespace ChooseYourOutfit
                                     this.preApparelsApparel.Clear();
                                     foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
                                 }
-                                this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
-                                this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+                                this.apparelListingRequest = true;
+                                this.selectedApparelListingRequest = true;
                             }
                         }
                     }
@@ -576,9 +590,9 @@ namespace ChooseYourOutfit
                         this.highlightedGroups = part.Value.groups;
                         if (Input.GetMouseButtonUp(0))
                         {
-                        this.SelectedBodypartGroups = part.Value.groups;
-                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
-                        this.layerListToShow = ListingLayerToShow();
+                            this.SelectedBodypartGroups = part.Value.groups;
+                            this.apparelListingRequest = true;
+                            this.layerListToShow = ListingLayerToShow();
                         }
                     }
                 }
@@ -619,7 +633,7 @@ namespace ChooseYourOutfit
                 if (Mouse.IsOver(new Rect(rect.width - width, rect.y, width, rect.height)) && Input.GetMouseButtonUp(0) && SelectedBodypartGroups != null)
                 {
                     this.SelectedBodypartGroups = null;
-                    this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                    this.apparelListingRequest = true;
                     this.layerListToShow = ListingLayerToShow();
                 }
             }
@@ -772,7 +786,7 @@ namespace ChooseYourOutfit
                                 {
                                     anyMouseOvered = true;
                                     mouseoveredSelectedApparel = apparel;
-                                    Widgets.DrawRectFast(curItemRect, new Color(0.7f, 0.7f, 1f, 0.3f));
+                                    Widgets.DrawRectFast(curItemRect, new Color(0.7f, 0.7f, 1f, 0.2f));
 
                                     if (Mouse.IsOver(curCheckBoxRect) && Input.GetMouseButtonDown(0))
                                     {
@@ -810,9 +824,10 @@ namespace ChooseYourOutfit
                                         var tmp = SelectedApparels.Where(a => a != apparel);
                                         this.SelectedApparels = new ConcurrentBag<ThingDef>();
                                         foreach (var a in tmp) SelectedApparels.Add(a);
-                                        this.apparelListToShow = ListingApparelToShow(this.allApparels);
+                                        this.apparelListingRequest = true;
                                         this.PreviewedApparels.Remove(apparel);
                                         this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                        this.selectedApparelListingRequest = true;
                                     }
                                 }
                             });
@@ -896,19 +911,20 @@ namespace ChooseYourOutfit
                 if (statsReporter.SortingEntry.descending) list = list.OrderByDescending(a => a.Value.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, GenStuff.AllowedStuffsFor(a.Value)?.Intersect(this.selStuffList)?.FirstOrDefault() ?? GenStuff.DefaultStuffFor(a.Value)));
                 else list = list.OrderBy(a => a.Value.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, GenStuff.AllowedStuffsFor(a.Value)?.Intersect(this.selStuffList)?.FirstOrDefault() ?? GenStuff.DefaultStuffFor(a.Value)));
             }
-
             return list.ToHashSet();
         }
 
         private IEnumerable<(ApparelLayerDef, IEnumerable<ThingDef>)> ListingSelectedApparelToShow(IEnumerable<ThingDef> selectedApparels)
         {
-            foreach(var layer in DefDatabase<ApparelLayerDef>.AllDefs.OrderByDescending(l => l.drawOrder))
+            var lists = new List<(ApparelLayerDef, IEnumerable<ThingDef>)>();
+            foreach (var layer in DefDatabase<ApparelLayerDef>.AllDefs.OrderByDescending(l => l.drawOrder))
             {
-                var list = SelectedApparels.Where(a => a.apparel.layers.Contains(layer));
-                if(list.Count() != 0) yield return (layer, list.OrderByDescending(a => a.label));
+                var list = SelectedApparels.Where(a => a.apparel.layers.Contains(layer)).OrderByDescending(a => a.label);
+                if (list.Count() != 0) lists.Add((layer, list));
             }
+            return lists;
         }
-
+            
         private HashSet<ApparelLayerDef> ListingLayerToShow()
         {
             return DefDatabase<ApparelLayerDef>.AllDefs
@@ -962,15 +978,15 @@ namespace ChooseYourOutfit
                 this.preApparelsApparel.Clear();
                 foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
             }
-            this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
-            this.apparelListToShow = this.ListingApparelToShow(this.allApparels);
+            this.selectedApparelListingRequest = true;
+            this.apparelListingRequest = true;
             this.PreviewedApparels.RemoveAll(a => !this.SelectedApparels.Contains(a));
             this.preApparelsApparel.RemoveAll(a => !this.SelectedApparels.Contains(a.def));
         }
 
         private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
         {
-            foreach(var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) this.SelectedPolicy.filter.SetAllow(a, false);
+            foreach (var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) this.SelectedPolicy.filter.SetAllow(a, false);
             foreach (var a in this.SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) this.SelectedPolicy.filter.SetAllow(a, true);
         }
 
@@ -1059,9 +1075,13 @@ namespace ChooseYourOutfit
 
         private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
 
-        public HashSet<KeyValuePair<bool, ThingDef>> apparelListToShow = new HashSet<KeyValuePair<bool, ThingDef>>();
+        private HashSet<KeyValuePair<bool, ThingDef>> apparelListToShow = new HashSet<KeyValuePair<bool, ThingDef>>();
 
-        private IEnumerable<(ApparelLayerDef layer, IEnumerable<ThingDef> list)> selectedApparelListToShow;
+        public bool apparelListingRequest;
+
+        private IEnumerable<(ApparelLayerDef layer, IEnumerable<ThingDef> list)> selectedApparelListToShow = new List<(ApparelLayerDef layer, IEnumerable<ThingDef> list)>();
+
+        public bool selectedApparelListingRequest;
 
         private Dictionary<ApparelLayerDef, bool> collapse = new Dictionary<ApparelLayerDef, bool>();
 

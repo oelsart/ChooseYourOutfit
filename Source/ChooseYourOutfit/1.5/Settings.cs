@@ -9,8 +9,9 @@ namespace ChooseYourOutfit
         public bool disableAddedUI = false;
         public bool collapseByLayer = true;
         public bool syncFilter = true;
-        public bool apparelListMode = true;
-        public bool moveToBottom = true;
+        public bool apparelListMode = false;
+        public bool moveToBottom = false;
+        public bool filterLoadTiming = false;
 
         public override void ExposeData()
         {
@@ -19,6 +20,7 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref syncFilter, "syncFilter", true);
             Scribe_Values.Look(ref apparelListMode, "apparelListMode", true);
             Scribe_Values.Look(ref moveToBottom, "moveToBottom", true);
+            Scribe_Values.Look(ref filterLoadTiming, "filterLoadTiming", true);
             base.ExposeData();
         }
     }

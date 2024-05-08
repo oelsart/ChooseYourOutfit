@@ -71,7 +71,7 @@ namespace ChooseYourOutfit
             {
                 SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
             }
-            dialog.apparelListToShow = dialog.ListingApparelToShow(dialog.allApparels);
+            dialog.apparelListingRequest = true;
         }
 
         private void DrawStatsWorker(Rect rect, IEnumerable<StatDrawEntry> specialDisplayStats)
@@ -118,7 +118,7 @@ namespace ChooseYourOutfit
                             Input.ResetInputAxes();
                             SortingEntry.entry = ent;
                             SortingEntry.descending = true;
-                            dialog.apparelListToShow = dialog.ListingApparelToShow(dialog.allApparels);
+                            dialog.apparelListingRequest = true;
                         }
                     }
                 }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
@@ -131,7 +131,7 @@ namespace ChooseYourOutfit
                         Input.ResetInputAxes();
                         if (SortingEntry.descending) SortingEntry.descending = false;
                         else SortingEntry.entry = null;
-                        dialog.apparelListToShow = dialog.ListingApparelToShow(dialog.allApparels);
+                        dialog.apparelListingRequest = true;
                     }
                 }
             }
