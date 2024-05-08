@@ -38,10 +38,10 @@ namespace ChooseYourOutfit
             this.svg.Add(Gender.Male, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.Male + ".svg"));
 
             //毎Tickボタンの当たり判定を計算するのは忍びないので先に計算するためボタン周りのrectを先に決めています
-            this.rect5 = new Rect(Margin + 400f, Margin + 52f + this.OffsetHeaderY, 200f, this.windowRect.height);
+            this.rect5 = new Rect(Margin + 402f, Margin + 52f + this.OffsetHeaderY, 200f, this.windowRect.height);
             this.rect5.yMax = this.InitialSize.y;
             this.rect5.yMax -= Margin + Window.CloseButSize.y + 13f;
-            this.rect6 = new Rect(rect5.x + this.rect5.width + 10f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - 340f - Margin, rect5.height - 15f);
+            this.rect6 = new Rect(rect5.xMax + 12f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - 340f - Margin, rect5.height - 15f);
 
             if (selectedPawn == null)
             {
@@ -231,7 +231,7 @@ namespace ChooseYourOutfit
             }
 
             //apparelのリストを描画
-            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
+            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, 200f, rect5.height - layersRect.height - 67f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
             Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
@@ -721,6 +721,15 @@ namespace ChooseYourOutfit
             });
 
             outerRect.yMin += Text.LineHeight + 1f;
+            outerRect.yMax -= 30f;
+
+            drawer.Enqueue(() =>
+            {
+                if (Widgets.ButtonText(new Rect(outerRect.x + 3f, outerRect.yMax + 3f, outerRect.width - 6f, 24f), "CYO.AddBills".Translate()))
+                {
+                    Find.WindowStack.Add(new Dialog_Confirm("CYO.AddBills.Desc".Translate(), "CYO.AddBills.Run".Translate(), () => Find.WindowStack.Add(new Dialog_AddBillsToWorkbenches())));
+                }
+            });
 
             Rect itemRect = outerRect;
             itemRect.xMax -= GenUI.ScrollBarWidth;

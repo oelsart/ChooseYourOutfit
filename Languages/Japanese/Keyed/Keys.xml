@@ -7,6 +7,9 @@
   <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
   <CYO.Preview>プレビュー</CYO.Preview>
+  <CYO.AddBills>加工台に作業指示を追加</CYO.AddBills>
+  <CYO.AddBills.Run>実行</CYO.AddBills.Run>
+  <CYO.AddBills.Desc>選択された衣服を作る作業指示を\nマップ上の加工台に追加します.\n本当に実行しますか?</CYO.AddBills.Desc>
   
   <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>

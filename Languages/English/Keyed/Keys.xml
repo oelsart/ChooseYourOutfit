@@ -7,6 +7,9 @@
   <CYO.CurrentlyResearched>Currently Researched</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
+  <CYO.AddBills>Add Bills To Workbenches</CYO.AddBills>
+  <CYO.AddBills.Run>Run</CYO.AddBills.Run>
+  <CYO.AddBills.Desc>Try to add the bills that make selected apparels to the workbenches.\nDo you really want to run it?</CYO.AddBills.Desc>
   
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>

@@ -695,6 +695,15 @@ namespace ChooseYourOutfit
             });
 
             outerRect.yMin += Text.LineHeight + 1f;
+            outerRect.yMax -= 30f;
+
+            drawer.Enqueue(() =>
+            {
+                if (Widgets.ButtonText(new Rect(outerRect.x + 3f, outerRect.yMax + 3f, outerRect.width - 6f, 24f), "CYO.AddBills".Translate()))
+                {
+                    Find.WindowStack.Add(new Dialog_Confirm("CYO.AddBills.Desc".Translate(), "CYO.AddBills.Run".Translate(), () => Find.WindowStack.Add(new Dialog_AddBillsToWorkbenches())));
+                }
+            });
 
             Rect itemRect = outerRect;
             itemRect.xMax -= GenUI.ScrollBarWidth + 1f;
