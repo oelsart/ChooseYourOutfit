@@ -194,7 +194,7 @@ namespace ChooseYourOutfit
             }
 
             //apparelLayerのリストを描画
-            var layersRect = new Rect(rect5.x, rect5.y + 40f, 200f, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count(), 240f));
+            var layersRect = new Rect(rect5.x, rect5.y + 40f, 275f, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count(), 240f));
             if (layerListToShow.Count() == 0)
             {
                 Widgets.Label(layersRect, "CYO.NoApparels".Translate());
@@ -205,7 +205,7 @@ namespace ChooseYourOutfit
             }
 
             //apparelのリストを描画
-            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 200f, rect5.height - layersRect.height - 65f))));
+            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, rect5.y + layersRect.height + 50f, 275f, rect5.height - layersRect.height - 65f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
             Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
@@ -430,6 +430,7 @@ namespace ChooseYourOutfit
             var drawer = new ConcurrentQueue<Action>();
             Rect viewRect = outerRect;
             viewRect.height = Text.LineHeight * this.apparelListToShow?.Count() ?? 0f;
+            viewRect.width -= GenUI.ScrollBarWidth + 1f;
 
             drawer.Enqueue(() => Widgets.DrawMenuSection(parentRect));
 
@@ -696,7 +697,7 @@ namespace ChooseYourOutfit
             outerRect.yMin += Text.LineHeight + 1f;
 
             Rect itemRect = outerRect;
-            itemRect.xMax -= GenUI.ScrollBarWidth;
+            itemRect.xMax -= GenUI.ScrollBarWidth + 1f;
             var viewRect = itemRect;
             itemRect.height = Text.LineHeight;
             viewRect.height = (selectedApparelListToShow.Count() + selectedApparelListToShow.Where(l => !collapse[l.layer]).Select(l => l.list.Count()).Sum()) * itemRect.height;
