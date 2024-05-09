@@ -18,8 +18,10 @@
   <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する).</CYO.Settings.SyncFilter>
+  <CYO.Settings.FilterLoadTiming>フィルターがロードされるタイミングを"マウスボタンがクリックされた時"にする.\n(無効な衣服によりロードフィルターが毎tick呼ばれている場合に有効です)</CYO.Settings.FilterLoadTiming>
   <CYO.Settings.ApparelListMode>衣服リストの内選択した衣服と一緒に着られないものを非表示にする.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• それを一番下に移動させる.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• それを移動させない.</CYO.Settings.DontMoveIt>
-  <CYO.Settings.FilterLoadTiming>フィルターがロードされるタイミングを"マウスボタンがクリックされた時"にする.\n(無効な衣服によりロードフィルターが毎tick呼ばれている場合に有効です)</CYO.Settings.FilterLoadTiming>
+  <CYO.Settings.ShowAddBillsButton>"加工台に作業指示を追加"ボタンを表示する.</CYO.Settings.ShowAddBillsButton>
+  <CYO.Settings.IgnoreBillLimit>作業指示の最大数を無視する.</CYO.Settings.IgnoreBillLimit>
 </LanguageData>

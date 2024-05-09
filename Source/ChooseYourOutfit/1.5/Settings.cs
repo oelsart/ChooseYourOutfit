@@ -1,6 +1,4 @@
 ﻿using Verse;
-using UnityEngine;
-using RimWorld;
 
 namespace ChooseYourOutfit
 {
@@ -17,14 +15,14 @@ namespace ChooseYourOutfit
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref disableAddedUI, "disableAddedUI", true);
+            Scribe_Values.Look(ref disableAddedUI, "disableAddedUI", false);
             Scribe_Values.Look(ref collapseByLayer, "collapseByLayer", true);
             Scribe_Values.Look(ref syncFilter, "syncFilter", true);
-            Scribe_Values.Look(ref filterLoadTiming, "filterLoadTiming", true);
-            Scribe_Values.Look(ref apparelListMode, "apparelListMode", true);
-            Scribe_Values.Look(ref moveToBottom, "moveToBottom", true);
+            Scribe_Values.Look(ref filterLoadTiming, "filterLoadTiming", false);
+            Scribe_Values.Look(ref apparelListMode, "apparelListMode", false);
+            Scribe_Values.Look(ref moveToBottom, "moveToBottom", false);
             Scribe_Values.Look(ref showAddBillsButton, "showAddBillsButton", true);
-            Scribe_Values.Look(ref ignoreBillLimit, "ignoreBillLimit", true);
+            Scribe_Values.Look(ref ignoreBillLimit, "ignoreBillLimit", false);
             base.ExposeData();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -8,16 +9,6 @@ using Verse;
 using Verse.Sound;
 using RimWorld;
 using HarmonyLib;
-using System.Text.RegularExpressions;
-using static UnityEngine.Scripting.GarbageCollector;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Net;
-using static RimWorld.ColonistBar;
-using static UnityEngine.GraphicsBuffer;
-using System.Security.Principal;
 
 namespace ChooseYourOutfit
 {
