@@ -10,26 +10,27 @@ namespace ChooseYourOutfit
 {
     public class Dialog_AddBillsToWorkTables : Window
     {
-        public Dialog_AddBillsToWorkTables(HashSet<ThingDef> selectedApparels)
+        public Dialog_AddBillsToWorkTables(HashSet<ThingDef> apparels, bool forceRegister)
         {
             this.forcePause = true;
             this.doCloseX = true;
             this.doCloseButton = true;
             this.closeOnClickedOutside = true;
 
-            this.SelectedApparels = selectedApparels.OrderByDescending(a => a.label).ToHashSet();
+            this.Apparels = apparels.OrderByDescending(a => a.label).ToHashSet();
+            this.forceRegister = forceRegister;
             this.tryAddResult = TryAddBillsToWorkTables();
         }
 
-        private HashSet<ThingDef> SelectedApparels
+        private HashSet<ThingDef> Apparels
         {
             get
             {
-                return selApparelsInt;
+                return apparelsInt;
             }
             set
             {
-                selApparelsInt = value;
+                apparelsInt = value;
             }
         }
 
@@ -37,15 +38,7 @@ namespace ChooseYourOutfit
         {
             get
             {
-                return this.SelectedApparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a)).ToHashSet();
-            }
-        }
-
-        private HashSet<ThingDef> NoRecipesAvailableNow
-        {
-            get
-            {
-                return this.SelectedApparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).All(r => r.ProducedThingDef != a)).ToHashSet();
+                return this.Apparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a)).ToHashSet();
             }
         }
 
@@ -90,8 +83,8 @@ namespace ChooseYourOutfit
         {
             var result = new Dictionary<TryAddBillsResult, HashSet<(ThingDef, Building_WorkTable)>>();
             foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, new HashSet<(ThingDef, Building_WorkTable)>());
-            
-            foreach (var apparel in this.SelectedApparels)
+
+            foreach (var apparel in this.Apparels)
             {
                 if (!RecipeExist.Contains(apparel))
                 {
@@ -101,25 +94,34 @@ namespace ChooseYourOutfit
 
                 var success = false;
                 var recipeFound = false;
-                foreach (var worktable in AllWorkTables)
+                var registered = false;
+                registered = AllWorkTables.Any(w => w.BillStack.Bills.Any(b => b.recipe.ProducedThingDef == apparel));
+                if (!registered || this.forceRegister)
                 {
-                    var recipe = worktable.def.AllRecipes.FirstOrDefault(r => r.ProducedThingDef == apparel);
-                    if (recipe != null)
+                    foreach (var worktable in AllWorkTables)
                     {
-                        recipeFound = true;
-                        if (worktable.BillStack.Count < BillStack.MaxCount || ChooseYourOutfit.settings.ignoreBillLimit)
+                        var recipe = worktable.def.AllRecipes.FirstOrDefault(r => r.ProducedThingDef == apparel);
+                        if (recipe != null)
                         {
-                            worktable.BillStack.AddBill(BillUtility.MakeNewBill(recipe));
-                            result[TryAddBillsResult.Success].Add((apparel, worktable));
-                            success = true;
-                            break;
+                            recipeFound = true;
+                            if (worktable.BillStack.Count < BillStack.MaxCount || ChooseYourOutfit.settings.ignoreBillLimit)
+                            {
+                                worktable.BillStack.AddBill(BillUtility.MakeNewBill(recipe));
+                                result[TryAddBillsResult.Success].Add((apparel, worktable));
+                                success = true;
+                                break;
+                            }
                         }
                     }
                 }
 
                 if (success is false)
                 {
-                    if (recipeFound is true)
+                    if (registered is true && this.forceRegister is false)
+                    {
+                        result[TryAddBillsResult.AlreadyRegistered].Add((apparel, null));
+                    }
+                    else if (recipeFound is true)
                     {
                         result[TryAddBillsResult.TooManyBills].Add((apparel, null));
                     }
@@ -134,16 +136,20 @@ namespace ChooseYourOutfit
             return result;
         }
 
-        private HashSet<ThingDef> selApparelsInt;
+        private HashSet<ThingDef> apparelsInt;
 
         private Dictionary<TryAddBillsResult, HashSet<(ThingDef apparel, Building_WorkTable worktable)>> tryAddResult;
 
         private Vector2 scrollPosition;
+
+        private bool forceRegister;
+
         private enum TryAddBillsResult
         {
             NoRecipes,
             NoWorkTables,
             TooManyBills,
+            AlreadyRegistered,
             Success
         }
     }

@@ -8,11 +8,13 @@
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
   <CYO.AddBills>Add Bills To WorkTables</CYO.AddBills>
-  <CYO.AddBills.Run>Run</CYO.AddBills.Run>
-  <CYO.AddBills.Desc>Try to add the bills that make selected apparels to the worktables.\nDo you really want to run it?</CYO.AddBills.Desc>
+  <CYO.AddBillsConfirm.Desc>Try to add the bills that make selected apparels to the worktables.\nDo you really want to run it?</CYO.AddBillsConfirm.Desc>
+  <CYO.AddBillsConfirm.RestrictToPreviewedApparels>Register only the apparel specified for preview.</CYO.AddBillsConfirm.RestrictToPreviewedApparels>
+  <CYO.AddBillsConfirm.ForceRegister>Apparel that its bill is already registered will also be registered.</CYO.AddBillsConfirm.ForceRegister>
   <CYO.AddBills.NoRecipes>There are no recipes available now to make this apparel.</CYO.AddBills.NoRecipes>
   <CYO.AddBills.NoWorkTables>There are no worktables to make this apparel on this map.</CYO.AddBills.NoWorkTables>
   <CYO.AddBills.TooManyBills>Too many bills on worktable.</CYO.AddBills.TooManyBills>
+  <CYO.AddBills.AlreadyRegistered>The bill to make this apparel is already registered.</CYO.AddBills.AlreadyRegistered>
   <CYO.AddBills.Success>Successfully created the bill!</CYO.AddBills.Success>
   
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>

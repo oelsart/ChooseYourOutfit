@@ -1,18 +1,16 @@
 ﻿using System;
 using UnityEngine;
+using Verse;
 
-namespace Verse
+namespace ChooseYourOutfit
 {
-    // Token: 0x020005B9 RID: 1465
-    public class Dialog_Confirm : Window
+    public class Dialog_AddBillsConfirm : Window
     {
-        // Token: 0x06002D21 RID: 11553 RVA: 0x0011D81A File Offset: 0x0011BA1A
-        public Dialog_Confirm(string title, Action onConfirm) : this(title, "Confirm".Translate(), onConfirm)
+        public Dialog_AddBillsConfirm(string title, Action onConfirm) : this(title, "Confirm".Translate(), onConfirm)
         {
         }
 
-        // Token: 0x06002D22 RID: 11554 RVA: 0x0011D833 File Offset: 0x0011BA33
-        public Dialog_Confirm(string title, string confirm, Action onConfirm) : base()
+        public Dialog_AddBillsConfirm(string title, string confirm, Action onConfirm) : base()
         {
             this.title = title;
             this.confirm = confirm;
@@ -23,17 +21,14 @@ namespace Verse
             this.absorbInputAroundWindow = true;
         }
 
-        // Token: 0x17000896 RID: 2198
-        // (get) Token: 0x06002D23 RID: 11555 RVA: 0x0011D86D File Offset: 0x0011BA6D
         public override Vector2 InitialSize
         {
             get
             {
-                return new Vector2(280f, 150f);
+                return new Vector2(500f, 200f);
             }
         }
 
-        // Token: 0x06002D24 RID: 11556 RVA: 0x0011D880 File Offset: 0x0011BA80
         public override void DoWindowContents(Rect inRect)
         {
             Text.Font = GameFont.Small;
@@ -45,17 +40,25 @@ namespace Verse
             }
             Rect rect = inRect;
             rect.width = inRect.width / 2f - 5f;
-            rect.yMin = inRect.yMax - Dialog_Confirm.ButtonSize.y - 10f;
+            rect.yMin = inRect.yMax - Dialog_AddBillsConfirm.ButtonSize.y - 10f;
             Rect rect2 = inRect;
             rect2.xMin = rect.xMax + 10f;
-            rect2.yMin = inRect.yMax - Dialog_Confirm.ButtonSize.y - 10f;
+            rect2.yMin = inRect.yMax - Dialog_AddBillsConfirm.ButtonSize.y - 10f;
             Rect rect3 = inRect;
             rect3.y += 4f;
-            rect3.yMax = rect2.y - 10f;
+            rect3.yMax = rect2.y - 10f - Text.LineHeight * 2;
+            Rect rect4 = inRect;
+            rect4.y = rect3.yMax;
+            rect4.height = Text.LineHeight;
+            Rect rect5 = rect4;
+            rect5.y = rect4.yMax;
+
             using (new TextBlock(TextAnchor.UpperCenter))
             {
                 Widgets.Label(rect3, this.title);
             }
+            Widgets.CheckboxLabeled(rect4, "CYO.AddBillsConfirm.RestrictToPreviewedApparels".Translate(), ref restrictToPreviewedApparels);
+            Widgets.CheckboxLabeled(rect5, "CYO.AddBillsConfirm.ForceRegister".Translate(), ref forceRegister);
             if (Widgets.ButtonText(rect, "Cancel".Translate(), true, true, true, null))
             {
                 Find.WindowStack.TryRemove(this, true);
@@ -71,16 +74,16 @@ namespace Verse
             }
         }
 
-        // Token: 0x04001D17 RID: 7447
         private string title;
 
-        // Token: 0x04001D18 RID: 7448
         private string confirm;
 
-        // Token: 0x04001D19 RID: 7449
         private Action onConfirm;
 
-        // Token: 0x04001D1A RID: 7450
+        public static bool restrictToPreviewedApparels = false;
+
+        public static bool forceRegister = false;
+
         private static readonly Vector2 ButtonSize = new Vector2(120f, 32f);
     }
 }
