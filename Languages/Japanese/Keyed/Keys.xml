@@ -7,11 +7,23 @@
   <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
   <CYO.Preview>プレビュー</CYO.Preview>
+  <CYO.AddBills>加工台に作業指示を追加</CYO.AddBills>
+  <CYO.AddBillsConfirm.Desc>選択された衣服を作る作業指示を\nマップ上の加工台に追加します.\n本当に実行しますか?</CYO.AddBillsConfirm.Desc>
+  <CYO.AddBillsConfirm.RestrictToPreviewedApparels>プレビューに指定されている衣服だけを登録する.</CYO.AddBillsConfirm.RestrictToPreviewedApparels>
+  <CYO.AddBillsConfirm.ForceRegister>既に作業指示が登録されている衣服も登録する.</CYO.AddBillsConfirm.ForceRegister>
+  <CYO.AddBills.NoRecipes>この衣服を作る現在利用可能なレシピがありません.</CYO.AddBills.NoRecipes>
+  <CYO.AddBills.NoWorkTables>マップ上にこの衣服を作るレシピを持つ加工台がありません.</CYO.AddBills.NoWorkTables>
+  <CYO.AddBills.TooManyBills>加工台に作業指示が多すぎます.</CYO.AddBills.TooManyBills>
+  <CYO.AddBills.AlreadyRegistered>この衣服を作る作業指示が既に登録されています.</CYO.AddBills.AlreadyRegistered>
+  <CYO.AddBills.Success>作業指示の作成に成功しました!</CYO.AddBills.Success>
   
   <CYO.Settings.DisableAddedUI>MODで追加されるUIを無効にする.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>選択した衣服リストはデフォルトでレイヤーごとに折り畳まれる.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>選択した衣服をリアルタイムでフィルターに同期する（オフならボタンで同期する).</CYO.Settings.SyncFilter>
+  <CYO.Settings.FilterLoadTiming>フィルターがロードされるタイミングを"マウスボタンがクリックされた時"にする.\n(無効な衣服によりロードフィルターが毎tick呼ばれている場合に有効です)</CYO.Settings.FilterLoadTiming>
   <CYO.Settings.ApparelListMode>衣服リストの内選択した衣服と一緒に着られないものを非表示にする.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• それを一番下に移動させる.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• それを移動させない.</CYO.Settings.DontMoveIt>
+  <CYO.Settings.ShowAddBillsButton>"加工台に作業指示を追加"ボタンを表示する.</CYO.Settings.ShowAddBillsButton>
+  <CYO.Settings.IgnoreBillLimit>作業指示の最大数を無視する.</CYO.Settings.IgnoreBillLimit>
 </LanguageData>
