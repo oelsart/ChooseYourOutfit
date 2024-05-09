@@ -11,7 +11,7 @@
   <CYO.AddBills.Run>実行</CYO.AddBills.Run>
   <CYO.AddBills.Desc>選択された衣服を作る作業指示を\nマップ上の加工台に追加します.\n本当に実行しますか?</CYO.AddBills.Desc>
   <CYO.AddBills.NoRecipes>この衣服を作る現在利用可能なレシピがありません.</CYO.AddBills.NoRecipes>
-  <CYO.AddBills.NoWorkbenches>マップ上にこの衣服を作るレシピを持つ加工台がありません.</CYO.AddBills.NoWorkbenches>
+  <CYO.AddBills.NoWorkTables>マップ上にこの衣服を作るレシピを持つ加工台がありません.</CYO.AddBills.NoWorkTables>
   <CYO.AddBills.TooManyBills>加工台に作業指示が多すぎます.</CYO.AddBills.TooManyBills>
   <CYO.AddBills.Success>作業指示の作成に成功しました!</CYO.AddBills.Success>
   

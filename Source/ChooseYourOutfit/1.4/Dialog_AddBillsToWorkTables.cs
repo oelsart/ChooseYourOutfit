@@ -7,9 +7,9 @@ using Verse;
 
 namespace ChooseYourOutfit
 {
-    public class Dialog_AddBillsToWorkbenches : Window
+    public class Dialog_AddBillsToWorkTables : Window
     {
-        public Dialog_AddBillsToWorkbenches(HashSet<ThingDef> selectedApparels)
+        public Dialog_AddBillsToWorkTables(HashSet<ThingDef> selectedApparels)
         {
             this.forcePause = true;
             this.doCloseX = true;
@@ -17,7 +17,7 @@ namespace ChooseYourOutfit
             this.closeOnClickedOutside = true;
 
             this.SelectedApparels = selectedApparels.OrderByDescending(a => a.label).ToHashSet();
-            this.tryAddResult = TryAddBillsToWorkBenches();
+            this.tryAddResult = TryAddBillsToWorkTables();
         }
 
         private HashSet<ThingDef> SelectedApparels
@@ -48,11 +48,11 @@ namespace ChooseYourOutfit
             }
         }
 
-        private IEnumerable<Building_WorkTable> AllWorkBenches
+        private IEnumerable<Building_WorkTable> AllWorkTables
         {
             get
             {
-                return Find.CurrentMap.listerBuildings.AllColonistBuildingsOfType<Building_WorkTable>();
+                return Find.CurrentMap.listerBuildings.AllBuildingsColonistOfClass<Building_WorkTable>();
             }
         }
 
@@ -63,8 +63,7 @@ namespace ChooseYourOutfit
             var itemRect = new Rect(outRect.x, outRect.y, outRect.width, Text.LineHeight);
             var viewRect = new Rect(outRect.x, outRect.y, outRect.width, 0f);
             viewRect.height = this.tryAddResult.Select(a => 1 + a.Value.Count).Sum() * itemRect.height;
-
-            Widgets.AdjustRectsForScrollView(inRect, ref outRect, ref viewRect);
+            viewRect.width -= GenUI.ScrollBarWidth + 1f;
 
             Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect);
             foreach (var result in tryAddResult)
@@ -76,38 +75,40 @@ namespace ChooseYourOutfit
                 foreach (var apparel in result.Value)
                 {
                     Widgets.DrawRectFast(itemRect, color);
-                    Widgets.Label(itemRect, apparel.label);
+                    TaggedString text = apparel.apparel.label + apparel.worktable != null ? " to " + apparel.worktable.Label : "";
+                    Widgets.Label(itemRect, text.Truncate(itemRect.width));
+                    TooltipHandler.TipRegion(itemRect, text);
                     itemRect.y += itemRect.height;
                 }
             }
             Widgets.EndScrollView();
         }
 
-        private Dictionary<TryAddBillsResult, HashSet<ThingDef>> TryAddBillsToWorkBenches()
+        private Dictionary<TryAddBillsResult, HashSet<(ThingDef, Building_WorkTable)>> TryAddBillsToWorkTables()
         {
-            var result = new Dictionary<TryAddBillsResult, HashSet<ThingDef>>();
-            foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, new HashSet<ThingDef>());
-            
+            var result = new Dictionary<TryAddBillsResult, HashSet<(ThingDef, Building_WorkTable)>>();
+            foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, new HashSet<(ThingDef, Building_WorkTable)>());
+
             foreach (var apparel in this.SelectedApparels)
             {
                 if (!RecipeExist.Contains(apparel))
                 {
-                    result[TryAddBillsResult.NoRecipes].Add(apparel);
+                    result[TryAddBillsResult.NoRecipes].Add((apparel, null));
                     continue;
                 }
 
                 var success = false;
                 var recipeFound = false;
-                foreach (var workbench in AllWorkBenches)
+                foreach (var worktable in AllWorkTables)
                 {
-                    var recipe = workbench.def.AllRecipes.FirstOrDefault(r => r.ProducedThingDef == apparel);
+                    var recipe = worktable.def.AllRecipes.FirstOrDefault(r => r.ProducedThingDef == apparel);
                     if (recipe != null)
                     {
                         recipeFound = true;
-                        if (workbench.BillStack.Count < BillStack.MaxCount || ChooseYourOutfit.settings.ignoreBillLimit)
+                        if (worktable.BillStack.Count < BillStack.MaxCount || ChooseYourOutfit.settings.ignoreBillLimit)
                         {
-                            workbench.BillStack.AddBill(BillUtility.MakeNewBill(recipe));
-                            result[TryAddBillsResult.Success].Add(apparel);
+                            worktable.BillStack.AddBill(BillUtility.MakeNewBill(recipe));
+                            result[TryAddBillsResult.Success].Add((apparel, worktable));
                             success = true;
                             break;
                         }
@@ -118,11 +119,11 @@ namespace ChooseYourOutfit
                 {
                     if (recipeFound is true)
                     {
-                        result[TryAddBillsResult.TooManyBills].Add(apparel);
+                        result[TryAddBillsResult.TooManyBills].Add((apparel, null));
                     }
                     else
                     {
-                        result[TryAddBillsResult.NoWorkbenches].Add(apparel);
+                        result[TryAddBillsResult.NoWorkTables].Add((apparel, null));
                     }
                 }
             }
@@ -133,13 +134,13 @@ namespace ChooseYourOutfit
 
         private HashSet<ThingDef> selApparelsInt;
 
-        private Dictionary<TryAddBillsResult, HashSet<ThingDef>> tryAddResult;
+        private Dictionary<TryAddBillsResult, HashSet<(ThingDef apparel, Building_WorkTable worktable)>> tryAddResult;
 
         private Vector2 scrollPosition;
         private enum TryAddBillsResult
         {
             NoRecipes,
-            NoWorkbenches,
+            NoWorkTables,
             TooManyBills,
             Success
         }

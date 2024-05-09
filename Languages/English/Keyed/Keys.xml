@@ -7,12 +7,12 @@
   <CYO.CurrentlyResearched>Currently Researched</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
-  <CYO.AddBills>Add Bills To Workbenches</CYO.AddBills>
+  <CYO.AddBills>Add Bills To WorkTables</CYO.AddBills>
   <CYO.AddBills.Run>Run</CYO.AddBills.Run>
-  <CYO.AddBills.Desc>Try to add the bills that make selected apparels to the workbenches.\nDo you really want to run it?</CYO.AddBills.Desc>
+  <CYO.AddBills.Desc>Try to add the bills that make selected apparels to the worktables.\nDo you really want to run it?</CYO.AddBills.Desc>
   <CYO.AddBills.NoRecipes>There are no recipes available now to make this apparel.</CYO.AddBills.NoRecipes>
-  <CYO.AddBills.NoWorkbenches>There are no workbenches to make this apparel on this map.</CYO.AddBills.NoWorkbenches>
-  <CYO.AddBills.TooManyBills>Too many bills on workbench.</CYO.AddBills.TooManyBills>
+  <CYO.AddBills.NoWorkTables>There are no worktables to make this apparel on this map.</CYO.AddBills.NoWorkTables>
+  <CYO.AddBills.TooManyBills>Too many bills on worktable.</CYO.AddBills.TooManyBills>
   <CYO.AddBills.Success>Successfully created the bill!</CYO.AddBills.Success>
   
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
@@ -22,6 +22,6 @@
   <CYO.Settings.ApparelListMode>Hide apparel that cannot be worn together with the selected apparels.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• Move it to the bottom.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• Don't move it.</CYO.Settings.DontMoveIt>
-  <CYO.Settings.ShowAddBillsButton>Show "Add Bills To Workbenches" button.</CYO.Settings.ShowAddBillsButton>
+  <CYO.Settings.ShowAddBillsButton>Show "Add Bills To WorkTables" button.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>Ignore the maximum number of bills.</CYO.Settings.IgnoreBillLimit>
 </LanguageData>
