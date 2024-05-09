@@ -84,6 +84,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChooseYourOutfit.cs" />
+    <Compile Include="Dialog_AddBillsToWorkbenches.cs" />
+    <Compile Include="Dialog_Confirm.cs" />
     <Compile Include="Dialog_ManageOutfitsEx.cs" />
     <Compile Include="StatsReporter.cs" />
     <Compile Include="PolygonCollider.cs" />

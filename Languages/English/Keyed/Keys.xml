@@ -10,6 +10,10 @@
   <CYO.AddBills>Add Bills To Workbenches</CYO.AddBills>
   <CYO.AddBills.Run>Run</CYO.AddBills.Run>
   <CYO.AddBills.Desc>Try to add the bills that make selected apparels to the workbenches.\nDo you really want to run it?</CYO.AddBills.Desc>
+  <CYO.AddBills.NoRecipes>There are no recipes available now to make this apparel.</CYO.AddBills.NoRecipes>
+  <CYO.AddBills.NoWorkbenches>There are no workbenches to make this apparel on this map.</CYO.AddBills.NoWorkbenches>
+  <CYO.AddBills.TooManyBills>Too many bills on workbench.</CYO.AddBills.TooManyBills>
+  <CYO.AddBills.Success>Successfully created the bill!</CYO.AddBills.Success>
   
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>

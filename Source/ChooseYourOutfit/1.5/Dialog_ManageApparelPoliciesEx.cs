@@ -727,7 +727,7 @@ namespace ChooseYourOutfit
             {
                 if (Widgets.ButtonText(new Rect(outerRect.x + 3f, outerRect.yMax + 3f, outerRect.width - 6f, 24f), "CYO.AddBills".Translate()))
                 {
-                    Find.WindowStack.Add(new Dialog_Confirm("CYO.AddBills.Desc".Translate(), "CYO.AddBills.Run".Translate(), () => Find.WindowStack.Add(new Dialog_AddBillsToWorkbenches())));
+                    Find.WindowStack.Add(new Dialog_Confirm("CYO.AddBills.Desc".Translate(), "CYO.AddBills.Run".Translate(), () => Find.WindowStack.Add(new Dialog_AddBillsToWorkbenches(this.SelectedApparels.ToHashSet()))));
                 }
             });
 

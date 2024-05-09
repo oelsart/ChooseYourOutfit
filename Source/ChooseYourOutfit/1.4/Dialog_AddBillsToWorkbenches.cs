@@ -52,19 +52,17 @@ namespace ChooseYourOutfit
         {
             get
             {
-                return Find.CurrentMap.listerBuildings.AllColonistBuildingsOfType<Building_WorkTable>();
+                return Find.CurrentMap.listerBuildings.AllBuildingsColonistOfClass<Building_WorkTable>();
             }
         }
 
         public override void DoWindowContents(Rect inRect)
         {
             var outRect = inRect;
-            outRect.yMax -= Margin + CloseButSize.y;
             var itemRect = new Rect(outRect.x, outRect.y, outRect.width, Text.LineHeight);
             var viewRect = new Rect(outRect.x, outRect.y, outRect.width, 0f);
             viewRect.height = this.tryAddResult.Select(a => 1 + a.Value.Count).Sum() * itemRect.height;
-
-            Widgets.AdjustRectsForScrollView(inRect, ref outRect, ref viewRect);
+            viewRect.width -= GenUI.ScrollBarWidth + 1f;
 
             Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect);
             foreach (var result in tryAddResult)
@@ -87,7 +85,7 @@ namespace ChooseYourOutfit
         {
             var result = new Dictionary<TryAddBillsResult, HashSet<ThingDef>>();
             foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, new HashSet<ThingDef>());
-            
+
             foreach (var apparel in this.SelectedApparels)
             {
                 if (!RecipeExist.Contains(apparel))
