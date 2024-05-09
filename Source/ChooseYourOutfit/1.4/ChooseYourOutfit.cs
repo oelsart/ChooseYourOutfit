@@ -36,6 +36,8 @@ namespace ChooseYourOutfit
                     listingStandard.Outdent(15f);
                     listingStandard.ColumnWidth = inRect.width;
                 }
+                listingStandard.CheckboxLabeled("CYO.Settings.ShowAddBillsButton".Translate(), ref settings.showAddBillsButton);
+                if (settings.showAddBillsButton) listingStandard.CheckboxLabeled("CYO.Settings.IgnoreBillLimit".Translate(), ref settings.ignoreBillLimit);
             }
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);

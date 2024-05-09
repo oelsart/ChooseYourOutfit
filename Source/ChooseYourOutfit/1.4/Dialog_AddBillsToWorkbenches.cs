@@ -102,7 +102,7 @@ namespace ChooseYourOutfit
                     if (recipe != null)
                     {
                         recipeFound = true;
-                        if (workbench.BillStack.Count < BillStack.MaxCount)
+                        if (workbench.BillStack.Count < BillStack.MaxCount || ChooseYourOutfit.settings.ignoreBillLimit)
                         {
                             workbench.BillStack.AddBill(BillUtility.MakeNewBill(recipe));
                             result[TryAddBillsResult.Success].Add(apparel);
