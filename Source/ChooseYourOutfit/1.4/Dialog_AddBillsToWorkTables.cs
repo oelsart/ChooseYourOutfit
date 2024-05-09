@@ -75,7 +75,7 @@ namespace ChooseYourOutfit
                 foreach (var apparel in result.Value)
                 {
                     Widgets.DrawRectFast(itemRect, color);
-                    TaggedString text = apparel.apparel.label + apparel.worktable != null ? " to " + apparel.worktable.Label : "";
+                    TaggedString text = apparel.apparel.label + (apparel.worktable != null ? " to " + apparel.worktable.Label : "");
                     Widgets.Label(itemRect, text.Truncate(itemRect.width));
                     TooltipHandler.TipRegion(itemRect, text);
                     itemRect.y += itemRect.height;
