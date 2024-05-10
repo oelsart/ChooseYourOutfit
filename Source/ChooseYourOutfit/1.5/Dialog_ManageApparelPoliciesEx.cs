@@ -577,9 +577,19 @@ namespace ChooseYourOutfit
                         this.highlightedGroups = part.Value.groups;
                         if (Input.GetMouseButtonUp(0))
                         {
-                            this.SelectedBodypartGroups = part.Value.groups;
-                            this.apparelListingRequest = true;
-                            this.layerListToShow = ListingLayerToShow();
+                            Input.ResetInputAxes();
+                            if (SelectedBodypartGroups != null && part.Value.groups.SequenceEqual(SelectedBodypartGroups))
+                            {
+                                this.SelectedBodypartGroups = null;
+                                this.apparelListingRequest = true;
+                                this.layerListToShow = ListingLayerToShow();
+                            }
+                            else
+                            {
+                                this.SelectedBodypartGroups = part.Value.groups;
+                                this.apparelListingRequest = true;
+                                this.layerListToShow = ListingLayerToShow();
+                            }
                         }
                     }
                 }
