@@ -203,11 +203,7 @@ namespace ChooseYourOutfit
             this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (ChooseYourOutfit.settings.syncFilter)
             {
-                if (ChooseYourOutfit.settings.filterLoadTiming)
-                {
-                    if (Input.GetMouseButtonUp(0)) loadFilter(canWearAllowed);
-                }
-                if (!ChooseYourOutfit.settings.filterLoadTiming && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
+                if (Input.GetMouseButtonUp(0) && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
             }
 
             //apparelLayerのリストを描画

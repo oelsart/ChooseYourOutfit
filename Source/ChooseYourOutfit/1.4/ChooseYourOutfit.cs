@@ -25,7 +25,6 @@ namespace ChooseYourOutfit
             {
                 listingStandard.CheckboxLabeled("CYO.Settings.CollapseByLayer".Translate(), ref settings.collapseByLayer);
                 listingStandard.CheckboxLabeled("CYO.Settings.SyncFilter".Translate(), ref settings.syncFilter);
-                if (settings.syncFilter) listingStandard.CheckboxLabeled("CYO.Settings.FilterLoadTiming".Translate(), ref settings.filterLoadTiming);
                 listingStandard.CheckboxLabeled("CYO.Settings.ApparelListMode".Translate(), ref settings.apparelListMode);
                 if (!settings.apparelListMode)
                 {
