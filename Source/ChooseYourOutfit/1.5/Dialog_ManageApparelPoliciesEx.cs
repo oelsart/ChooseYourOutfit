@@ -293,10 +293,10 @@ namespace ChooseYourOutfit
                     {
                         InitializeByPawn(entry.pawn);
 
-                        /*foreach (var apparel in preApparelsApparel)
+                        foreach (var apparel in PreviewedApparels)
                         {
-                            AccessTools.Field(typeof(ThingOwner), "owner").SetValue(apparel.holdingOwner, pawn.apparel);
-                        }*/
+                            preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
+                        }
 
                         /*foreach (var apparel in allApparels)
                         {
@@ -367,7 +367,7 @@ namespace ChooseYourOutfit
                         this.previewApparelStuff[apparel] = stuff;
                         this.previewApparelStuff[apparel].stuffProps.allowColorGenerators = false;
                         this.preApparelsApparel.Clear();
-                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
 
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = apparel
@@ -528,7 +528,8 @@ namespace ChooseYourOutfit
                                 this.SelectedApparels = new ConcurrentBag<ThingDef>();
                                 foreach (var a in tmp) SelectedApparels.Add(a);
                                 this.PreviewedApparels.Remove(apparel.Value);
-                                this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                this.preApparelsApparel.Clear();
+                                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
                                 //this.overrideApparelColors.RemoveAll(a => !preApparelsApparel.Contains(a.Key));
                                 //this.apparelDatabase.RemoveAll(a => a.Key == apparel.Value);
                                 this.apparelListingRequest = true;
@@ -541,8 +542,7 @@ namespace ChooseYourOutfit
                                 {
                                     this.PreviewedApparels.Add(apparel.Value);
                                     this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-                                    this.preApparelsApparel.Clear();
-                                    foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                                    this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel.Value));
                                 }
                                 this.apparelListingRequest = true;
                                 this.selectedApparelListingRequest = true;
@@ -800,17 +800,16 @@ namespace ChooseYourOutfit
                                     {
                                         this.PreviewedApparels.Remove(apparel);
                                         this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
-                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
+                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
                                         //this.overrideApparelColors.Remove(apparelDatabase[apparel]);
                                     }
                                     else
                                     {
                                         this.PreviewedApparels.Add(apparel);
                                         this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
+                                        this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
                                         this.preApparelsApparel.Clear();
-                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
-                                        this.PreviewedApparels.RemoveWhere(p => p != apparel && cantWearTogether[apparel].Contains(p));
-                                        this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
                                         //this.overrideApparelColors[apparelDatabase[apparel]] = Color.white;
 
                                     }
@@ -831,7 +830,8 @@ namespace ChooseYourOutfit
                                     foreach (var a in tmp) SelectedApparels.Add(a);
                                     this.apparelListingRequest = true;
                                     this.PreviewedApparels.Remove(apparel);
-                                    this.preApparelsApparel.RemoveAll(a => !this.PreviewedApparels.Contains(a.def));
+                                    this.preApparelsApparel.Clear();
+                                    foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
                                     this.selectedApparelListingRequest = true;
                                 }
                             }
@@ -938,16 +938,12 @@ namespace ChooseYourOutfit
                 .OrderByDescending(l => l.drawOrder).ToHashSet();
         }
 
-        private Apparel GetApparel(ThingDef tDef, Pawn pawn)
+        private Apparel GetApparel(ThingDef tDef)
         {
             var apparelThing = tDef.GetConcreteExample(this.previewApparelStuff[tDef]);
-            var thingOwner = new ThingOwner<Thing>(pawn.apparel);
-            thingOwner.TryAddOrTransfer(apparelThing);
-            apparelThing.holdingOwner = thingOwner;
             var apparelThingWithComps = (ThingWithComps)apparelThing;
-            AccessTools.FieldRefAccess<List<ThingComp>>(typeof(ThingWithComps), "comps")(apparelThingWithComps).Add(new CompShield());
-            apparelThingWithComps.GetComp<CompShield>().parent = apparelThingWithComps;
-            return (Apparel)apparelThingWithComps;
+            var apparel = (Apparel)apparelThingWithComps;
+            return apparel;
         }
 
         private ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef>)> GetExistPartsAndButtons(ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> buttonColliders)
@@ -979,13 +975,12 @@ namespace ChooseYourOutfit
             {
                 this.PreviewedApparels.AddRange(addedApparels.Where(a => this.PreviewedApparels.All(p => !cantWearTogether[a].Contains(p))));
                 this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-                this.preApparelsApparel.Clear();
-                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p, SelectedPawn));
             }
             this.selectedApparelListingRequest = true;
             this.apparelListingRequest = true;
             this.PreviewedApparels.RemoveAll(a => !this.SelectedApparels.Contains(a));
-            this.preApparelsApparel.RemoveAll(a => !this.SelectedApparels.Contains(a.def));
+            this.preApparelsApparel.Clear();
+            foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
         }
 
         private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
@@ -1026,6 +1021,8 @@ namespace ChooseYourOutfit
                 this.svgViewBox = svgInterpreter.GetViewBox(this.svg[Gender.None]);
             }
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
+
+            preApparelsApparel = new ThingOwner<Apparel>(pawn.apparel);
         }
 
         private static bool InfoCardButtonWorker(Rect rect)
@@ -1091,7 +1088,7 @@ namespace ChooseYourOutfit
 
         private List<ThingDef> preApparelsInt = new List<ThingDef>();
 
-        private ThingOwner<Apparel> preApparelsApparel = new ThingOwner<Apparel>();
+        private ThingOwner<Apparel> preApparelsApparel;
 
         //private Dictionary<ThingDef, Apparel> apparelDatabase = new Dictionary<ThingDef, Apparel>();
 
