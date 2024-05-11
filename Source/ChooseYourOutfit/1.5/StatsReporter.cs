@@ -106,7 +106,7 @@ namespace ChooseYourOutfit
                 }, delegate
                 {
                     anyMouseOvered = true;
-                    if (SortingEntry.entry != ent && Regex.IsMatch(ent.ValueString, @"[0-9]") && ent.stat != null)
+                    if (ent.stat != null)
                     {
                         if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(sortButtonRect, "CYO.Tip.SortButton".Translate());
                         if (ent != SortingEntry.entry) GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
@@ -146,12 +146,12 @@ namespace ChooseYourOutfit
                     Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
                 }
 
-                num += height;
-
                 if (ent == SortingEntry.entry)
                 {
                     GUI.DrawTexture(sortButtonRect, SortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp);
                 }
+
+                num += height;
             }
             this.listHeight = num + 100f;
             Widgets.EndScrollView();
