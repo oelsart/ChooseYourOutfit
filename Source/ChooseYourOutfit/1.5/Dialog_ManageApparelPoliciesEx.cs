@@ -9,6 +9,8 @@ using Verse;
 using Verse.Sound;
 using RimWorld;
 using HarmonyLib;
+using System.Security.Cryptography;
+using static HarmonyLib.Code;
 
 namespace ChooseYourOutfit
 {
@@ -207,6 +209,18 @@ namespace ChooseYourOutfit
                 if (Input.GetMouseButtonUp(0) && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
             }
 
+            //右のインフォカード描画
+            Rect rect7 = new Rect(inRect.xMax - 300f, rect5.y, 300f, rect5.height - 15f);
+            
+            if (this.statsDrawn != this.lastMouseovered)
+            {
+                this.statsDrawn = this.lastMouseovered;
+                statsReporter.Reset(rect7.width - 10f, this.statsDrawn, this.selStuffInt, this.selQualityInt);
+            }
+
+            tasks[3] = Task.Run(() => this.DoInfoCard(rect7));
+            //ちらつきを無くすため一番手前に持ってきました
+
             //apparelLayerのリストを描画
             var layersRect = new Rect(rect5.x, rect5.y + 40f, 200f, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count(), 240f));
             if (layerListToShow.Count() == 0)
@@ -247,11 +261,6 @@ namespace ChooseYourOutfit
                 true);
             this.DoPawnBodySeparatedByParts(rect6.AtZero()); //ButtonCollidersの基準がViewBoxの位置(0, 0)からなのでここはBeginGroupで合わせています。（代わりに中身はほぼParallel）
             Widgets.EndGroup();
-
-            //右のインフォカード描画
-            Rect rect7 = new Rect(inRect.xMax - 300f, rect5.y, 300f, rect5.height - 15f);
-
-            tasks[3] = Task.Run(() => this.DoInfoCard(rect7));
 
             if (Find.UIRoot.windows.IsOpen<FloatMenu>() && Input.GetMouseButtonDown(0)) Input.ResetInputAxes(); //フロートメニューを閉じる瞬間他のボタンが反応しないようにする
 
@@ -322,7 +331,7 @@ namespace ChooseYourOutfit
                     {
                         this.selQualityInt = cat;
                         this.selQualityButtonLabel = cat.GetLabel();
-                        statsReporter.Reset();
+                        statsReporter.Reset(290f, statsDrawn, selStuffInt, cat);
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = quality
                 };
@@ -346,7 +355,7 @@ namespace ChooseYourOutfit
                         }
                         this.selStuffInt = stuff;
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
-                        statsReporter.Reset();
+                        statsReporter.Reset(290f, statsDrawn, stuff, selQualityInt);
 
                         if (statsReporter.SortingEntry.entry != null) this.apparelListingRequest = true;
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
@@ -510,11 +519,11 @@ namespace ChooseYourOutfit
 
                 var apparel = apparelListToShow.ElementAt(index);
 
+                if (!apparel.Key) drawer.Enqueue(() => GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f))));
+                if (this.SelectedApparels.Contains(apparel.Value)) drawer.Enqueue(() => Widgets.DrawHighlightSelected(curItemRect));
+
                 drawer.Enqueue(() =>
                 {
-                    if (!apparel.Key) GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
-                    if (this.SelectedApparels.Contains(apparel.Value)) Widgets.DrawHighlightSelected(curItemRect);
-
                     if (Mouse.IsOver(curItemRect))
                     {
                         this.lastMouseovered = this.mouseovered = apparel.Value;
@@ -538,7 +547,7 @@ namespace ChooseYourOutfit
                             }
                             else
                             {
-                                this.SelectedApparels.Add(apparel.Value); 
+                                this.SelectedApparels.Add(apparel.Value);
                                 if (!this.PreviewedApparels.Any(p => apparel.Value != p && !ApparelUtility.CanWearTogether(apparel.Value, p, this.SelectedPawn.RaceProps.body)))
                                 {
                                     this.PreviewedApparels.Add(apparel.Value);
@@ -662,14 +671,7 @@ namespace ChooseYourOutfit
                     null,
                     true);
             });
-
-            if (this.statsDrawn != this.lastMouseovered)
-            {
-                this.statsDrawn = this.lastMouseovered;
-                statsReporter.Reset();
-            }
-
-                Rect rect4 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
+            Rect rect4 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
             drawer.Enqueue(() => Widgets.DrawMenuSection(rect4));
             if (this.statsDrawn != null)
             {
@@ -704,7 +706,16 @@ namespace ChooseYourOutfit
                             true);
                     });
                 }
-                drawer.Enqueue(() => statsReporter.DrawStatsReport(rect4.ContractedBy(5f), this.statsDrawn, this.selStuffInt, this.selQualityInt));
+                Rect rect5 = rect4.ContractedBy(5f);
+                drawer.Enqueue(() =>
+                {
+                    using (new TextBlock(GameFont.Medium))
+                    {
+                        Widgets.Label(rect5, statsDrawn.label);
+                    }
+                });
+
+                foreach (var draw in statsReporter.DrawStatsWorker(rect5)) drawer.Enqueue(draw);
             }
 
             return drawer;
