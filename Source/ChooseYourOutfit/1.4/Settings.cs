@@ -11,6 +11,7 @@ namespace ChooseYourOutfit
         public bool moveToBottom = false;
         public bool showAddBillsButton = true;
         public bool ignoreBillLimit = false;
+        public bool showTooltips = true;
 
         public override void ExposeData()
         {
@@ -21,6 +22,7 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref moveToBottom, "moveToBottom", false);
             Scribe_Values.Look(ref showAddBillsButton, "showAddBillsButton", true);
             Scribe_Values.Look(ref ignoreBillLimit, "ignoreBillLimit", false);
+            Scribe_Values.Look(ref showTooltips, "showTooltips", true);
             base.ExposeData();
         }
     }

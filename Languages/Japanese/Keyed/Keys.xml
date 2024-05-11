@@ -7,9 +7,21 @@
   <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
   <CYO.Preview>プレビュー</CYO.Preview>
+  
+  <CYO.Tip.ColonistButton>プレビューに表示する入植者を選択します.\n衣服リストに表示される衣服はこのボタンで指定した入植者が着られるものに限定されます.</CYO.Tip.ColonistButton>
+  <CYO.Tip.Checkbox>この衣服をプレビューに反映させるかどうかです.\n"加工台に加工指示を追加"ボタンで追加する衣服を指定する目的で使うこともできます.</CYO.Tip.Checkbox>
+  <CYO.Tip.StuffIcon>プレビューに反映させる衣服の素材を指定できます.\n"加工台に加工指示を追加"ボタンで追加する衣服の素材を限定する目的で使うこともできます.</CYO.Tip.StuffIcon>
+  <CYO.Tip.InfoQuality>情報カードに表示される衣服のクオリティを指定できます.</CYO.Tip.InfoQuality>
+  <CYO.Tip.InfoStuff>情報カードに表示される衣服の素材を指定できます.</CYO.Tip.InfoStuff>
+  <CYO.Tip.SpecialStat>このステータスで衣服リストをフィルターできます.</CYO.Tip.SpecialStat>
+  <CYO.Tip.FilterByValue>衣服リストはこのステータスの値でフィルターされます.</CYO.Tip.FilterByValue>
+  <CYO.Tip.FilterByLabel>衣服リストはこのステータス項目を持つ衣服だけが表示されます.</CYO.Tip.FilterByLabel>
+  <CYO.Tip.SortButton>このステータスの値で衣服リストをソートできます.</CYO.Tip.SortButton>
+  
   <CYO.AddBills>加工台に加工指示を追加</CYO.AddBills>
   <CYO.AddBillsConfirm.Desc>選択された衣服を作る加工指示をマップ上の加工台に追加します.\n本当に実行しますか?</CYO.AddBillsConfirm.Desc>
   <CYO.AddBillsConfirm.RestrictToPreviewedApparels>プレビューに指定されている衣服だけを登録する.</CYO.AddBillsConfirm.RestrictToPreviewedApparels>
+  <CYO.AddBillsConfirm.RestrictToPreviewedStuffs>プレビューに指定されている素材だけを許可する.</CYO.AddBillsConfirm.RestrictToPreviewedStuffs>
   <CYO.AddBillsConfirm.ForceRegister>既に加工指示が登録されている衣服も登録する.</CYO.AddBillsConfirm.ForceRegister>
   <CYO.AddBills.NoRecipes>この衣服を作る現在利用可能なレシピがありません.</CYO.AddBills.NoRecipes>
   <CYO.AddBills.NoWorkTables>マップ上にこの衣服を作るレシピを持つ加工台がありません.</CYO.AddBills.NoWorkTables>
@@ -25,4 +37,5 @@
   <CYO.Settings.DontMoveIt>• それを移動させない.</CYO.Settings.DontMoveIt>
   <CYO.Settings.ShowAddBillsButton>"加工台に加工指示を追加"ボタンを表示する.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>加工指示の最大数を無視する.</CYO.Settings.IgnoreBillLimit>
+  <CYO.Settings.ShowTooltips>機能説明のためのツールチップを表示する.\n(このMOD特有の機能に関する説明だけが切り替えできます)</CYO.Settings.ShowTooltips>
 </LanguageData>

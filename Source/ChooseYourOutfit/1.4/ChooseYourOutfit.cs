@@ -18,7 +18,6 @@ namespace ChooseYourOutfit
         public override void DoSettingsWindowContents(Rect inRect)
         {
             Listing_Standard listingStandard = new Listing_Standard();
-            Listing_Tree listingTree = new Listing_Tree();
             listingStandard.Begin(inRect);
             listingStandard.CheckboxLabeled("CYO.Settings.DisableAddedUI".Translate(), ref settings.disableAddedUI);
             if (!settings.disableAddedUI)
@@ -37,6 +36,7 @@ namespace ChooseYourOutfit
                 }
                 listingStandard.CheckboxLabeled("CYO.Settings.ShowAddBillsButton".Translate(), ref settings.showAddBillsButton);
                 if (settings.showAddBillsButton) listingStandard.CheckboxLabeled("CYO.Settings.IgnoreBillLimit".Translate(), ref settings.ignoreBillLimit);
+                listingStandard.CheckboxLabeled("CYO.Settings.ShowTooltips".Translate(), ref settings.showTooltips);
             }
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);

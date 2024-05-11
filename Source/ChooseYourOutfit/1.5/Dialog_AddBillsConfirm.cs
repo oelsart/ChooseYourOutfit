@@ -52,13 +52,16 @@ namespace ChooseYourOutfit
             rect4.height = Text.LineHeight;
             Rect rect5 = rect4;
             rect5.y = rect4.yMax;
+            Rect rect6 = rect5;
+            rect6.y = rect5.yMax;
 
             using (new TextBlock(TextAnchor.UpperCenter))
             {
                 Widgets.Label(rect3, this.title);
             }
             Widgets.CheckboxLabeled(rect4, "CYO.AddBillsConfirm.RestrictToPreviewedApparels".Translate(), ref restrictToPreviewedApparels);
-            Widgets.CheckboxLabeled(rect5, "CYO.AddBillsConfirm.ForceRegister".Translate(), ref forceRegister);
+            Widgets.CheckboxLabeled(rect5, "CYO.AddBillsConfirm.RestrictToPreviewedStuffs".Translate(), ref restrictToPreviewedStuffs);
+            Widgets.CheckboxLabeled(rect6, "CYO.AddBillsConfirm.ForceRegister".Translate(), ref forceRegister);
             if (Widgets.ButtonText(rect, "Cancel".Translate(), true, true, true, null))
             {
                 Find.WindowStack.TryRemove(this, true);
@@ -81,6 +84,8 @@ namespace ChooseYourOutfit
         private Action onConfirm;
 
         public static bool restrictToPreviewedApparels = false;
+
+        public static bool restrictToPreviewedStuffs = false;
 
         public static bool forceRegister = false;
 

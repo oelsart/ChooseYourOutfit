@@ -27,6 +27,7 @@ namespace ChooseYourOutfit
 
         public void DrawStatsReport(Rect rect, ThingDef def, ThingDef stuff, QualityCategory quality)
         {
+            this.def = def;
             BuildableDef buildableDef = def as BuildableDef;
             StatRequest req = (buildableDef != null) ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
             var specialDisplayStats = def.SpecialDisplayStats(req);
@@ -72,6 +73,7 @@ namespace ChooseYourOutfit
                 SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
             }
             dialog.apparelListingRequest = true;
+            dialog.layerListingRequest = true;
         }
 
         private void DrawStatsWorker(Rect rect, IEnumerable<StatDrawEntry> specialDisplayStats)
@@ -96,7 +98,7 @@ namespace ChooseYourOutfit
                 }
 
                 var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
-                num += ent.Draw(8f, num, viewRect.width, this.selectedEntry == ent, false, false, delegate
+                var height = ent.Draw(8f, num, viewRect.width, this.selectedEntry == ent, false, false, delegate
                 {
                     if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
                     {
@@ -105,35 +107,52 @@ namespace ChooseYourOutfit
                 }, delegate
                 {
                     anyMouseOvered = true;
-                    if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
+                    if (ent.stat != null)
                     {
-                        this.mousedOverEntry = ent;
-                    }
-
-                    if (SortingEntry.entry != ent && Regex.IsMatch(ent.ValueString, @"[0-9]") && ent.stat != null)
-                    {
-                        GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(sortButtonRect, "CYO.Tip.SortButton".Translate());
+                        if (ent != SortingEntry.entry) GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
                         if (Mouse.IsOver(sortButtonRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
                         {
                             Input.ResetInputAxes();
-                            SortingEntry.entry = ent;
-                            SortingEntry.descending = true;
+                            if (SortingEntry.entry != ent)
+                            {
+                                SortingEntry.entry = ent;
+                                SortingEntry.descending = true;
+                            }
+                            else if (SortingEntry.descending) SortingEntry.descending = false;
+                            else SortingEntry.entry = null;
+
                             dialog.apparelListingRequest = true;
                         }
                     }
                 }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
 
+                var statRect = new Rect(8f, num, viewRect.width, height);
+                if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && Mouse.IsOver(statRect))
+                {
+                    this.mousedOverEntry = ent;
+                    if (ChooseYourOutfit.settings.showTooltips)
+                    {
+                        var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
+                        if (ent.LabelCap == "Stat_Source_Label".Translate() ||
+                            ent.LabelCap == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate() ||
+                            ent.LabelCap == "Layer".Translate() ||
+                            ent.LabelCap == "Covers".Translate() ||
+                            ent.LabelCap == "CreatedAt".Translate() ||
+                            ent.LabelCap == "Ingredients".Translate() ||
+                            ent.LabelCap == "Stat_Thing_Apparel_ValidLifestage".Translate()) tip += "CYO.Tip.FilterByValue".Translate();
+                        else tip += "CYO.Tip.FilterByLabel".Translate();
+                            TooltipHandler.TipRegion(statRect, tip);
+                    }
+                    Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
+                }
+
                 if (ent == SortingEntry.entry)
                 {
                     GUI.DrawTexture(sortButtonRect, SortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp);
-                    if (Mouse.IsOver(sortButtonRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
-                    {
-                        Input.ResetInputAxes();
-                        if (SortingEntry.descending) SortingEntry.descending = false;
-                        else SortingEntry.entry = null;
-                        dialog.apparelListingRequest = true;
-                    }
                 }
+
+                num += height;
             }
             this.listHeight = num + 100f;
             Widgets.EndScrollView();
@@ -187,6 +206,8 @@ namespace ChooseYourOutfit
             }
             this.SelectEntry(this.cachedDrawEntries[index], true);
         }
+
+        private ThingDef def;
 
         private StatDrawEntry selectedEntry;
 

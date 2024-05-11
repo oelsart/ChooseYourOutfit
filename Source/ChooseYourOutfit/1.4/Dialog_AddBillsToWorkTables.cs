@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using Verse.Noise;
 
 namespace ChooseYourOutfit
 {
     public class Dialog_AddBillsToWorkTables : Window
     {
-        public Dialog_AddBillsToWorkTables(HashSet<ThingDef> apparels, bool forceRegister)
+        public Dialog_AddBillsToWorkTables(HashSet<ThingDef> apparels, Dictionary<ThingDef, ThingDef> stuff)
         {
             this.forcePause = true;
             this.doCloseX = true;
@@ -17,7 +18,7 @@ namespace ChooseYourOutfit
             this.closeOnClickedOutside = true;
 
             this.Apparels = apparels.OrderByDescending(a => a.label).ToHashSet();
-            this.forceRegister = forceRegister;
+            this.Stuff = stuff;
             this.tryAddResult = TryAddBillsToWorkTables();
         }
 
@@ -30,6 +31,17 @@ namespace ChooseYourOutfit
             set
             {
                 apparelsInt = value;
+            }
+        }
+        private Dictionary<ThingDef, ThingDef> Stuff
+        {
+            get
+            {
+                return stuffInt;
+            }
+            set
+            {
+                stuffInt = value;
             }
         }
 
@@ -94,7 +106,7 @@ namespace ChooseYourOutfit
                 var recipeFound = false;
                 var registered = false;
                 registered = AllWorkTables.Any(w => w.BillStack.Bills.Any(b => b.recipe.ProducedThingDef == apparel));
-                if (!registered || this.forceRegister)
+                if (!registered || Dialog_AddBillsConfirm.forceRegister)
                 {
                     foreach (var worktable in AllWorkTables)
                     {
@@ -104,7 +116,13 @@ namespace ChooseYourOutfit
                             recipeFound = true;
                             if (worktable.BillStack.Count < BillStack.MaxCount || ChooseYourOutfit.settings.ignoreBillLimit)
                             {
-                                worktable.BillStack.AddBill(BillUtility.MakeNewBill(recipe));
+                                var bill = BillUtility.MakeNewBill(recipe);
+                                if (Dialog_AddBillsConfirm.restrictToPreviewedStuffs)
+                                {
+                                    foreach (var stuff in GenStuff.AllowedStuffsFor(apparel)) bill.ingredientFilter.SetAllow(stuff, false);
+                                    bill.ingredientFilter.SetAllow(Stuff[apparel], true);
+                                }
+                                worktable.BillStack.AddBill(bill);
                                 result[TryAddBillsResult.Success].Add((apparel, worktable));
                                 success = true;
                                 break;
@@ -115,7 +133,7 @@ namespace ChooseYourOutfit
 
                 if (success is false)
                 {
-                    if (registered is true && this.forceRegister is false)
+                    if (registered is true && Dialog_AddBillsConfirm.forceRegister is false)
                     {
                         result[TryAddBillsResult.AlreadyRegistered].Add((apparel, null));
                     }
@@ -136,11 +154,11 @@ namespace ChooseYourOutfit
 
         private HashSet<ThingDef> apparelsInt;
 
+        private Dictionary<ThingDef, ThingDef> stuffInt;
+
         private Dictionary<TryAddBillsResult, HashSet<(ThingDef apparel, Building_WorkTable worktable)>> tryAddResult;
 
         private Vector2 scrollPosition;
-
-        private bool forceRegister;
 
         private enum TryAddBillsResult
         {
