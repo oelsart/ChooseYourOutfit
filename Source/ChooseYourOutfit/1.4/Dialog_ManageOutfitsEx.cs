@@ -181,10 +181,10 @@ namespace ChooseYourOutfit
             apparelListingRequest = false;
             selectedApparelListingRequest = false;
 
-            this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
-            if (ChooseYourOutfit.settings.syncFilter)
+            if (Input.GetMouseButtonUp(0))
             {
-                if (Input.GetMouseButtonUp(0) && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
+                this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
             }
 
             //右のインフォカード描画
@@ -276,6 +276,7 @@ namespace ChooseYourOutfit
                         {
                             preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
                         }
+                        this.loadFilter(this.canWearAllowed);
                         this.layerListingRequest = true;
                         this.apparelListingRequest = true;
                         this.selectedApparelListingRequest = true;
