@@ -200,6 +200,10 @@ namespace ChooseYourOutfit
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
             if (SelectedPolicy == null) return;
 
+            if (this.layerListingRequest) this.layerListToShow = this.ListingLayerToShow();
+            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.SelectedLayers);
+            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+
             layerListingRequest = false;
             apparelListingRequest = false;
             selectedApparelListingRequest = false;
@@ -266,10 +270,6 @@ namespace ChooseYourOutfit
                 if (task == null) continue;
                 foreach (var drawer in task.Result) drawer();
             }
-
-            if (this.layerListingRequest) this.layerListToShow = this.ListingLayerToShow();
-            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.SelectedLayers);
-            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
 
             if (ChooseYourOutfit.settings.syncFilter)
             {

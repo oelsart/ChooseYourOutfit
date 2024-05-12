@@ -6,8 +6,6 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using RimWorld;
-using System.Security.Cryptography;
-using static HarmonyLib.Code;
 
 namespace ChooseYourOutfit
 {
@@ -41,11 +39,16 @@ namespace ChooseYourOutfit
 
             for (int i = 0; i < this.cachedDrawEntries.Count; i++)
             {
-                this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
+                using (new TextBlock(GameFont.Small))
+                {
+                    this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
+                }
             }
 
-            Text.Font = GameFont.Small;
-            this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
+            using (new TextBlock(GameFont.Medium))
+            {
+                this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
+            }
         }
 
         public StatsReporter(Dialog_ManageOutfitsEx dialog)
