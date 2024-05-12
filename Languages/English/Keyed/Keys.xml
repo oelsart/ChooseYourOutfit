@@ -9,6 +9,7 @@
   <CYO.Preview>Preview</CYO.Preview>
   
   <CYO.Tip.ColonistButton>Select the colonist to show in the preview.\nThe apparels displayed in the apparel list is restricted to that can be worn by the colonist specified by this button.</CYO.Tip.ColonistButton>
+  <CYO.Tip.Researched>The list of apparels can be restricted to those with recipes that have been currently researched.</CYO.Tip.Researched>
   <CYO.Tip.Checkbox>Whether or not this apparel is reflected in the preview.\nThis is also possible to use to specify apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.Checkbox>
   <CYO.Tip.StuffIcon>Specify the material of this apparel to be reflected in the preview.\nThis is also possible to use to restrict the material of the apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.StuffIcon>
   <CYO.Tip.InfoQuality>Specify the quality of the apparel to display on the information card.</CYO.Tip.InfoQuality>

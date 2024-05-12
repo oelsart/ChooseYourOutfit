@@ -453,6 +453,7 @@ namespace ChooseYourOutfit
             drawer.Enqueue(() =>
             {
                 this.mouseovered = null;
+                if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(filterLabelRect, "CYO.Tip.Researched".Translate());
                 Widgets.Label(filterLabelRect, "CYO.CurrentlyResearched".Translate());
                 Widgets.Checkbox(checkBoxPosition, ref filterByCurrentlyResearched, 20f);
                 if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
