@@ -12,6 +12,7 @@
   <CYO.Tip.Researched>衣服リストに表示される衣服を現在研究済みのレシピを持つものに限定することができます.</CYO.Tip.Researched>
   <CYO.Tip.Checkbox>この衣服をプレビューに反映させるかどうかです.\n"加工台に加工指示を追加"ボタンで追加する衣服を指定する目的で使うこともできます.</CYO.Tip.Checkbox>
   <CYO.Tip.StuffIcon>プレビューに反映させる衣服の素材を指定できます.\n"加工台に加工指示を追加"ボタンで追加する衣服の素材を限定する目的で使うこともできます.</CYO.Tip.StuffIcon>
+  <CYO.Tip.AddBills>現在マップ上に存在する加工台に,選択した衣服を作る加工指示を追加することができます.\n確認ダイアログでオプションを指定することができます.</CYO.Tip.AddBills>
   <CYO.Tip.InfoQuality>情報カードに表示される衣服のクオリティを指定できます.</CYO.Tip.InfoQuality>
   <CYO.Tip.InfoStuff>情報カードに表示される衣服の素材を指定できます.</CYO.Tip.InfoStuff>
   <CYO.Tip.SpecialStat>このステータスで衣服リストをフィルターできます.</CYO.Tip.SpecialStat>
