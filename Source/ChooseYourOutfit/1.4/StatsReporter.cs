@@ -41,7 +41,7 @@ namespace ChooseYourOutfit
 
             for (int i = 0; i < this.cachedDrawEntries.Count; i++)
             {
-                this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width));
+                this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
             }
 
             this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
@@ -83,7 +83,7 @@ namespace ChooseYourOutfit
             var drawer = new ConcurrentQueue<Action>();
             Rect rect2 = new Rect(rect);
             rect2.yMin += this.titleHeight;
-            Rect viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth, this.listHeight);
+            Rect viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, this.listHeight);
             var anyMouseOvered = false;
 
             float num = 0f;
