@@ -44,6 +44,7 @@ namespace ChooseYourOutfit
                 this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
             }
 
+            Text.Font = GameFont.Small;
             this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
         }
 
