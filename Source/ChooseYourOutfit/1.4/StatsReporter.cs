@@ -44,7 +44,10 @@ namespace ChooseYourOutfit
                 this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
             }
 
-            this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
+            using (new TextBlock(GameFont.Small))
+            {
+                this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
+            }
         }
 
         public StatsReporter(Dialog_ManageOutfitsEx dialog)
