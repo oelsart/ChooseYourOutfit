@@ -852,7 +852,7 @@ namespace ChooseYourOutfit
                             if (previewApparelStuff[apparel] != null)
                             {
                                 Widgets.DefIcon(curStuffRect, previewApparelStuff[apparel]);
-                                if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(curCheckBoxRect, "CYO.Tip.StuffIcon".Translate());
+                                if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(curStuffRect, "CYO.Tip.StuffIcon".Translate());
                             }
                             Widgets.CheckboxDraw(curCheckBoxRect.x, curCheckBoxRect.y, isPreviewed, !isPreviewed, 20f);
                             if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(curCheckBoxRect, "CYO.Tip.Checkbox".Translate());
