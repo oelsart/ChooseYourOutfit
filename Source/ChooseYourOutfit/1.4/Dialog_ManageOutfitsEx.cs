@@ -276,7 +276,9 @@ namespace ChooseYourOutfit
                         {
                             preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
                         }
-
+                        this.layerListingRequest = true;
+                        this.apparelListingRequest = true;
+                        this.selectedApparelListingRequest = true;
                         /*foreach (var apparel in allApparels)
                         {
                             this.overrideApparelColors[apparelDatabase[apparel]] = overrideApparelColors.FirstOrDefault(a => a.Key.def == apparel).Value;
