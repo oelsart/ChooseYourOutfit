@@ -276,10 +276,7 @@ namespace ChooseYourOutfit
                         {
                             preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
                         }
-                        this.loadFilter(this.canWearAllowed);
-                        this.layerListingRequest = true;
-                        this.apparelListingRequest = true;
-                        this.selectedApparelListingRequest = true;
+
                         /*foreach (var apparel in allApparels)
                         {
                             this.overrideApparelColors[apparelDatabase[apparel]] = overrideApparelColors.FirstOrDefault(a => a.Key.def == apparel).Value;
@@ -1022,8 +1019,11 @@ namespace ChooseYourOutfit
                 this.svgViewBox = svgInterpreter.GetViewBox(this.svg[Gender.None]);
             }
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
-
             preApparelsApparel = new ThingOwner<Apparel>(pawn.apparel);
+
+            this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+            this.loadFilter(this.canWearAllowed);
+            this.layerListingRequest = true;
         }
 
         private static bool InfoCardButtonWorker(Rect rect)
