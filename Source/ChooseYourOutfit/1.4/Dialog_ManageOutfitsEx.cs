@@ -696,9 +696,11 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.showAddBillsButton)
             {
                 outerRect.yMax -= 30f;
+                var addBillsButtonRect = new Rect(outerRect.x + 3f, outerRect.yMax + 3f, outerRect.width - 6f, 24f);
                 drawer.Enqueue(() =>
                 {
-                    if (Widgets.ButtonText(new Rect(outerRect.x + 3f, outerRect.yMax + 3f, outerRect.width - 6f, 24f), "CYO.AddBills".Translate()))
+                    if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(addBillsButtonRect, "CYO.Tip.AddBills");
+                    if (Widgets.ButtonText(addBillsButtonRect, "CYO.AddBills".Translate()))
                     {
                         Find.WindowStack.Add(new Dialog_AddBillsConfirm("CYO.AddBillsConfirm.Desc".Translate(), () =>
                         {

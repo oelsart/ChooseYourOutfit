@@ -12,6 +12,7 @@
   <CYO.Tip.Researched>The list of apparels can be restricted to those with recipes that have been currently researched.</CYO.Tip.Researched>
   <CYO.Tip.Checkbox>Whether or not this apparel is reflected in the preview.\nThis is also possible to use to specify apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.Checkbox>
   <CYO.Tip.StuffIcon>Specify the material of this apparel to be reflected in the preview.\nThis is also possible to use to restrict the material of the apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.StuffIcon>
+  <CYO.Tip.AddBills>Add to the worktables currently existing on the map the bills that will produce the selected apparels.\nYou can set the options in the confirmation dialog.</CYO.Tip.AddBills>
   <CYO.Tip.InfoQuality>Specify the quality of the apparel to display on the information card.</CYO.Tip.InfoQuality>
   <CYO.Tip.InfoStuff>Specify the material of the apparel to display on the information card.</CYO.Tip.InfoStuff>
   <CYO.Tip.SpecialStat>This status allows to filter apparel list.</CYO.Tip.SpecialStat>

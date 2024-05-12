@@ -46,7 +46,7 @@ namespace ChooseYourOutfit
             rect2.yMin = inRect.yMax - Dialog_AddBillsConfirm.ButtonSize.y - 10f;
             Rect rect3 = inRect;
             rect3.y += 4f;
-            rect3.yMax = rect2.y - 10f - Text.LineHeight * 2;
+            rect3.yMax = rect2.y - 10f - Text.LineHeight * 3;
             Rect rect4 = inRect;
             rect4.y = rect3.yMax;
             rect4.height = Text.LineHeight;
