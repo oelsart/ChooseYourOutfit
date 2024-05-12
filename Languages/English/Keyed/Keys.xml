@@ -7,9 +7,23 @@
   <CYO.CurrentlyResearched>Currently Researched</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
+  
+  <CYO.Tip.ColonistButton>Select the colonist to show in the preview.\nThe apparels displayed in the apparel list is restricted to that can be worn by the colonist specified by this button.</CYO.Tip.ColonistButton>
+  <CYO.Tip.Researched>The list of apparels can be restricted to those with recipes that have been currently researched.</CYO.Tip.Researched>
+  <CYO.Tip.Checkbox>Whether or not this apparel is reflected in the preview.\nThis is also possible to use to specify apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.Checkbox>
+  <CYO.Tip.StuffIcon>Specify the material of this apparel to be reflected in the preview.\nThis is also possible to use to restrict the material of the apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.StuffIcon>
+  <CYO.Tip.AddBills>Add to the worktables currently existing on the map the bills that will produce the selected apparels.\nYou can set the options in the confirmation dialog.</CYO.Tip.AddBills>
+  <CYO.Tip.InfoQuality>Specify the quality of the apparel to display on the information card.</CYO.Tip.InfoQuality>
+  <CYO.Tip.InfoStuff>Specify the material of the apparel to display on the information card.</CYO.Tip.InfoStuff>
+  <CYO.Tip.SpecialStat>This status allows to filter apparel list.</CYO.Tip.SpecialStat>
+  <CYO.Tip.FilterByValue>Apparel list is filtered by the value of this status.</CYO.Tip.FilterByValue>
+  <CYO.Tip.FilterByLabel>Apparel list will only show apparel which have this status entry.</CYO.Tip.FilterByLabel>
+  <CYO.Tip.SortButton>Sort apparel list by the value of this status.\nNote that data is sorted by the value of the material selected with the material button on the info card.</CYO.Tip.SortButton>
+  
   <CYO.AddBills>Add Bills To WorkTables</CYO.AddBills>
   <CYO.AddBillsConfirm.Desc>Try to add the bills that make selected apparels to the worktables.\nDo you really want to run it?</CYO.AddBillsConfirm.Desc>
   <CYO.AddBillsConfirm.RestrictToPreviewedApparels>Register only the apparel specified for preview.</CYO.AddBillsConfirm.RestrictToPreviewedApparels>
+  <CYO.AddBillsConfirm.RestrictToPreviewedStuffs>Allow only the ingredient specified for preview.</CYO.AddBillsConfirm.RestrictToPreviewedStuffs>
   <CYO.AddBillsConfirm.ForceRegister>Apparel that its bill is already registered will also be registered.</CYO.AddBillsConfirm.ForceRegister>
   <CYO.AddBills.NoRecipes>There are no recipes available now to make this apparel.</CYO.AddBills.NoRecipes>
   <CYO.AddBills.NoWorkTables>There are no worktables to make this apparel on this map.</CYO.AddBills.NoWorkTables>
@@ -20,10 +34,10 @@
   <CYO.Settings.DisableAddedUI>Disable UI added by mod.</CYO.Settings.DisableAddedUI>
   <CYO.Settings.CollapseByLayer>Selected apparel Lists are collapsed by layer as default.</CYO.Settings.CollapseByLayer>
   <CYO.Settings.SyncFilter>Sync selected apparels to filters in real time (If this is off, sync with button).</CYO.Settings.SyncFilter>
-  <CYO.Settings.FilterLoadTiming>Set the timing of filter loading to "when the mouse button is clicked".\n(This is effective when the load filter is called every tick due to invalid apparel)</CYO.Settings.FilterLoadTiming>
   <CYO.Settings.ApparelListMode>Hide apparel that cannot be worn together with the selected apparels.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• Move it to the bottom.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• Don't move it.</CYO.Settings.DontMoveIt>
   <CYO.Settings.ShowAddBillsButton>Show "Add Bills To WorkTables" button.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>Ignore the maximum number of bills.</CYO.Settings.IgnoreBillLimit>
+  <CYO.Settings.ShowTooltips>Show tooltips to describe features.\n(Only the description of the features specific to this mod can be toggled)</CYO.Settings.ShowTooltips>
 </LanguageData>
