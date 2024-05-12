@@ -550,7 +550,8 @@ namespace ChooseYourOutfit
                                 {
                                     this.PreviewedApparels.Add(apparel.Value);
                                     this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-                                    this.preApparelsApparel.TryAddOrTransfer(GetApparel(apparel.Value));
+                                    this.preApparelsApparel.Clear();
+                                    foreach (var a in PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(a)); //drawOrderのためにここは一度リセットして再追加している
                                 }
                                 this.apparelListingRequest = true;
                                 this.selectedApparelListingRequest = true;
