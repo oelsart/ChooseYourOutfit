@@ -119,7 +119,7 @@ namespace ChooseYourOutfit
                                 ent.LabelCap == "Ingredients".Translate() ||
                                 ent.LabelCap == "Stat_Thing_Apparel_ValidLifestage".Translate()) tip += "CYO.Tip.FilterByValue".Translate();
                             else tip += "CYO.Tip.FilterByLabel".Translate();
-                            TooltipHandler.TipRegion(statRect, tip);
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(statRect, tip);
                         }
                         Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
                     }

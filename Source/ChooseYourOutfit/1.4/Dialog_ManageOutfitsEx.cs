@@ -56,7 +56,7 @@ namespace ChooseYourOutfit
                 }
                 else this.previewApparelStuff.Add(apparel, null);
 
-                selStuffList.Add(defaultStuff);
+                selStuffDatabase.Add(apparel, defaultStuff);
             }
         }
 
@@ -227,16 +227,12 @@ namespace ChooseYourOutfit
             Widgets.BeginGroup(rect6);
             var colonistButtonRect = new Rect(0f, 0f, 150f, 35f);
             if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(colonistButtonRect, "CYO.Tip.ColonistButton".Translate());
-            Widgets.Dropdown(colonistButtonRect,
-                null,
-                null,
-                (Pawn p) => this.GeneratePawnList(p),
-                this.selPawnButtonLabel,
-                null,
-                null,
-                null,
-                null,
-                true);
+            if (Widgets.ButtonTextDraggable(colonistButtonRect, this.selPawnButtonLabel) == Widgets.DraggableResult.Pressed)
+            {
+                List<FloatMenuOption> options = (from opt in GeneratePawnList(this.SelectedPawn)
+                                                 select opt.option).ToList<FloatMenuOption>();
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
             this.DoPawnBodySeparatedByParts(rect6.AtZero()); //ButtonCollidersの基準がViewBoxの位置(0, 0)からなのでここはBeginGroupで合わせています。（代わりに中身はほぼParallel）
             Widgets.EndGroup();
 
@@ -305,7 +301,7 @@ namespace ChooseYourOutfit
                     {
                         this.selQualityInt = cat;
                         this.selQualityButtonLabel = cat.GetLabel();
-                        statsReporter.Reset(290f, statsDrawn, selStuffInt, cat);
+                        if (statsDrawn != null) statsReporter.Reset(290f, statsDrawn, selStuffInt, cat);
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = quality
                 };
@@ -322,10 +318,10 @@ namespace ChooseYourOutfit
                 {
                     option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
                     {
-                        if (selStuffInt != null)
+                        this.selStuffDatabase[statsDrawn] = stuff;
+                        foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
                         {
-                            this.selStuffList.Remove(this.selStuffInt);
-                            this.selStuffList.Add(stuff);
+                            if (apparel.stuffCategories?.SequenceEqual(statsDrawn.stuffCategories) ?? false) selStuffDatabase[apparel] = stuff;
                         }
                         this.selStuffInt = stuff;
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
@@ -633,51 +629,34 @@ namespace ChooseYourOutfit
 
             drawer.Enqueue(() =>
             {
-                TooltipHandler.TipRegion(rect2, "CYO.Tip.InfoQuality".Translate());
-                Widgets.Dropdown(rect2,
-                    this.selQualityInt,
-                    null,
-                    (QualityCategory q) => this.GenerateQualityList(q),
-                    this.selQualityButtonLabel,
-                    null,
-                    null,
-                    null,
-                    null,
-                    true);
+                if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect2, "CYO.Tip.InfoQuality".Translate());
+                if (Widgets.ButtonTextDraggable(rect2, selQualityButtonLabel) == Widgets.DraggableResult.Pressed)
+                {
+                    List<FloatMenuOption> options = (from opt in GenerateQualityList(selQualityInt)
+                                                     select opt.option).ToList<FloatMenuOption>();
+                    Find.WindowStack.Add(new FloatMenu(options));
+                }
             });
             Rect rect4 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
             drawer.Enqueue(() => Widgets.DrawMenuSection(rect4));
             if (this.statsDrawn != null)
             {
-                var selStuffInthisThing = GenStuff.AllowedStuffsFor(this.statsDrawn)?.FirstOrDefault(s => selStuffList.Contains(s)) ?? GenStuff.DefaultStuffFor(this.statsDrawn);
+                this.selStuffInt = selStuffDatabase[statsDrawn];
 
-                if (GenStuff.AllowedStuffsFor(this.statsDrawn).Count() != 0)
+                if (this.statsDrawn.stuffCategories != null)
                 {
-                    if (selStuffInthisThing != null)
-                    {
-                        this.selStuffInt = selStuffInthisThing;
-                        this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
-                    }
-                    else
-                    {
-                        this.selStuffInt = GenStuff.DefaultStuffFor(this.statsDrawn);
-                        this.selStuffList.Add(this.selStuffInt);
-                        this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
-                    }
+                    this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
+
                     var rect3 = new Rect(rect.x + 155f, rect.y, 145f, 35f);
                     drawer.Enqueue(() =>
                     {
-                        TooltipHandler.TipRegion(rect3, "CYO.Tip.InfoStuff".Translate());
-                        Widgets.Dropdown(rect3,
-                            null,
-                            null,
-                            (ThingDef s) => this.GenerateStuffList(s),
-                            this.selStuffButtonLabel,
-                            null,
-                            null,
-                            null,
-                            null,
-                            true);
+                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect3, "CYO.Tip.InfoStuff".Translate());
+                        if (Widgets.ButtonTextDraggable(rect3, selStuffButtonLabel) == Widgets.DraggableResult.Pressed)
+                        {
+                            List<FloatMenuOption> options = (from opt in GenerateStuffList(selStuffInt)
+                                                             select opt.option).ToList<FloatMenuOption>();
+                            Find.WindowStack.Add(new FloatMenu(options));
+                        }
                     });
                 }
                 Rect rect5 = rect4.ContractedBy(5f);
@@ -957,7 +936,7 @@ namespace ChooseYourOutfit
             }
             else
             {
-                return def.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, GenStuff.AllowedStuffsFor(this.statsDrawn)?.FirstOrDefault(s => selStuffList.Contains(s)) ?? GenStuff.DefaultStuffFor(def));
+                return def.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, selStuffDatabase[def]);
             }
         }
 
@@ -1061,7 +1040,7 @@ namespace ChooseYourOutfit
 
         private ThingDef selStuffInt;
 
-        private HashSet<ThingDef> selStuffList = new HashSet<ThingDef>();
+        private Dictionary<ThingDef, ThingDef> selStuffDatabase = new Dictionary<ThingDef, ThingDef>();
 
         private string selStuffButtonLabel;
 
