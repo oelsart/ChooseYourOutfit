@@ -42,8 +42,6 @@ namespace ChooseYourOutfit
                 this.SelectedPawn = Find.ColonistBar.Entries.FirstOrDefault().pawn;
             }
 
-            this.InitializeByPawn(this.SelectedPawn);
-
             foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
             {
                 //this.apparelDatabase.Add(apparel, GetApparel(apparel, SelectedPawn));
@@ -58,6 +56,8 @@ namespace ChooseYourOutfit
 
                 selStuffDatabase.Add(apparel, defaultStuff);
             }
+
+            this.InitializeByPawn(this.SelectedPawn);
         }
 
         private Pawn SelectedPawn
@@ -1021,9 +1021,12 @@ namespace ChooseYourOutfit
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
             preApparelsApparel = new ThingOwner<Apparel>(pawn.apparel);
 
-            this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
-            this.loadFilter(this.canWearAllowed);
-            this.layerListingRequest = true;
+            this.canWearAllowed = SelectedOutfit?.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+            if (this.canWearAllowed != null)
+            {
+                this.loadFilter(this.canWearAllowed);
+                this.layerListingRequest = true;
+            }
         }
 
         private static bool InfoCardButtonWorker(Rect rect)
