@@ -221,7 +221,7 @@ namespace ChooseYourOutfit
             if (this.statsDrawn != this.lastMouseovered)
             {
                 this.statsDrawn = this.lastMouseovered;
-                statsReporter.Reset(rect7.width - 10f, this.statsDrawn, this.selStuffInt, this.selQualityInt);
+                statsReporter.Reset(rect7.width - 10f, this.statsDrawn, this.selStuffDatabase[this.statsDrawn], this.selQualityInt);
             }
 
             tasks[3] = Task.Run(() => this.DoInfoCard(rect7));
@@ -328,7 +328,7 @@ namespace ChooseYourOutfit
                     {
                         this.selQualityInt = cat;
                         this.selQualityButtonLabel = cat.GetLabel();
-                        if (statsDrawn != null) statsReporter.Reset(290f, statsDrawn, selStuffInt, cat);
+                        if (statsDrawn != null) statsReporter.Reset(290f, statsDrawn, selStuffDatabase[statsDrawn], cat);
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = quality
                 };
@@ -352,7 +352,7 @@ namespace ChooseYourOutfit
                         }
                         this.selStuffInt = stuff;
                         this.selStuffButtonLabel = stuff.LabelAsStuff;
-                        statsReporter.Reset(290f, statsDrawn, stuff, selQualityInt);
+                        statsReporter.Reset(290f, statsDrawn, selStuffDatabase[statsDrawn], selQualityInt);
 
                         if (statsReporter.SortingEntry.entry != null) this.apparelListingRequest = true;
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
