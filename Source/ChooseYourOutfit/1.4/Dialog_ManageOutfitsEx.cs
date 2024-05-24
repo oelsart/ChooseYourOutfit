@@ -500,7 +500,7 @@ namespace ChooseYourOutfit
                         this.lastMouseovered = this.mouseovered = apparel.Value;
                         TooltipHandler.TipRegion(curItemRect, apparel.Value.label + "\n\n" + apparel.Value.DescriptionDetailed);
                         Widgets.DrawHighlight(curItemRect);
-                        if (Input.GetMouseButtonUp(0))
+                        if (Input.GetMouseButtonUp(0) && !Mouse.IsOver(curInfoButtonRect))
                         {
                             Input.ResetInputAxes();
                             if (this.SelectedApparels.Contains(apparel.Value))

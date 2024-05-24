@@ -54,6 +54,10 @@ namespace ChooseYourOutfit
         public StatsReporter(Dialog_ManageOutfitsEx dialog)
         {
             this.dialog = dialog;
+            foreach (var statCategory in DefDatabase<StatCategoryDef>.AllDefs)
+            {
+                collapse[statCategory.LabelCap] = false;
+            }
         }
 
         public StatDrawEntry SelectedEntry { get { return this.selectedEntry; } }
@@ -101,10 +105,12 @@ namespace ChooseYourOutfit
                 if (ent.category.LabelCap != b)
                 {
                     var tmp = num;
-                    drawer.Enqueue(() => Widgets.ListSeparator(ref tmp, viewRect.width, ent.category.LabelCap));
+                    drawer.Enqueue(() => this.ListSeparator(tmp, viewRect.width, ent.category));
                     b = ent.category.LabelCap;
                     num += Widgets.ListSeparatorHeight;
                 }
+
+                if (collapse[ent.category.LabelCap]) continue;
 
                 var statRect = new Rect(8f, num, viewRect.width, this.cachedEntryHeights[i]);
                 drawer.Enqueue(() =>
@@ -279,6 +285,27 @@ namespace ChooseYourOutfit
             }
             this.SelectEntry(this.cachedDrawEntries[index], true);
         }
+        public void ListSeparator(float curY, float width, StatCategoryDef category)
+        {
+            Color color = GUI.color;
+            curY += 3f;
+            GUI.color = Widgets.SeparatorLabelColor;
+            Rect rect1 = new Rect(0f, curY, 20f, 20f);
+            Rect rect2 = new Rect(25f, curY, width - 25f, 30f);
+            Text.Anchor = TextAnchor.UpperLeft;
+            Texture2D tex = collapse[category.LabelCap] ? TexButton.Reveal : TexButton.Collapse;
+            if (Mouse.IsOver(rect1) && Input.GetMouseButtonUp(0))
+            {
+                Input.ResetInputAxes();
+                collapse[category.LabelCap] = !collapse[category.LabelCap];
+            }
+            Widgets.DrawTextureFitted(rect1, tex, 1f);
+            Widgets.Label(rect2, category.LabelCap);
+            curY += 20f;
+            GUI.color = Widgets.SeparatorLineColor;
+            Widgets.DrawLineHorizontal(0f, curY, width);
+            GUI.color = color;
+        }
 
         private StatDrawEntry selectedEntry;
 
@@ -305,5 +332,7 @@ namespace ChooseYourOutfit
         private Dialog_ManageOutfitsEx dialog;
 
         public (StatDrawEntry entry, bool descending) SortingEntry;
+
+        private Dictionary<string, bool> collapse = new Dictionary<string, bool>();
     }
 }
