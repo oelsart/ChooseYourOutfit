@@ -104,7 +104,8 @@ namespace ChooseYourOutfit
 
                 if (ent.category.LabelCap != b)
                 {
-                    drawer.Enqueue(() => this.ListSeparator(num, viewRect.width, ent.category));
+                    var tmp = num;
+                    drawer.Enqueue(() => this.ListSeparator(tmp, viewRect.width, ent.category));
                     b = ent.category.LabelCap;
                     num += Widgets.ListSeparatorHeight;
                 }
