@@ -750,7 +750,7 @@ namespace ChooseYourOutfit
                 if (!collapse[apparels.layer])
                 {
                     var fromInclusive = (int)Math.Max((this.listScrollPosition.y - curY + outerRect.height) / itemRect.height - 1, 0);
-                    var toExclusive = (int)Math.Min(fromInclusive + outerRect.height / itemRect.height + 1, apparels.list.Count());
+                    var toExclusive = (int)Math.Min(fromInclusive + outerRect.height / itemRect.height + 4, apparels.list.Count());
 
                     for (var index = fromInclusive; index < toExclusive; index++)
                     {
