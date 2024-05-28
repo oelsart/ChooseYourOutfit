@@ -9,9 +9,6 @@ using Verse;
 using Verse.Sound;
 using RimWorld;
 using HarmonyLib;
-using System.Security.Cryptography;
-using static HarmonyLib.Code;
-using static UnityEngine.GraphicsBuffer;
 
 namespace ChooseYourOutfit
 {
@@ -481,7 +478,7 @@ namespace ChooseYourOutfit
                 this.mouseovered = null;
                 if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(filterLabelRect, "CYO.Tip.Researched".Translate());
                 Widgets.Label(filterLabelRect, "CYO.CurrentlyResearched".Translate());
-                Widgets.Checkbox(checkBoxPosition, ref filterByCurrentlyResearched, 20f);
+                Widgets.Checkbox(checkBoxPosition, ref ChooseYourOutfit.settings.currentlyResearched, 20f);
                 if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
                 {
                     this.apparelListingRequest = true;
@@ -904,7 +901,7 @@ namespace ChooseYourOutfit
                 .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)))
                 .OrderByDescending(a => a.Value.label);
 
-            if (this.filterByCurrentlyResearched)
+            if (ChooseYourOutfit.settings.currentlyResearched)
             {
                 //そのapparelを含むレシピが存在しないか、あるいは研究済みのレシピに含まれているapparelに限定
                 list = list.Where(a => DefDatabase<RecipeDef>.AllDefs.All(r => r.ProducedThingDef != a.Value) || DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a.Value));
@@ -1152,8 +1149,6 @@ namespace ChooseYourOutfit
         //private Dictionary<Apparel, Color> overrideApparelColors = new Dictionary<Apparel, Color>();
 
         private Dictionary<ThingDef, ThingDef> previewApparelStuff = new Dictionary<ThingDef, ThingDef>();
-
-        private bool filterByCurrentlyResearched = false;
 
         private SVGInterpreter svgInterpreter = new SVGInterpreter();
 
