@@ -251,12 +251,21 @@ namespace ChooseYourOutfit
             //入植者選択ボタン
             Widgets.BeginGroup(rect6);
             var colonistButtonRect = new Rect(0f, 0f, 150f, 35f);
+            var gearButtonRect = colonistButtonRect;
+            gearButtonRect.x = colonistButtonRect.xMax + 5f;
+            gearButtonRect.xMax = rect8.width;
+
             if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(colonistButtonRect, "CYO.Tip.ColonistButton".Translate());
-            if (Widgets.ButtonTextDraggable(colonistButtonRect, this.selPawnButtonLabel) == Widgets.DraggableResult.Pressed)
+            if (Widgets.ButtonText(colonistButtonRect, this.selPawnButtonLabel))
             {
                 List<FloatMenuOption> options = (from opt in GeneratePawnList(this.SelectedPawn)
                                                  select opt.option).ToList<FloatMenuOption>();
                 Find.WindowStack.Add(new FloatMenu(options));
+            }
+
+            if (Widgets.ButtonImageWithBG(gearButtonRect, ForColonistsTex))
+            {
+                Find.WindowStack.Add(new Dialog_WornApparelList(SelectedPawn, SelectedPolicy));
             }
             this.DoPawnBodySeparatedByParts(rect6.AtZero()); //ButtonCollidersの基準がViewBoxの位置(0, 0)からなのでここはBeginGroupで合わせています。（代わりに中身はほぼParallel）
             Widgets.EndGroup();
@@ -656,7 +665,7 @@ namespace ChooseYourOutfit
             drawer.Enqueue(() =>
             {
                 if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect2, "CYO.Tip.InfoQuality".Translate());
-                if (Widgets.ButtonTextDraggable(rect2, selQualityButtonLabel) == Widgets.DraggableResult.Pressed)
+                if (Widgets.ButtonText(rect2, selQualityButtonLabel))
                 {
                     List<FloatMenuOption> options = (from opt in GenerateQualityList(selQualityInt)
                                                      select opt.option).ToList<FloatMenuOption>();
@@ -677,7 +686,7 @@ namespace ChooseYourOutfit
                     drawer.Enqueue(() =>
                     {
                         if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect3, "CYO.Tip.InfoStuff".Translate());
-                        if (Widgets.ButtonTextDraggable(rect3, selStuffButtonLabel) == Widgets.DraggableResult.Pressed)
+                        if (Widgets.ButtonText(rect3, selStuffButtonLabel))
                         {
                             List<FloatMenuOption> options = (from opt in GenerateStuffList(selStuffInt)
                                                              select opt.option).ToList<FloatMenuOption>();
@@ -740,8 +749,8 @@ namespace ChooseYourOutfit
             var viewRect = itemRect;
             itemRect.height = Text.LineHeight;
             viewRect.height = (selectedApparelListToShow.Count() + selectedApparelListToShow.Where(l => !collapse[l.layer]).Select(l => l.list.Count()).Sum()) * itemRect.height;
-            Rect checkBoxRect = new Rect(itemRect.xMax - itemRect.height - 2f, itemRect.y, itemRect.height, itemRect.height);
-            Rect stuffRect = new Rect(itemRect.xMax - itemRect.height * 2 - 2f, itemRect.y, itemRect.height, itemRect.height);
+            Rect checkBoxRect = new Rect(itemRect.xMax - itemRect.height, itemRect.y, itemRect.height, itemRect.height);
+            Rect stuffRect = new Rect(itemRect.xMax - itemRect.height * 2, itemRect.y, itemRect.height, itemRect.height);
             var curY = itemRect.y;
             var anyMouseOvered = false;
 
@@ -779,8 +788,8 @@ namespace ChooseYourOutfit
                         var apparel = apparels.list.ElementAt(index);
                         var curApparelY = curY + index * itemRect.height;
                         var curItemRect = new Rect(itemRect.x, curApparelY, itemRect.width, itemRect.height);
-                        var curCheckBoxRect = new Rect(checkBoxRect.x + 2f, curApparelY + 2f, checkBoxRect.width, checkBoxRect.height);
-                        var curStuffRect = new Rect(stuffRect.x + 2f, curApparelY + 2f, stuffRect.width, stuffRect.height);
+                        var curCheckBoxRect = new Rect(checkBoxRect.x, curApparelY, checkBoxRect.width, checkBoxRect.height);
+                        var curStuffRect = new Rect(stuffRect.x, curApparelY, stuffRect.width, stuffRect.height);
 
                         var isPreviewed = this.PreviewedApparels.Contains(apparel);
                         if (mouseoveredSelectedApparel != null)
@@ -844,7 +853,7 @@ namespace ChooseYourOutfit
                         drawer.Enqueue(() =>
                         {
                             Widgets.Label(curItemRect, apparel.label.Truncate(curItemRect.width - curItemRect.height * 2));
-                            TooltipHandler.TipRegion(new Rect(curItemRect.x, curItemRect.y, itemRect.width - itemRect.height * 2 - 2f, itemRect.height), apparel.label + "\n\n" + apparel.DescriptionDetailed);
+                            TooltipHandler.TipRegion(new Rect(curItemRect.x, curItemRect.y, itemRect.width - itemRect.height * 2, itemRect.height), apparel.label + "\n\n" + apparel.DescriptionDetailed);
                             if (previewApparelStuff[apparel] != null)
                             {
                                 Widgets.DefIcon(curStuffRect.ContractedBy(2f), previewApparelStuff[apparel]);
@@ -1151,5 +1160,7 @@ namespace ChooseYourOutfit
         private SVGInterpreter svgInterpreter = new SVGInterpreter();
 
         private PolygonCollider polygonCollider = new PolygonCollider();
+
+        private readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
     }
 }

@@ -194,7 +194,7 @@ namespace ChooseYourOutfit
                     num += this.cachedEntryHeights[i];
                 }
             }
-            this.listHeight = num + 100f;
+            this.listHeight = num;
             drawer.Enqueue(() => Widgets.EndScrollView());
 
             if (anyMouseOvered is false) this.mousedOverEntry = null;
