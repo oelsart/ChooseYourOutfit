@@ -19,6 +19,7 @@
   <CYO.Tip.FilterByValue>Apparel list is filtered by the value of this status.</CYO.Tip.FilterByValue>
   <CYO.Tip.FilterByLabel>Apparel list will only show apparel which have this status entry.</CYO.Tip.FilterByLabel>
   <CYO.Tip.SortButton>Sort apparel list by the value of this status.\nNote that data is sorted by the value of the material selected with the material button on the info card.</CYO.Tip.SortButton>
+  <CYO.Tip.PinButton>Pinning status entries to the top of the list.</CYO.Tip.PinButton>
   
   <CYO.AddBills>Add Bills To WorkTables</CYO.AddBills>
   <CYO.AddBillsConfirm.Desc>Try to add the bills that make selected apparels to the worktables.\nDo you really want to run it?</CYO.AddBillsConfirm.Desc>

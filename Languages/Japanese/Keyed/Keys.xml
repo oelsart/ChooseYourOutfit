@@ -19,6 +19,7 @@
   <CYO.Tip.FilterByValue>衣服リストはこのステータスの値でフィルターされます.</CYO.Tip.FilterByValue>
   <CYO.Tip.FilterByLabel>衣服リストはこのステータス項目を持つ衣服だけが表示されます.</CYO.Tip.FilterByLabel>
   <CYO.Tip.SortButton>このステータスの値で衣服リストをソートできます.\n情報カードの素材ボタンで選択した素材の値でソートされることに注意して下さい.</CYO.Tip.SortButton>
+  <CYO.Tip.PinButton>ピン留めしたステータス項目を一番上に固定しておくことができます.</CYO.Tip.PinButton>
   
   <CYO.AddBills>加工台に加工指示を追加</CYO.AddBills>
   <CYO.AddBillsConfirm.Desc>選択された衣服を作る加工指示をマップ上の加工台に追加します.\n本当に実行しますか?</CYO.AddBillsConfirm.Desc>

@@ -151,6 +151,7 @@ namespace ChooseYourOutfit
                         anyMouseOvered = true;
 
                         if (!pinnedEntry.Contains(ent)) GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(pinRect, "CYO.Tip.PinButton".Translate());
                         if (Mouse.IsOver(pinRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
                         {
                             Input.ResetInputAxes();
