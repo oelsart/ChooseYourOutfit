@@ -263,7 +263,7 @@ namespace ChooseYourOutfit
                 Find.WindowStack.Add(new FloatMenu(options));
             }
 
-            if (Widgets.ButtonImageWithBG(gearButtonRect, ForColonistsTex))
+            if (Widgets.ButtonImageWithBG(gearButtonRect, ForColonistsTex, new Vector2(28f, 28f)))
             {
                 Find.WindowStack.Add(new Dialog_WornApparelList(SelectedPawn, SelectedPolicy));
             }
