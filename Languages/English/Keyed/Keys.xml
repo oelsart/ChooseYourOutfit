@@ -8,6 +8,8 @@
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
   
+  <CYO.WornApparels.ApplyToFilter>Apply To Filter</CYO.WornApparels.ApplyToFilter>
+  
   <CYO.Tip.ColonistButton>Select the colonist to show in the preview.\nThe apparels displayed in the apparel list is restricted to that can be worn by the colonist specified by this button.</CYO.Tip.ColonistButton>
   <CYO.Tip.Researched>The list of apparels can be restricted to those with recipes that have been currently researched.</CYO.Tip.Researched>
   <CYO.Tip.Checkbox>Whether or not this apparel is reflected in the preview.\nThis is also possible to use to specify apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.Checkbox>
@@ -19,6 +21,8 @@
   <CYO.Tip.FilterByValue>Apparel list is filtered by the value of this status.</CYO.Tip.FilterByValue>
   <CYO.Tip.FilterByLabel>Apparel list will only show apparel which have this status entry.</CYO.Tip.FilterByLabel>
   <CYO.Tip.SortButton>Sort apparel list by the value of this status.\nNote that data is sorted by the value of the material selected with the material button on the info card.</CYO.Tip.SortButton>
+  <CYO.Tip.PinButton>Pinning status entries to the top of the list.</CYO.Tip.PinButton>
+  <CYO.Tip.ApplyToFilter>Apply pawn's current apparels to the filter.\nEverything else will be set to disallow.</CYO.Tip.ApplyToFilter>
   
   <CYO.AddBills>Add Bills To WorkTables</CYO.AddBills>
   <CYO.AddBillsConfirm.Desc>Try to add the bills that make selected apparels to the worktables.\nDo you really want to run it?</CYO.AddBillsConfirm.Desc>

@@ -6,6 +6,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using RimWorld;
+using System.Reflection;
 
 namespace ChooseYourOutfit
 {
@@ -98,84 +99,103 @@ namespace ChooseYourOutfit
             string b = null;
             drawer.Enqueue(() => Widgets.BeginScrollView(rect2, ref this.scrollPosition, viewRect, true));
 
-            for (int i = 0; i < this.cachedDrawEntries.Count; i++)
+            foreach (var group in this.cachedDrawEntries.GroupBy(e => pinnedEntry.Contains(e)).OrderByDescending(g => g.Key == true))
             {
-                StatDrawEntry ent = this.cachedDrawEntries[i];
-
-                if (ent.category.LabelCap != b)
+                foreach (var ent in group)
                 {
-                    var tmp = num;
-                    drawer.Enqueue(() => this.ListSeparator(tmp, viewRect.width, ent.category));
-                    b = ent.category.LabelCap;
-                    num += Widgets.ListSeparatorHeight;
-                }
+                    var i = this.cachedDrawEntries.IndexOf(ent);
 
-                if (collapse[ent.category.LabelCap]) continue;
-
-                var statRect = new Rect(8f, num, viewRect.width, this.cachedEntryHeights[i]);
-                drawer.Enqueue(() =>
-                {
-                    if (Mouse.IsOver(statRect) && specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
+                    if (group.Key == false && ent.category.LabelCap != b)
                     {
-                        this.mousedOverEntry = ent;
-                        if (ChooseYourOutfit.settings.showTooltips)
+                        var tmp = num;
+                        drawer.Enqueue(() => this.ListSeparator(tmp, viewRect.width, ent.category));
+                        b = ent.category.LabelCap;
+                        num += Widgets.ListSeparatorHeight;
+                    }
+
+                    if (collapse[ent.category.LabelCap]) continue;
+
+                    var statRect = new Rect(8f, num, viewRect.width, this.cachedEntryHeights[i]);
+                    drawer.Enqueue(() =>
+                    {
+                        if (Mouse.IsOver(statRect) && specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
                         {
-                            var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
-                            if (ent.LabelCap == "Stat_Source_Label".Translate() ||
-                                ent.LabelCap == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate() ||
-                                ent.LabelCap == "Layer".Translate() ||
-                                ent.LabelCap == "Covers".Translate() ||
-                                ent.LabelCap == "CreatedAt".Translate() ||
-                                ent.LabelCap == "Ingredients".Translate() ||
-                                ent.LabelCap == "Stat_Thing_Apparel_ValidLifestage".Translate()) tip += "CYO.Tip.FilterByValue".Translate();
-                            else tip += "CYO.Tip.FilterByLabel".Translate();
-                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(statRect, tip);
+                            this.mousedOverEntry = ent;
+                            if (ChooseYourOutfit.settings.showTooltips)
+                            {
+                                var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
+                                if (ent.LabelCap == "Stat_Source_Label".Translate() ||
+                                    ent.LabelCap == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate() ||
+                                    ent.LabelCap == "Layer".Translate() ||
+                                    ent.LabelCap == "Covers".Translate() ||
+                                    ent.LabelCap == "CreatedAt".Translate() ||
+                                    ent.LabelCap == "Ingredients".Translate() ||
+                                    ent.LabelCap == "Stat_Thing_Apparel_ValidLifestage".Translate()) tip += "CYO.Tip.FilterByValue".Translate();
+                                else tip += "CYO.Tip.FilterByLabel".Translate();
+                                if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(statRect, tip);
+                            }
+                            Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
                         }
-                        Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
-                    }
-                });
+                    });
 
-                var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
-                var drawResult = this.Draw(ent, 8f, num, viewRect.width, this.selectedEntry == ent, false, false, delegate
-                {
-                    if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
+                    var pinRect = new Rect(viewRect.width * 0.55f - 24f, num, 24f, 24f);
+                    var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
+                    var drawResult = this.Draw(ent, 8f, num, viewRect.width, this.selectedEntry == ent, false, false, delegate
                     {
-                        Input.ResetInputAxes();
-                        this.SelectEntry(ent, true);
-                    }
-                }, delegate
-                {
-                    anyMouseOvered = true;
-                    if (ent.stat != null)
-                    {
-                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(sortButtonRect, "CYO.Tip.SortButton".Translate());
-                        if (ent != SortingEntry.entry) GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
-                        if (Mouse.IsOver(sortButtonRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
+                        if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
                         {
                             Input.ResetInputAxes();
-                            if (SortingEntry.entry != ent)
-                            {
-                                SortingEntry.entry = ent;
-                                SortingEntry.descending = true;
-                            }
-                            else if (SortingEntry.descending) SortingEntry.descending = false;
-                            else SortingEntry.entry = null;
-
-                            dialog.apparelListingRequest = true;
+                            this.SelectEntry(ent, true);
                         }
+                    }, delegate
+                    {
+                        anyMouseOvered = true;
+
+                        if (!pinnedEntry.Contains(ent)) GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(pinRect, "CYO.Tip.PinButton".Translate());
+                        if (Mouse.IsOver(pinRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
+                        {
+                            Input.ResetInputAxes();
+                            if (pinnedEntry.Contains(ent)) pinnedEntry.Remove(ent);
+                            else pinnedEntry.Add(ent);
+                        }
+
+                        if (ent.stat != null)
+                        {
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(sortButtonRect, "CYO.Tip.SortButton".Translate());
+                            if (ent != SortingEntry.entry) GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                            if (Mouse.IsOver(sortButtonRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
+                            {
+                                Input.ResetInputAxes();
+                                if (SortingEntry.entry != ent)
+                                {
+                                    SortingEntry.entry = ent;
+                                    SortingEntry.descending = true;
+                                }
+                                else if (SortingEntry.descending) SortingEntry.descending = false;
+                                else SortingEntry.entry = null;
+
+                                dialog.apparelListingRequest = true;
+                            }
+                        }
+                    }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
+
+                    foreach (var draw in drawResult) drawer.Enqueue(draw);
+
+                    if (group.Key == true)
+                    {
+                        drawer.Enqueue(() => GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex));
                     }
-                }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
 
-                foreach (var draw in drawResult) drawer.Enqueue(draw);
+                    if (ent == SortingEntry.entry)
+                    {
+                        drawer.Enqueue(() => GUI.DrawTexture(sortButtonRect, SortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp));
+                    }
 
-                if (ent == SortingEntry.entry)
-                {
-                    drawer.Enqueue(() => GUI.DrawTexture(sortButtonRect, SortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp));
+                    num += this.cachedEntryHeights[i];
                 }
-
-                num += this.cachedEntryHeights[i];
             }
-            this.listHeight = num + 100f;
+            this.listHeight = num;
             drawer.Enqueue(() => Widgets.EndScrollView());
 
             if (anyMouseOvered is false) this.mousedOverEntry = null;
@@ -192,6 +212,8 @@ namespace ChooseYourOutfit
             foreach (StatDrawEntry statDrawEntry in this.cachedDrawEntries)
             {
                 this.cachedEntryValues.Add(statDrawEntry.ValueString);
+                var ent = this.pinnedEntry.FirstOrDefault((StatDrawEntry e) => e.Same(statDrawEntry));
+                if (ent != null) this.pinnedEntry.Replace(ent, statDrawEntry);
             }
             if (this.selectedEntry != null)
             {
@@ -245,10 +267,14 @@ namespace ChooseYourOutfit
                     GUI.color = Color.grey;
                 }
                 Rect rect2 = rect;
-                rect2.width -= num;
-                drawer.Enqueue(() => Widgets.Label(rect2, entry.LabelCap));
+                rect2.width -= num + 26f;
+                drawer.Enqueue(() =>
+                {
+                    Widgets.Label(rect2, entry.LabelCap.Truncate(rect2.width));
+                    if (Text.CalcSize(entry.LabelCap).x > rect2.width) TooltipHandler.TipRegion(rect2, entry.LabelCap);
+                });
                 Rect rect3 = rect;
-                rect3.x = rect2.xMax;
+                rect3.x = rect2.xMax + 26f;
                 rect3.width = num;
                 drawer.Enqueue(() => Widgets.Label(rect3, text));
                 GUI.color = Color.white;
@@ -335,5 +361,9 @@ namespace ChooseYourOutfit
         public (StatDrawEntry entry, bool descending) SortingEntry;
 
         private Dictionary<string, bool> collapse = new Dictionary<string, bool>();
+
+        private List<StatDrawEntry> pinnedEntry = new List<StatDrawEntry>();
+
+        private readonly Texture2D PinTex = ContentFinder<Texture2D>.Get("UI/Icons/Pin", true);
     }
 }
