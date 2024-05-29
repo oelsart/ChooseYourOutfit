@@ -9,8 +9,6 @@ using Verse;
 using Verse.Sound;
 using RimWorld;
 using HarmonyLib;
-using System.Security.Cryptography;
-using static UnityEngine.Random;
 
 namespace ChooseYourOutfit
 {
@@ -467,6 +465,7 @@ namespace ChooseYourOutfit
                 Widgets.Checkbox(checkBoxPosition, ref ChooseYourOutfit.settings.currentlyResearched, 20f);
                 if (Widgets.ButtonInvisible(new Rect(checkBoxPosition, new Vector2(24f, 24f))))
                 {
+                    ChooseYourOutfit.settings.Write();
                     this.apparelListingRequest = true;
                     this.layerListingRequest = true;
                 }
