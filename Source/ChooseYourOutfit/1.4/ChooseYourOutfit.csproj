@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChooseYourOutfit.cs" />
+    <Compile Include="Dialog_WornApparelList.cs" />
     <Compile Include="Dialog_AddBillsToWorkTables.cs" />
     <Compile Include="Dialog_AddBillsConfirm.cs" />
     <Compile Include="Dialog_ManageOutfitsEx.cs" />
