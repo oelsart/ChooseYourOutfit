@@ -22,6 +22,6 @@
     </li>
   </modDependencies>
   <loadAfter>
-    <li></li>
+    <li>KamiKatze.MaterialFilter</li>
   </loadAfter>
 </ModMetaData>
