@@ -124,14 +124,8 @@ namespace ChooseYourOutfit
                             if (ChooseYourOutfit.settings.showTooltips)
                             {
                                 var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
-                                if (ent.LabelCap == "Stat_Source_Label".Translate() ||
-                                    ent.LabelCap == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate() ||
-                                    ent.LabelCap == "Layer".Translate() ||
-                                    ent.LabelCap == "Covers".Translate() ||
-                                    ent.LabelCap == "CreatedAt".Translate() ||
-                                    ent.LabelCap == "Ingredients".Translate() ||
-                                    ent.LabelCap == "Stat_Thing_Apparel_ValidLifestage".Translate()) tip += "CYO.Tip.FilterByValue".Translate();
-                                else tip += "CYO.Tip.FilterByLabel".Translate();
+                                if (ent.category == StatCategoryDefOf.EquippedStatOffsets) tip += "CYO.Tip.FilterByLabel".Translate();
+                                else tip += "CYO.Tip.FilterByValue".Translate();
                                 if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(statRect, tip);
                             }
                             Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));

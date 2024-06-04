@@ -890,15 +890,9 @@ namespace ChooseYourOutfit
 
             if (statsReporter.SelectedEntry != null)
             {
-                if (statsReporter.SelectedEntry.LabelCap == "Stat_Source_Label".Translate() ||
-                    statsReporter.SelectedEntry.LabelCap == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate() ||
-                    statsReporter.SelectedEntry.LabelCap == "Layer".Translate() ||
-                    statsReporter.SelectedEntry.LabelCap == "Covers".Translate() ||
-                    statsReporter.SelectedEntry.LabelCap == "CreatedAt".Translate() ||
-                    statsReporter.SelectedEntry.LabelCap == "Ingredients".Translate() ||
-                    statsReporter.SelectedEntry.LabelCap == "Stat_Thing_Apparel_ValidLifestage".Translate())
-                    list = list.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.ValueString == statsReporter.SelectedEntry.ValueString));
-                else list = list.Where(a => a.Value.SpecialDisplayStats(StatRequest.For(a.Value.GetConcreteExample())).Any(s => s.LabelCap == statsReporter.SelectedEntry.LabelCap));
+                if (statsReporter.SelectedEntry.category == StatCategoryDefOf.EquippedStatOffsets)
+                    list = list.Where(a => a.Value.equippedStatOffsets.StatListContains(statsReporter.SelectedEntry.stat));
+                else list = list.Where(a => GetValueStringFromSelectedEntry(a.Value) == statsReporter.SelectedEntry.ValueString);
             }
 
             if (ChooseYourOutfit.settings.apparelListMode) list = list.Where(a => a.Key == true);
@@ -936,6 +930,48 @@ namespace ChooseYourOutfit
             var apparelThingWithComps = (ThingWithComps)apparelThing;
             var apparel = (Apparel)apparelThingWithComps;
             return apparel;
+        }
+
+        private string GetValueStringFromSelectedEntry(ThingDef apparel)
+        {
+            var label = statsReporter.SelectedEntry.LabelCap;
+            if (label == "Stat_Source_Label".Translate()) return apparel.modContentPack?.Name ?? null;
+            if (label == "Covers".Translate()) return apparel.apparel.GetCoveredOuterPartsString(BodyDefOf.Human);
+            if (label == "Layer".Translate()) return apparel.apparel.GetLayersString();
+            if (label == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate()) return apparel.apparel.countsAsClothingForNudity ? "Yes".Translate() : "No".Translate();
+            if (label == "Stat_Thing_Apparel_ValidLifestage".Translate()) return apparel.apparel.developmentalStageFilter.ToCommaList(false).CapitalizeFirst();
+            if (label == "Stat_Thing_Apparel_Gender".Translate()) return apparel.apparel.gender.GetLabel(false).CapitalizeFirst();
+            IEnumerable<RecipeDef> recipes = from r in DefDatabase<RecipeDef>.AllDefsListForReading
+                                             where r.products.Count == 1 && r.products.Any((ThingDefCountClass p) => p.thingDef == apparel) && !r.IsSurgery
+                                             select r;
+            if (label == "CreatedAt".Translate())
+            {
+                IEnumerable<string> enumerable = (from u in (from x in recipes
+                                                             where x.recipeUsers != null
+                                                             select x).SelectMany((RecipeDef r) => r.recipeUsers)
+                                                  select u.label).Concat(from x in DefDatabase<ThingDef>.AllDefsListForReading
+                                                                         where x.recipes != null && x.recipes.Any((RecipeDef y) => y.products.Any((ThingDefCountClass z) => z.thingDef == apparel))
+                                                                         select x.label).Distinct<string>();
+                return enumerable.ToCommaList(false, false).CapitalizeFirst();
+            }
+            if (label == "Ingredients".Translate())
+            {
+                RecipeDef recipeDef = recipes.FirstOrDefault<RecipeDef>();
+                List<string> tmpCostList = new List<string>();
+                if (recipeDef != null && !recipeDef.ingredients.NullOrEmpty<IngredientCount>())
+                {
+                    for (int j = 0; j < recipeDef.ingredients.Count; j++)
+                    {
+                        IngredientCount ingredientCount = recipeDef.ingredients[j];
+                        if (!ingredientCount.filter.Summary.NullOrEmpty())
+                        {
+                            tmpCostList.Add(recipeDef.IngredientValueGetter.BillRequirementsDescription(recipeDef, ingredientCount));
+                        }
+                    }
+                }
+                return tmpCostList.ToCommaList(false, false);
+            }
+            return apparel.SpecialDisplayStats(StatRequest.ForEmpty()).FirstOrDefault(s => label == s.LabelCap)?.ValueString ?? null;
         }
 
         private float GetSortingStatValue(ThingDef def)
