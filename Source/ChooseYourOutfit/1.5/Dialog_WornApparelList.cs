@@ -3,13 +3,15 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 using Verse.Sound;
+using System.Collections.Concurrent;
 
 namespace ChooseYourOutfit
 {
     public class Dialog_WornApparelList : Window
     {
-        public Dialog_WornApparelList(Pawn pawn, ApparelPolicy apparelPolicy)
+        public Dialog_WornApparelList(Dialog_ManageApparelPoliciesEx dialog, Pawn pawn, ApparelPolicy apparelPolicy)
         {
+            this.dialog = dialog;
             this.pawn = pawn;
             this.apparelPolicy = apparelPolicy;
 
@@ -44,10 +46,17 @@ namespace ChooseYourOutfit
                 Widgets.ThingIcon(rect, apparel);
                 rect.x = rect.xMax + 6f;
                 rect.xMax = inRect.xMax - Widgets.InfoCardButtonSize - 6f;
+                if (dialog.SelectedApparels.Contains(apparel.def)) Widgets.DrawHighlightSelected(rect);
                 Widgets.Label(rect, apparel.Label.Truncate(rect.width));
                 Widgets.InfoCardButton(rect.xMax + 6f, num, apparel);
                 if (Mouse.IsOver(rect))
                 {
+                    Widgets.DrawHighlight(rect);
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        Input.ResetInputAxes();
+                        dialog.SelectApparel(apparel.def);
+                    }
                     string text2 = apparel.LabelNoParenthesisCap.AsTipTitle() + GenLabel.LabelExtras(apparel, true, true) + "\n\n" + apparel.DescriptionDetailed;
                     if (apparel.def.useHitPoints)
                     {
@@ -89,5 +98,7 @@ namespace ChooseYourOutfit
         private ApparelPolicy apparelPolicy;
 
         private readonly float itemHeight = 28f;
+
+        private Dialog_ManageApparelPoliciesEx dialog;
     }
 }

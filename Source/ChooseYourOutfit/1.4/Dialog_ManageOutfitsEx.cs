@@ -58,7 +58,7 @@ namespace ChooseYourOutfit
             this.InitializeByPawn(this.SelectedPawn);
         }
 
-        private Pawn SelectedPawn
+        public Pawn SelectedPawn
         {
             get
             {
@@ -70,7 +70,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private Outfit SelectedOutfit
+        public Outfit SelectedOutfit
         {
             get
             {
@@ -78,7 +78,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private HashSet<ApparelLayerDef> SelectedLayers
+        public HashSet<ApparelLayerDef> SelectedLayers
         {
             get
             {
@@ -90,7 +90,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private ConcurrentBag<ThingDef> SelectedApparels
+        public ConcurrentBag<ThingDef> SelectedApparels
         {
             get
             {
@@ -102,7 +102,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private List<ThingDef> PreviewedApparels
+        public List<ThingDef> PreviewedApparels
         {
             get
             {
@@ -114,7 +114,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        private IEnumerable<BodyPartGroupDef> SelectedBodypartGroups
+        public IEnumerable<BodyPartGroupDef> SelectedBodypartGroups
         {
             get
             {
@@ -238,7 +238,7 @@ namespace ChooseYourOutfit
 
             if (Widgets.ButtonImageWithBG(gearButtonRect, ForColonistsTex, new Vector2(28f, 28f)))
             {
-                Find.WindowStack.Add(new Dialog_WornApparelList(SelectedPawn, SelectedOutfit));
+                Find.WindowStack.Add(new Dialog_WornApparelList(this, SelectedPawn, SelectedOutfit));
             }
             this.DoPawnBodySeparatedByParts(rect6.AtZero()); //ButtonCollidersの基準がViewBoxの位置(0, 0)からなのでここはBeginGroupで合わせています。（代わりに中身はほぼParallel）
             Widgets.EndGroup();
@@ -511,32 +511,7 @@ namespace ChooseYourOutfit
                         if (Input.GetMouseButtonUp(0) && !Mouse.IsOver(curInfoButtonRect))
                         {
                             Input.ResetInputAxes();
-                            if (this.SelectedApparels.Contains(apparel.Value))
-                            {
-                                var tmp = SelectedApparels.Where(a => a != apparel.Value);
-                                this.SelectedApparels = new ConcurrentBag<ThingDef>();
-                                foreach (var a in tmp) SelectedApparels.Add(a);
-                                this.PreviewedApparels.Remove(apparel.Value);
-                                this.preApparelsApparel.Clear();
-                                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
-                                //this.overrideApparelColors.RemoveAll(a => !preApparelsApparel.Contains(a.Key));
-                                //this.apparelDatabase.RemoveAll(a => a.Key == apparel.Value);
-                                this.apparelListingRequest = true;
-                                this.selectedApparelListingRequest = true;
-                            }
-                            else
-                            {
-                                this.SelectedApparels.Add(apparel.Value);
-                                if (!this.PreviewedApparels.Any(p => apparel.Value != p && !ApparelUtility.CanWearTogether(apparel.Value, p, this.SelectedPawn.RaceProps.body)))
-                                {
-                                    this.PreviewedApparels.Add(apparel.Value);
-                                    this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-                                    this.preApparelsApparel.Clear();
-                                    foreach (var a in PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(a)); //drawOrderのためにここは一度リセットして再追加している
-                                }
-                                this.apparelListingRequest = true;
-                                this.selectedApparelListingRequest = true;
-                            }
+                            this.SelectApparel(apparel.Value);
                         }
                     }
                     Widgets.DefIcon(curIconRect, apparel.Value);
@@ -922,6 +897,34 @@ namespace ChooseYourOutfit
             return DefDatabase<ApparelLayerDef>.AllDefs
                 .Where(l => ListingApparelToShow(new List<ApparelLayerDef>() { l }).Count() != 0)
                 .OrderByDescending(l => l.drawOrder).ToHashSet();
+        }
+
+        public void SelectApparel(ThingDef apparel)
+        {
+            if (this.SelectedApparels.Contains(apparel))
+            {
+                var tmp = SelectedApparels.Where(a => a != apparel);
+                this.SelectedApparels = new ConcurrentBag<ThingDef>();
+                foreach (var a in tmp) SelectedApparels.Add(a);
+                this.PreviewedApparels.Remove(apparel);
+                this.preApparelsApparel.Clear();
+                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+                //this.overrideApparelColors.RemoveAll(a => !preApparelsApparel.Contains(a.Key));
+                //this.apparelDatabase.RemoveAll(a => a.Key == apparel.Value);
+            }
+            else
+            {
+                this.SelectedApparels.Add(apparel);
+                if (!this.PreviewedApparels.Any(p => apparel != p && !ApparelUtility.CanWearTogether(apparel, p, this.SelectedPawn.RaceProps.body)))
+                {
+                    this.PreviewedApparels.Add(apparel);
+                    this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
+                    this.preApparelsApparel.Clear();
+                    foreach (var a in PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(a)); //drawOrderのためにここは一度リセットして再追加している
+                }
+            }
+            this.apparelListingRequest = true;
+            this.selectedApparelListingRequest = true;
         }
 
         private Apparel GetApparel(ThingDef tDef)
