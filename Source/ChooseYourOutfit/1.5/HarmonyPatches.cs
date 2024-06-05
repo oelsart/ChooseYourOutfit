@@ -135,7 +135,7 @@ namespace ChooseYourOutfit
                 CodeInstruction.LoadArgument(1),
                 CodeInstruction.LoadLocal(135),
                 CodeInstruction.LoadArgument(2),
-                CodeInstruction.Call(typeof(Patch_FloatMenuMakerMap_AddHumanlikeOrders), "AddFilterDesignationOption", new Type[] { typeof(Pawn), typeof(Apparel), typeof(List<FloatMenuOption>) })
+                CodeInstruction.Call(typeof(Patch_FloatMenuMakerMap_AddHumanlikeOrders), "AddFilterDesignationOption", new Type[] { typeof(Pawn), typeof(Thing), typeof(List<FloatMenuOption>) })
             };
 
             codes.InsertRange(pos, addCodes);

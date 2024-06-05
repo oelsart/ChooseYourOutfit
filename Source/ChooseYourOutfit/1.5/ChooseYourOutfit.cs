@@ -45,7 +45,7 @@ namespace ChooseYourOutfit
 
         public override string SettingsCategory()
         {
-            return "ChooseYourOutfit";
+            return "Choose Your Outfit";
         }
     }
 }
