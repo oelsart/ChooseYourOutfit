@@ -7,6 +7,8 @@
   <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
   <CYO.Preview>プレビュー</CYO.Preview>
+  <CYO.RemoveApparelFromFilter>{0} を {1} から除外する</CYO.RemoveApparelFromFilter>
+  <CYO.AddApparelToFilter>{0} を {1} に追加する</CYO.AddApparelToFilter>
   
   <CYO.WornApparels.ApplyToFilter>衣服をフィルターに適用</CYO.WornApparels.ApplyToFilter>
   
@@ -44,4 +46,5 @@
   <CYO.Settings.ShowAddBillsButton>"加工台に加工指示を追加"ボタンを表示する.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>加工指示の最大数を無視する.</CYO.Settings.IgnoreBillLimit>
   <CYO.Settings.ShowTooltips>機能説明のためのツールチップを表示する.\n(このMOD特有の機能に関する説明だけが切り替えできます)</CYO.Settings.ShowTooltips>
+  <CYO.Settings.addFroatMenu>マップ上から衣服を直接フィルターに追加／削除するフロートメニューを追加する.</CYO.Settings.addFroatMenu>
 </LanguageData>
