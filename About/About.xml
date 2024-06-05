@@ -22,6 +22,8 @@
     </li>
   </modDependencies>
   <loadAfter>
-    <li></li>
+    <li>brrainz.harmony</li>
+    <li>Ludeon.Rimworld</li>
+    <li>KamiKatze.MaterialFilter</li>
   </loadAfter>
 </ModMetaData>

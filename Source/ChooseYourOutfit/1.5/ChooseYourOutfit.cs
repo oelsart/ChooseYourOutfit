@@ -37,6 +37,7 @@ namespace ChooseYourOutfit
                 listingStandard.CheckboxLabeled("CYO.Settings.ShowAddBillsButton".Translate(), ref settings.showAddBillsButton);
                 if (settings.showAddBillsButton) listingStandard.CheckboxLabeled("CYO.Settings.IgnoreBillLimit".Translate(), ref settings.ignoreBillLimit);
                 listingStandard.CheckboxLabeled("CYO.Settings.ShowTooltips".Translate(), ref settings.showTooltips);
+                listingStandard.CheckboxLabeled("CYO.Settings.addFroatMenu".Translate(), ref settings.addFroatMenu);
             }
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
@@ -44,7 +45,7 @@ namespace ChooseYourOutfit
 
         public override string SettingsCategory()
         {
-            return "ChooseYourOutfit";
+            return "Choose Your Outfit";
         }
     }
 }

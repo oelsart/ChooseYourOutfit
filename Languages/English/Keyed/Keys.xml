@@ -7,6 +7,8 @@
   <CYO.CurrentlyResearched>Currently Researched</CYO.CurrentlyResearched>
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
+  <CYO.RemoveApparelFromFilter>Remove {0} from {1}</CYO.RemoveApparelFromFilter>
+  <CYO.AddApparelToFilter>Add {0} to {1}</CYO.AddApparelToFilter>
   
   <CYO.WornApparels.ApplyToFilter>Apply To Filter</CYO.WornApparels.ApplyToFilter>
   
@@ -44,4 +46,5 @@
   <CYO.Settings.ShowAddBillsButton>Show "Add Bills To WorkTables" button.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>Ignore the maximum number of bills.</CYO.Settings.IgnoreBillLimit>
   <CYO.Settings.ShowTooltips>Show tooltips to describe features.\n(Only the description of the features specific to this mod can be toggled)</CYO.Settings.ShowTooltips>
+  <CYO.Settings.addFroatMenu>Add a float menu to add/remove apparel directly from the map to the filter.</CYO.Settings.addFroatMenu>
 </LanguageData>

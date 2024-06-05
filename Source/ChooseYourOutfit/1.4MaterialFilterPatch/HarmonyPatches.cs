@@ -1,7 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
-using RimWorld;
 using HarmonyLib;
 using MaterialFilter;
 using System.Collections.Generic;
@@ -24,31 +24,11 @@ namespace ChooseYourOutfit.MaterialFilterPatch
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            int pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Callvirt) && (c.operand as MethodInfo).Equals(AccessTools.Method(typeof(Window), "Close"))) + 1;
-            codes.Insert(pos, new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Patch_MaterialFilter_drawFilterButton), "PostClose")));
-
-            pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Callvirt) && (c.operand as MethodInfo).Equals(AccessTools.Method(typeof(WindowStack), "Add"))) + 1;
-            codes.Insert(pos, new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Patch_MaterialFilter_drawFilterButton), "PostOpen")));
-
+            int pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && (c.operand as ConstructorInfo).DeclaringType.Equals(typeof(MaterialFilterWindow)));
+            codes.RemoveAt(pos);
+            codes.Insert(pos, new CodeInstruction(OpCodes.Newobj, AccessTools.Constructor(typeof(MaterialFilterWindowForApparel)
+                , new Type[] { typeof(ThingFilter), typeof(float), typeof(float), typeof(WindowLayer) })));
             return codes;
         }
-
-        public static void PostClose()
-        {
-            var dialog = Find.WindowStack.WindowOfType<Dialog_ManageOutfits>();
-            dialog.windowRect.x += offset;
-        }
-
-        public static void PostOpen()
-        {
-            var tmpFilterWindow = Find.WindowStack.WindowOfType<MaterialFilterWindow>();
-            tmpFilterWindow.DoWindowContents(tmpFilterWindow.windowRect); //DoWindowContents内でwindowRect.widthを変更しているようなので一回実行してからwidthを取得する
-            offset = tmpFilterWindow.windowRect.width / 2;
-            var dialog = Find.WindowStack.WindowOfType<Dialog_ManageOutfits>();
-            dialog.windowRect.x -= offset;
-            tmpFilterWindow.windowRect.x -= offset;
-        }
-
-        private static float offset;
     }
 }

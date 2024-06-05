@@ -62,4 +62,43 @@ namespace ChooseYourOutfit
             }
         }
     }
+
+    [HarmonyPatch(typeof(FloatMenuMakerMap), "AddHumanlikeOrders")]
+    static class Patch_FloatMenuMakerMap_AddHumanlikeOrders
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+            var pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Ldloc_S) && (c.operand as LocalBuilder).LocalIndex.Equals(124)) - 1;
+
+            List<CodeInstruction> addCodes = new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldarg_1),
+                new CodeInstruction(OpCodes.Ldloc_S, Convert.ToByte(120)),
+                new CodeInstruction(OpCodes.Ldarg_2),
+                CodeInstruction.Call(typeof(Patch_FloatMenuMakerMap_AddHumanlikeOrders), "AddFilterDesignationOption", new Type[] { typeof(Pawn), typeof(Thing), typeof(List<FloatMenuOption>) })
+            };
+
+            codes.InsertRange(pos, addCodes);
+
+            foreach (var code in codes)
+            {
+                yield return code;
+            }
+        }
+
+        public static void AddFilterDesignationOption(Pawn pawn, Thing apparel, List<FloatMenuOption> opts)
+        {
+            if (ChooseYourOutfit.settings.addFroatMenu)
+            {
+                Log.Message("pawn=" + pawn + " apparel=" + apparel + " opts=" + opts);
+                var allows = pawn.outfits.CurrentOutfit.filter.Allows(apparel);
+                var key = string.Format(allows ? "CYO.RemoveApparelFromFilter".Translate() : "CYO.AddApparelToFilter".Translate(), apparel.def.label, pawn.outfits.CurrentOutfit.label);
+                opts.Add(new FloatMenuOption(key, delegate ()
+                {
+                    pawn.outfits.CurrentOutfit.filter.SetAllow(apparel.def, !allows);
+                }));
+            }
+        }
+    }
 }

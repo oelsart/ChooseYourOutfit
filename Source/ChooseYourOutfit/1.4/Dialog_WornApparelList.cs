@@ -8,8 +8,9 @@ namespace ChooseYourOutfit
 {
     public class Dialog_WornApparelList : Window
     {
-        public Dialog_WornApparelList(Pawn pawn, Outfit outfit)
+        public Dialog_WornApparelList(Dialog_ManageOutfitsEx dialog, Pawn pawn, Outfit outfit)
         {
+            this.dialog = dialog;
             this.pawn = pawn;
             this.outfit = outfit;
 
@@ -44,10 +45,17 @@ namespace ChooseYourOutfit
                 Widgets.ThingIcon(rect, apparel);
                 rect.x = rect.xMax + 6f;
                 rect.xMax = inRect.xMax - Widgets.InfoCardButtonSize - 6f;
+                if (dialog.SelectedApparels.Contains(apparel.def)) Widgets.DrawHighlightSelected(rect);
                 Widgets.Label(rect, apparel.Label.Truncate(rect.width));
                 Widgets.InfoCardButton(rect.xMax + 6f, num, apparel);
                 if (Mouse.IsOver(rect))
                 {
+                    Widgets.DrawHighlight(rect);
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        Input.ResetInputAxes();
+                        dialog.SelectApparel(apparel.def);
+                    }
                     string text2 = apparel.LabelNoParenthesisCap.AsTipTitle() + GenLabel.LabelExtras(apparel, apparel.def.stackLimit, true, true) + "\n\n" + apparel.DescriptionDetailed;
                     if (apparel.def.useHitPoints)
                     {
@@ -83,6 +91,8 @@ namespace ChooseYourOutfit
             this.windowRect = new Rect(UI.MousePositionOnUIInverted, initialSize);
             this.windowRect = this.windowRect.Rounded();
         }
+
+        private Dialog_ManageOutfitsEx dialog;
 
         private Pawn pawn;
 

@@ -13,6 +13,7 @@ namespace ChooseYourOutfit
         public bool ignoreBillLimit = false;
         public bool showTooltips = true;
         public bool currentlyResearched = false;
+        public bool addFroatMenu = true;
 
         public override void ExposeData()
         {
@@ -25,6 +26,7 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref ignoreBillLimit, "ignoreBillLimit", false);
             Scribe_Values.Look(ref showTooltips, "showTooltips", true);
             Scribe_Values.Look(ref currentlyResearched, "currentlyResearched", false);
+            Scribe_Values.Look(ref addFroatMenu, "addFroatMenu", true);
             base.ExposeData();
         }
     }
