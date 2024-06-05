@@ -45,6 +45,7 @@ namespace ChooseYourOutfit
                 Widgets.ThingIcon(rect, apparel);
                 rect.x = rect.xMax + 6f;
                 rect.xMax = inRect.xMax - Widgets.InfoCardButtonSize - 6f;
+                if (dialog.SelectedApparels.Contains(apparel.def)) Widgets.DrawHighlightSelected(rect);
                 Widgets.Label(rect, apparel.Label.Truncate(rect.width));
                 Widgets.InfoCardButton(rect.xMax + 6f, num, apparel);
                 if (Mouse.IsOver(rect))
