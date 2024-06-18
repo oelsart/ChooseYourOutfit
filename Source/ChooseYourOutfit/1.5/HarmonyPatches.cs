@@ -33,10 +33,7 @@ namespace ChooseYourOutfit
             int pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && (c.operand as ConstructorInfo).DeclaringType.Equals(typeof(Dialog_ManageApparelPolicies)));
             //新しいoperandに置き換え
             codes[pos].operand = operand;
-            foreach (var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
     }
 
@@ -63,17 +60,20 @@ namespace ChooseYourOutfit
             //(pawn以下の).outfits.CurrentApparelPolicyを削除
             codes.RemoveAt(pos - 1);
             codes.RemoveAt(pos - 2);
-            foreach (var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
     }
 
     //Policy編集ボタン3つを右端からポリシー名の横に変える
-    [HarmonyPatch(typeof(Dialog_ManagePolicies<ApparelPolicy>), nameof(Dialog_ManagePolicies<ApparelPolicy>.DoWindowContents))]
+    [HarmonyPatch()]
     static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
     {
+        static MethodBase TargetMethod()
+        {
+            Type generic = ModsConfig.IsActive("avilmask.AnimalControls") ? typeof(Dialog_ManagePolicies<FoodPolicy>) : typeof(Dialog_ManagePolicies<ApparelPolicy>);
+            return AccessTools.Method(generic, "DoWindowContents");
+        }
+
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List <CodeInstruction> codes = instructions.ToList();
@@ -110,13 +110,8 @@ namespace ChooseYourOutfit
                 new CodeInstruction(OpCodes.Add),
                 CodeInstruction.Call(typeof(Rect), "set_x", new Type[] { typeof(float) })
             };
-
             codes.InsertRange(pos, addCodes);
-
-            foreach(var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
 
         public static float tmpLocal = 0f;
@@ -139,11 +134,7 @@ namespace ChooseYourOutfit
             };
 
             codes.InsertRange(pos, addCodes);
-
-            foreach (var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
 
         public static void AddFilterDesignationOption(Pawn pawn, Thing apparel, List<FloatMenuOption> opts)

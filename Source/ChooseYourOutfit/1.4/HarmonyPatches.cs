@@ -33,10 +33,7 @@ namespace ChooseYourOutfit
             int pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && (c.operand as ConstructorInfo).DeclaringType.Equals(typeof(Dialog_ManageOutfits)));
             //新しいoperandに置き換え
             codes[pos].operand = operand;
-            foreach (var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
     }
 
@@ -56,10 +53,7 @@ namespace ChooseYourOutfit
             //(pawn以下の).outfits.CurrentOutfitを削除
             codes.RemoveAt(pos - 1);
             codes.RemoveAt(pos - 2);
-            foreach (var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
     }
 
@@ -80,11 +74,7 @@ namespace ChooseYourOutfit
             };
 
             codes.InsertRange(pos, addCodes);
-
-            foreach (var code in codes)
-            {
-                yield return code;
-            }
+            return codes;
         }
 
         public static void AddFilterDesignationOption(Pawn pawn, Thing apparel, List<FloatMenuOption> opts)
