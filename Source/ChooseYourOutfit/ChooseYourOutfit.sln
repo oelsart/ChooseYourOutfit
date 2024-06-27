@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.5MaterialFilterPatch", "1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.4MaterialFilterPatch", "1.4MaterialFilterPatch\1.4MaterialFilterPatch.csproj", "{B122AE48-0D08-477B-BA5E-81DF490C3AEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.5SaveStorageSettingsPatch", "1.5SaveStoragePatch\1.5SaveStorageSettingsPatch.csproj", "{2D56B23D-273F-4F55-994B-F43F44AE7A73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B122AE48-0D08-477B-BA5E-81DF490C3AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B122AE48-0D08-477B-BA5E-81DF490C3AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B122AE48-0D08-477B-BA5E-81DF490C3AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D56B23D-273F-4F55-994B-F43F44AE7A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D56B23D-273F-4F55-994B-F43F44AE7A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D56B23D-273F-4F55-994B-F43F44AE7A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D56B23D-273F-4F55-994B-F43F44AE7A73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

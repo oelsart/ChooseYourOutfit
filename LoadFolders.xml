@@ -8,5 +8,6 @@
     <li>/</li>
     <li>1.5</li>
     <li IfModActive="KamiKatze.MaterialFilter">1.5/MaterialFilter</li>
+    <li IfModActive="savestoragesettings.kv.rw.fishtmp">1.5/SaveStorageSettings</li>
   </v1.5>
 </loadFolders>
