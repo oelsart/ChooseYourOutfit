@@ -77,39 +77,47 @@ namespace ChooseYourOutfit
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List <CodeInstruction> codes = instructions.ToList();
-            var pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Ldstr) && c.operand.Equals("DeletePolicyTip"));
+            var pos = codes.FindIndex(c => c.opcode == OpCodes.Call && c.operand.Equals(AccessTools.Method(typeof(Widgets), "LabelEllipses"))) - 2;
             var window = AccessTools.CreateInstance<Dialog_ManageApparelPolicies>();
             var margin = (float)AccessTools.Property(window.GetType(), "Margin").GetValue(window);
 
-            //魂のIL手打ちゾーン
-            List<CodeInstruction> addCodes = new List<CodeInstruction>()
+            List<CodeInstruction> addCodes = new List<CodeInstruction>
             {
-                CodeInstruction.LoadLocal(7, true),
-                CodeInstruction.LoadField(typeof(Text), "fontStyles"),
-                new CodeInstruction(OpCodes.Ldc_I4_2),
-                new CodeInstruction(OpCodes.Ldelem_Ref),
                 CodeInstruction.LoadLocal(12),
-                new CodeInstruction(OpCodes.Newobj, AccessTools.Constructor(typeof(GUIContent), new Type[] { typeof(string) })),
-                CodeInstruction.Call(typeof(GUIStyle), "CalcSize", new Type[] { typeof(GUIContent) }),
+                CodeInstruction.Call(typeof(Text), "CalcSize"),
                 CodeInstruction.LoadField(typeof(Vector2), "x"),
                 new CodeInstruction(OpCodes.Ldc_R4, margin),
-                new CodeInstruction(OpCodes.Ldc_R4, 200f),
+                new CodeInstruction(OpCodes.Ldc_R4, 194f),
                 new CodeInstruction(OpCodes.Add),
                 new CodeInstruction(OpCodes.Add),
+                new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
+                CodeInstruction.Call(typeof(Math), "Min", new Type[] { typeof(float), typeof(float) }),
                 CodeInstruction.StoreField(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), "tmpLocal"),
+                CodeInstruction.LoadLocal(4, true),
+                new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
+                CodeInstruction.Call(typeof(Rect), "set_xMax")
+            };
+
+            List<CodeInstruction> addCodes2 = new List<CodeInstruction>
+            {
+                CodeInstruction.LoadLocal(7, true),
                 CodeInstruction.LoadField(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), "tmpLocal"),
-                CodeInstruction.Call(typeof(Rect), "set_x", new Type[] { typeof(float) }),
+                CodeInstruction.Call(typeof(Rect), "set_x"),
                 CodeInstruction.LoadLocal(6, true),
                 CodeInstruction.LoadField(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), "tmpLocal"),
                 new CodeInstruction(OpCodes.Ldc_R4, 42f),
                 new CodeInstruction(OpCodes.Add),
-                CodeInstruction.Call(typeof(Rect), "set_x", new Type[] { typeof(float) }),
+                CodeInstruction.Call(typeof(Rect), "set_x"),
                 CodeInstruction.LoadLocal(5, true),
                 CodeInstruction.LoadField(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), "tmpLocal"),
                 new CodeInstruction(OpCodes.Ldc_R4, 84f),
                 new CodeInstruction(OpCodes.Add),
-                CodeInstruction.Call(typeof(Rect), "set_x", new Type[] { typeof(float) })
+                CodeInstruction.Call(typeof(Rect), "set_x")
             };
+
+            var pos2 = codes.FindIndex(c => c.opcode == OpCodes.Ldstr && c.operand.Equals("DeletePolicyTip"));
+
+            codes.InsertRange(pos2, addCodes2);
             codes.InsertRange(pos, addCodes);
             return codes;
         }

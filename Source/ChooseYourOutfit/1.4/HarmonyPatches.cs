@@ -81,7 +81,6 @@ namespace ChooseYourOutfit
         {
             if (ChooseYourOutfit.settings.addFroatMenu)
             {
-                Log.Message("pawn=" + pawn + " apparel=" + apparel + " opts=" + opts);
                 var allows = pawn.outfits.CurrentOutfit.filter.Allows(apparel);
                 var key = string.Format(allows ? "CYO.RemoveApparelFromFilter".Translate() : "CYO.AddApparelToFilter".Translate(), apparel.def.label, pawn.outfits.CurrentOutfit.label);
                 opts.Add(new FloatMenuOption(key, delegate ()

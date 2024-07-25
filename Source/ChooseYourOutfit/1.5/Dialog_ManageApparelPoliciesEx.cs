@@ -9,6 +9,7 @@ using Verse;
 using Verse.Sound;
 using RimWorld;
 using HarmonyLib;
+using static RimWorld.ColonistBar;
 
 namespace ChooseYourOutfit
 {
@@ -23,6 +24,7 @@ namespace ChooseYourOutfit
             this.listScrollPosition = default;
             this.SelectedPawn = selectedPawn;
             this.SelectedPolicy = selectedPawn?.outfits.CurrentApparelPolicy;
+            this.selPolicyInt = this.SelectedPolicy;
             DefDatabase<ApparelLayerDef>.AllDefsListForReading.ForEach(l => collapse[l] = ChooseYourOutfit.settings.collapseByLayer);
 
             this.svg.Add(Gender.None, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.None + ".svg"));
@@ -58,6 +60,12 @@ namespace ChooseYourOutfit
             }
 
             this.InitializeByPawn(this.SelectedPawn);
+
+            if (Current.Game.outfitDatabase.AllOutfits.Any(outfit => outfit == null))
+            {
+                Log.Error("[ChooseYourOutfit] A Null Apparel Policy has been generated. Please contact the mod author when you get this.");
+                AccessTools.Field(typeof(OutfitDatabase), "outfits").SetValue(Current.Game.outfitDatabase, Current.Game.outfitDatabase.AllOutfits.Select((o, i) => o ?? new ApparelPolicy(i, "Delete This Policy")).ToList());
+            }
         }
 
         private static ThingFilter ApparelGlobalFilter
@@ -186,12 +194,6 @@ namespace ChooseYourOutfit
         {
             Task<ConcurrentQueue<Action>>[] tasks = new Task<ConcurrentQueue<Action>>[4];
 
-            if(Current.Game.outfitDatabase.AllOutfits.Any(outfit => outfit == null))
-            {
-                Log.Error("[ChooseYourOutfit] A Null Apparel Policy has been generated. Please contact the mod author when you get this.");
-                AccessTools.Field(typeof(OutfitDatabase), "outfits").SetValue(Current.Game.outfitDatabase, Current.Game.outfitDatabase.AllOutfits.Select((o, i) => o == null ? new ApparelPolicy(i, "Delete This Policy") : o).ToList());
-            }
-
             base.DoWindowContents(inRect);
             if (ChooseYourOutfit.settings.disableAddedUI) return;
 
@@ -210,6 +212,20 @@ namespace ChooseYourOutfit
             {
                 this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
                 if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
+                if (this.selPolicyInt != this.SelectedPolicy)
+                {
+                    this.selPolicyInt = this.SelectedPolicy;
+                    var pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentApparelPolicy == this.selPolicyInt, this.SelectedPawn);
+                    if (pawn != this.SelectedPawn)
+                    {
+                        AccessTools.Field(typeof(MemoryThoughtHandler), "memories").SetValue(this.SelectedPawn.needs.mood.thoughts.memories, this.cachedMemories);
+                        InitializeByPawn(pawn);
+                        foreach (var apparel in PreviewedApparels)
+                        {
+                            preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
+                        }
+                    }
+                }
             }
 
             //右のインフォカード描画
@@ -304,6 +320,7 @@ namespace ChooseYourOutfit
                 {
                     option = new FloatMenuOption(entry.pawn.LabelShortCap, delegate ()
                     {
+                        AccessTools.Field(typeof(MemoryThoughtHandler), "memories").SetValue(this.SelectedPawn.needs.mood.thoughts.memories, this.cachedMemories);
                         InitializeByPawn(entry.pawn);
 
                         foreach (var apparel in PreviewedApparels)
@@ -1099,6 +1116,8 @@ namespace ChooseYourOutfit
                 this.loadFilter(this.canWearAllowed);
                 this.layerListingRequest = true;
             }
+
+            this.cachedMemories = new List<Thought_Memory>(pawn.needs.mood.thoughts.memories.Memories);
         }
 
         private static bool InfoCardButtonWorker(Rect rect)
@@ -1110,11 +1129,19 @@ namespace ChooseYourOutfit
             return result;
         }
 
+        public override void PreClose()
+        {
+            base.PreClose();
+            AccessTools.Field(typeof(MemoryThoughtHandler), "memories").SetValue(this.SelectedPawn.needs.mood.thoughts.memories, this.cachedMemories);
+        }
+
         private readonly ThingFilterUI.UIState thingFilterState = new ThingFilterUI.UIState();
 
         private static ThingFilter apparelGlobalFilter;
 
         private Pawn selPawnInt;
+
+        private ApparelPolicy selPolicyInt;
 
         private ConcurrentDictionary<string, (BodyPartRecord, IEnumerable<BodyPartGroupDef>)> existParts;
 
@@ -1203,5 +1230,7 @@ namespace ChooseYourOutfit
         private PolygonCollider polygonCollider = new PolygonCollider();
 
         private readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
+
+        private List<Thought_Memory> cachedMemories;
     }
 }
