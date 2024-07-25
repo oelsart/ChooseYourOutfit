@@ -81,7 +81,6 @@ namespace ChooseYourOutfit
         {
             if (ChooseYourOutfit.settings.addFroatMenu)
             {
-                Log.Message("pawn=" + pawn + " apparel=" + apparel + " opts=" + opts);
                 var allows = pawn.outfits.CurrentOutfit.filter.Allows(apparel);
                 var key = string.Format(allows ? "CYO.RemoveApparelFromFilter".Translate() : "CYO.AddApparelToFilter".Translate(), apparel.def.label, pawn.outfits.CurrentOutfit.label);
                 opts.Add(new FloatMenuOption(key, delegate ()
@@ -89,6 +88,37 @@ namespace ChooseYourOutfit
                     pawn.outfits.CurrentOutfit.filter.SetAllow(apparel.def, !allows);
                 }));
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(PawnGraphicSet), "ResolveApparelGraphics")]
+    static class Patch_PawnGraphicSet_ResolveApparelGraphics
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ILGenerator)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+            var pos = codes.FindIndex(c => c.opcode == OpCodes.Callvirt && c.operand.Equals(AccessTools.Method(typeof(List<Apparel>), "GetEnumerator")));
+            var windowOfTypeGeneric = AccessTools.Method(typeof(WindowStack), "WindowOfType").MakeGenericMethod(typeof(Dialog_ManageOutfitsEx));
+
+            var labelPop = ILGenerator.DefineLabel();
+            var labelEnum = ILGenerator.DefineLabel();
+
+            codes[pos].WithLabels(labelEnum);
+            codes.InsertRange(pos - 4, new List<CodeInstruction>
+            {
+                CodeInstruction.Call(typeof(Find), "get_WindowStack"),
+                new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                new CodeInstruction(OpCodes.Dup),
+                CodeInstruction.LoadField(typeof(Dialog_ManageOutfitsEx), "inDialogPortraitRequest"),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                CodeInstruction.LoadField(typeof(Dialog_ManageOutfitsEx), "preApparelsApparel"),
+                new CodeInstruction(OpCodes.Br_S, labelEnum),
+                new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
+            });
+
+            return codes;
         }
     }
 }
