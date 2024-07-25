@@ -76,7 +76,7 @@ namespace ChooseYourOutfit
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List <CodeInstruction> codes = instructions.ToList();
+            List<CodeInstruction> codes = instructions.ToList();
             var pos = codes.FindIndex(c => c.opcode == OpCodes.Call && c.operand.Equals(AccessTools.Method(typeof(Widgets), "LabelEllipses"))) - 2;
             var window = AccessTools.CreateInstance<Dialog_ManageApparelPolicies>();
             var margin = (float)AccessTools.Property(window.GetType(), "Margin").GetValue(window);
@@ -151,10 +151,94 @@ namespace ChooseYourOutfit
             {
                 var allows = pawn.outfits.CurrentApparelPolicy.filter.Allows(apparel);
                 var key = string.Format(allows ? "CYO.RemoveApparelFromFilter".Translate() : "CYO.AddApparelToFilter".Translate(), apparel.def.label, pawn.outfits.CurrentApparelPolicy.label);
-                opts.Add(new FloatMenuOption(key, delegate () {
+                opts.Add(new FloatMenuOption(key, delegate ()
+                {
                     pawn.outfits.CurrentApparelPolicy.filter.SetAllow(apparel.def, !allows);
                 }));
             }
         }
     }
-}   
+
+    [HarmonyPatch(typeof(PawnRenderTree), "SetupApparelNodes")]
+    static class Patch_PawnRenderTree_SetupApparelNodes
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ILGenerator)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+            var labelPop = ILGenerator.DefineLabel();
+            var labelPop2 = ILGenerator.DefineLabel();
+
+            var windowOfTypeGeneric = AccessTools.Method(typeof(WindowStack), "WindowOfType").MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx));
+
+            codes.Insert(0, new CodeInstruction(OpCodes.Pop).WithLabels(labelPop2));
+            codes.InsertRange(0, new List<CodeInstruction> {
+                CodeInstruction.Call(typeof(Find), "get_WindowStack"),
+                new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                new CodeInstruction(OpCodes.Dup),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                new CodeInstruction(OpCodes.Dup),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(List<Apparel>), "Count")),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop2),
+                new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
+            });
+
+            var pos = codes.FindIndex(c => c.opcode == OpCodes.Callvirt && c.operand.Equals(AccessTools.Method(typeof(List<Apparel>), "GetEnumerator")));
+
+            labelPop = ILGenerator.DefineLabel();
+            var labelEnum = ILGenerator.DefineLabel();
+
+            codes[pos] = codes[pos].WithLabels(labelEnum);
+            codes.InsertRange(pos - 4, new List<CodeInstruction>
+            {
+                CodeInstruction.Call(typeof(Find), "get_WindowStack"),
+                new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                new CodeInstruction(OpCodes.Dup),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
+                new CodeInstruction(OpCodes.Br_S, labelEnum),
+                new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
+            });
+
+            return codes;
+        }
+    }
+
+    [HarmonyPatch(typeof(PawnRenderTree), "AdjustParms")]
+    static class Patch_PawnRenderTree_AdjustParms
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ILGenerator)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            var pos = codes.FindIndex(c => c.opcode == OpCodes.Callvirt && c.operand.Equals(AccessTools.Method(typeof(List<Apparel>), "GetEnumerator")));
+            var windowOfTypeGeneric = AccessTools.Method(typeof(WindowStack), "WindowOfType").MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx));
+
+            var labelPop = ILGenerator.DefineLabel();
+            var labelEnum = ILGenerator.DefineLabel();
+
+            codes[pos].WithLabels(labelEnum);
+            codes.InsertRange(pos - 4, new List<CodeInstruction>
+            {
+                CodeInstruction.Call(typeof(Find), "get_WindowStack"),
+                new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                new CodeInstruction(OpCodes.Dup),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
+                new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
+                new CodeInstruction(OpCodes.Br_S, labelEnum),
+                new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
+            });
+
+            return codes;
+        }
+    }
+}

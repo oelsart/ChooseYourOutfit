@@ -218,12 +218,7 @@ namespace ChooseYourOutfit
                     var pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentApparelPolicy == this.selPolicyInt, this.SelectedPawn);
                     if (pawn != this.SelectedPawn)
                     {
-                        AccessTools.Field(typeof(MemoryThoughtHandler), "memories").SetValue(this.SelectedPawn.needs.mood.thoughts.memories, this.cachedMemories);
                         InitializeByPawn(pawn);
-                        foreach (var apparel in PreviewedApparels)
-                        {
-                            preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
-                        }
                     }
                 }
             }
@@ -320,13 +315,7 @@ namespace ChooseYourOutfit
                 {
                     option = new FloatMenuOption(entry.pawn.LabelShortCap, delegate ()
                     {
-                        AccessTools.Field(typeof(MemoryThoughtHandler), "memories").SetValue(this.SelectedPawn.needs.mood.thoughts.memories, this.cachedMemories);
                         InitializeByPawn(entry.pawn);
-
-                        foreach (var apparel in PreviewedApparels)
-                        {
-                            preApparelsApparel.TryAddOrTransfer(GetApparel(apparel));
-                        }
                         /*foreach (var apparel in allApparels)
                         {
                             this.overrideApparelColors[apparelDatabase[apparel]] = overrideApparelColors.FirstOrDefault(a => a.Key.def == apparel).Value;
@@ -395,8 +384,7 @@ namespace ChooseYourOutfit
                     {
                         this.previewApparelStuff[apparel] = stuff;
                         this.previewApparelStuff[apparel].stuffProps.allowColorGenerators = false;
-                        this.preApparelsApparel.Clear();
-                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+                        this.ChangePreviewedApparels();
 
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                     payload = apparel
@@ -805,8 +793,7 @@ namespace ChooseYourOutfit
                                     if (isPreviewed)
                                     {
                                         this.PreviewedApparels.Remove(apparel);
-                                        this.preApparelsApparel.Clear(); //目的のApparelだけを消してもなんか反映されなかったので一回全消ししてから再追加している
-                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+                                        this.ChangePreviewedApparels();
                                         //this.overrideApparelColors.Remove(apparelDatabase[apparel]);
                                     }
                                     else
@@ -814,8 +801,7 @@ namespace ChooseYourOutfit
                                         this.PreviewedApparels.Add(apparel);
                                         this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
                                         this.PreviewedApparels.RemoveAll(p => p != apparel && cantWearTogether[apparel].Contains(p));
-                                        this.preApparelsApparel.Clear();
-                                        foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+                                        this.ChangePreviewedApparels();
                                         //this.overrideApparelColors[apparelDatabase[apparel]] = Color.white;
 
                                     }
@@ -834,10 +820,9 @@ namespace ChooseYourOutfit
                                     var tmp = SelectedApparels.Where(a => a != apparel);
                                     this.SelectedApparels = new ConcurrentBag<ThingDef>();
                                     foreach (var a in tmp) SelectedApparels.Add(a);
-                                    this.apparelListingRequest = true;
                                     this.PreviewedApparels.Remove(apparel);
-                                    this.preApparelsApparel.Clear();
-                                    foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+                                    this.ChangePreviewedApparels();
+                                    this.apparelListingRequest = true;
                                     this.selectedApparelListingRequest = true;
                                 }
                             }
@@ -873,20 +858,18 @@ namespace ChooseYourOutfit
         {
             rect = rect.ContractedBy(10f);
 
-            //現在着ている服とDrawerを保存しておく
-            var tmpWornApparel = AccessTools.Field(typeof(Pawn_ApparelTracker), "wornApparel").GetValue(this.SelectedPawn.apparel);
-            var tmpDrawer = this.SelectedPawn.Drawer;
+            //renderTreeを保存しておく
+            var tmpRenderTree = this.SelectedPawn.Drawer.renderer.renderTree;
 
-            AccessTools.Field(typeof(Pawn), "drawer").SetValue(this.SelectedPawn, new Pawn_DrawTracker(this.SelectedPawn));
-            AccessTools.Field(typeof(Pawn_ApparelTracker), "wornApparel").SetValue(this.SelectedPawn.apparel, preApparelsApparel);
-
+            this.SelectedPawn.Drawer.renderer.renderTree = this.selPawnRenderTree;
             bool renderClothes = this.PreviewedApparels.Count != 0;
 
+            this.inDialogPortraitRequest = true;
             GUI.DrawTexture(rect, PortraitsCache.Get(this.SelectedPawn, rect.size, Rot4.South, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, renderClothes, null, null, false, null));
+            this.inDialogPortraitRequest = false;
 
-            //服とDrawerを返してあげる
-            AccessTools.Field(typeof(Pawn_ApparelTracker), "wornApparel").SetValue(this.SelectedPawn.apparel, tmpWornApparel);
-            AccessTools.Field(typeof(Pawn), "drawer").SetValue(this.SelectedPawn, tmpDrawer);
+            //renderTreeを返してあげる
+            this.SelectedPawn.Drawer.renderer.renderTree = tmpRenderTree;
         }
 
         public HashSet<KeyValuePair<bool, ThingDef>> ListingApparelToShow(IEnumerable<ApparelLayerDef> layers)
@@ -951,8 +934,7 @@ namespace ChooseYourOutfit
                 this.SelectedApparels = new ConcurrentBag<ThingDef>();
                 foreach (var a in tmp) SelectedApparels.Add(a);
                 this.PreviewedApparels.Remove(apparel);
-                this.preApparelsApparel.Clear();
-                foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+                this.ChangePreviewedApparels();
                 //this.overrideApparelColors.RemoveAll(a => !preApparelsApparel.Contains(a.Key));
                 //this.apparelDatabase.RemoveAll(a => a.Key == apparel.Value);
             }
@@ -963,8 +945,7 @@ namespace ChooseYourOutfit
                 {
                     this.PreviewedApparels.Add(apparel);
                     this.PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-                    this.preApparelsApparel.Clear();
-                    foreach (var a in PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(a)); //drawOrderのためにここは一度リセットして再追加している
+                    this.ChangePreviewedApparels();
                 }
             }
             this.apparelListingRequest = true;
@@ -977,6 +958,14 @@ namespace ChooseYourOutfit
             var apparelThingWithComps = (ThingWithComps)apparelThing;
             var apparel = (Apparel)apparelThingWithComps;
             return apparel;
+        }
+
+        private void ChangePreviewedApparels()
+        {
+            this.preApparelsApparel.Clear();
+            this.preApparelsApparel.AddRange(this.PreviewedApparels.Select(p => GetApparel(p))); //drawOrderのためにここは一度リセットして再追加している
+            this.selPawnRenderTree.rootNode = null;
+            PortraitsCache.Clear();
         }
 
         private string GetValueStringFromSelectedEntry(ThingDef apparel)
@@ -1066,8 +1055,7 @@ namespace ChooseYourOutfit
             this.selectedApparelListingRequest = true;
             this.apparelListingRequest = true;
             this.PreviewedApparels.RemoveAll(a => !this.SelectedApparels.Contains(a));
-            this.preApparelsApparel.Clear();
-            foreach (var p in this.PreviewedApparels) this.preApparelsApparel.TryAddOrTransfer(GetApparel(p));
+            this.ChangePreviewedApparels();
         }
 
         private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
@@ -1089,6 +1077,7 @@ namespace ChooseYourOutfit
         private void InitializeByPawn(Pawn pawn)
         {
             this.SelectedPawn = pawn;
+            this.selPawnRenderTree = new PawnRenderTree(pawn);
             this.selPawnButtonLabel = pawn.LabelShortCap;
             this.allApparels = DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel).Where(a => a.apparel.PawnCanWear(pawn)).ToHashSet();
             this.cantWearTogether.Clear();
@@ -1108,7 +1097,6 @@ namespace ChooseYourOutfit
                 this.svgViewBox = svgInterpreter.GetViewBox(this.svg[Gender.None]);
             }
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
-            preApparelsApparel = new ThingOwner<Apparel>(pawn.apparel);
 
             this.canWearAllowed = SelectedPolicy?.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (this.canWearAllowed != null)
@@ -1116,8 +1104,6 @@ namespace ChooseYourOutfit
                 this.loadFilter(this.canWearAllowed);
                 this.layerListingRequest = true;
             }
-
-            this.cachedMemories = new List<Thought_Memory>(pawn.needs.mood.thoughts.memories.Memories);
         }
 
         private static bool InfoCardButtonWorker(Rect rect)
@@ -1129,17 +1115,13 @@ namespace ChooseYourOutfit
             return result;
         }
 
-        public override void PreClose()
-        {
-            base.PreClose();
-            AccessTools.Field(typeof(MemoryThoughtHandler), "memories").SetValue(this.SelectedPawn.needs.mood.thoughts.memories, this.cachedMemories);
-        }
-
         private readonly ThingFilterUI.UIState thingFilterState = new ThingFilterUI.UIState();
 
         private static ThingFilter apparelGlobalFilter;
 
         private Pawn selPawnInt;
+
+        private PawnRenderTree selPawnRenderTree;
 
         private ApparelPolicy selPolicyInt;
 
@@ -1193,7 +1175,7 @@ namespace ChooseYourOutfit
 
         private List<ThingDef> preApparelsInt = new List<ThingDef>();
 
-        private ThingOwner<Apparel> preApparelsApparel;
+        public List<Apparel> preApparelsApparel = new List<Apparel>();
 
         //private Dictionary<ThingDef, Apparel> apparelDatabase = new Dictionary<ThingDef, Apparel>();
 
@@ -1231,6 +1213,6 @@ namespace ChooseYourOutfit
 
         private readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
 
-        private List<Thought_Memory> cachedMemories;
+        public bool inDialogPortraitRequest = false;
     }
 }
