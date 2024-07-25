@@ -189,10 +189,14 @@ namespace ChooseYourOutfit
                 if (this.selOutfitInt != outfit)
                 {
                     this.selOutfitInt = outfit;
-                    var pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentOutfit == this.selOutfitInt, this.SelectedPawn);
-                    if (pawn != this.SelectedPawn)
+                    var pawn = this.SelectedPawn;
+                    if (this.SelectedPawn.outfits.CurrentOutfit != this.selOutfitInt)
                     {
-                        InitializeByPawn(pawn);
+                        pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentOutfit == this.selOutfitInt, this.SelectedPawn);
+                        if (pawn != this.SelectedPawn)
+                        {
+                            InitializeByPawn(pawn);
+                        }
                     }
                 }
             }

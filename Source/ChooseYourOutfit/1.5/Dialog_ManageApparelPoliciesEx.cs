@@ -215,10 +215,14 @@ namespace ChooseYourOutfit
                 if (this.selPolicyInt != this.SelectedPolicy)
                 {
                     this.selPolicyInt = this.SelectedPolicy;
-                    var pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentApparelPolicy == this.selPolicyInt, this.SelectedPawn);
-                    if (pawn != this.SelectedPawn)
+                    var pawn = this.SelectedPawn;
+                    if (this.SelectedPawn.outfits.CurrentApparelPolicy != this.selPolicyInt)
                     {
-                        InitializeByPawn(pawn);
+                        pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentApparelPolicy == this.selPolicyInt, this.SelectedPawn);
+                        if (pawn != this.SelectedPawn)
+                        {
+                            InitializeByPawn(pawn);
+                        }
                     }
                 }
             }
