@@ -211,6 +211,7 @@ namespace ChooseYourOutfit
     }
 
     [HarmonyPatch(typeof(PawnRenderTree), "AdjustParms")]
+    [HarmonyAfter("net.velc.rimworld.mod.hds")]
     static class Patch_PawnRenderTree_AdjustParms
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ILGenerator)
