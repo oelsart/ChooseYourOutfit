@@ -858,7 +858,7 @@ namespace ChooseYourOutfit
                 .OrderByDescending(a => a.label)
                 .GroupBy(a => this.SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
                 this.SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
-                a.apparel.bodyPartGroups.Any(b => this.SelectedPawn.health.hediffSet.GetNotMissingParts().Any(p => p.groups.Contains(b)))) //その服のbodyPartGroupのいずれかをpawnが持っていればtrue
+                ApparelUtility.HasPartsToWear(this.SelectedPawn, a))
                 .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)))
                 .OrderByDescending(a => a.Value.label);
 
@@ -1004,14 +1004,30 @@ namespace ChooseYourOutfit
         private ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef>)> GetExistPartsAndButtons(ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> buttonColliders)
         {
             var result = new ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef> groups)>();
+            var whiteList = new HashSet<string>();
+            if (ModsConfig.IsActive("mlie.prostheticnomissingbodyparts"))
+            {
+                Type ProsMod = AccessTools.TypeByName("ProstheticNoMissingBodyPartsMod");
+                Type ProsModSettings = AccessTools.TypeByName("ProstheticNoMissingBodyPartsSettings");
+                Mod mod = LoadedModManager.GetMod(ProsMod);
+                object modSettings = AccessTools.Field(ProsMod, "modSettings").GetValue(mod);
+                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "ArmsWhitelist").GetValue(modSettings));
+                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "LegsWhitelist").GetValue(modSettings));
+                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "HandsWhitelist").GetValue(modSettings));
+                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "FeetWhitelist").GetValue(modSettings));
+            }
+            var hediffSet = this.SelectedPawn.health.hediffSet;
+            var parts = this.SelectedPawn.def.race.body.AllParts.Where(p => !hediffSet.PartIsMissing(p) ||
+            //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
+            hediffSet.hediffs.Any(h => whiteList.Contains(h.def.defName) && (h.Part == p.parent || h.Part == p.parent?.parent)));
+
             foreach (var (id, button) in this.buttonColliders)
             {
                 var folder = SelectedPawn.gender == Gender.Female || SelectedPawn.gender == Gender.Male ? SelectedPawn.gender : Gender.None;
                 this.unfilledPart[id] = ContentFinder<Texture2D>.Get($"ChooseYourOutfit/Body/{folder}/Unfilled/{id}");
                 this.filledPart[id] = ContentFinder<Texture2D>.Get($"ChooseYourOutfit/Body/{folder}/Filled/{id}");
 
-                var part = this.SelectedPawn.health.hediffSet.GetNotMissingParts()
-                    .FirstOrDefault(p => id.EqualsIgnoreCase(p.untranslatedCustomLabel?.Replace(" ", "_")) || id.EqualsIgnoreCase(p.def.defName));
+                var part = parts.FirstOrDefault(p => id.EqualsIgnoreCase(p.untranslatedCustomLabel?.Replace(" ", "_")) || id.EqualsIgnoreCase(p.def.defName));
                 if (part == null) continue;
                 var groups = part.groups;
                 groups.AddRange(DefDatabase<BodyPartGroupDef>.AllDefs.Where(g => part.Label.Replace(" ", "").EqualsIgnoreCase(g.defName)));
