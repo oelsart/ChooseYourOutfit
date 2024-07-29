@@ -51,7 +51,6 @@ namespace ChooseYourOutfit
                 var defaultStuff = GenStuff.DefaultStuffFor(apparel);
                 if (defaultStuff != null)
                 {
-                    defaultStuff.stuffProps.allowColorGenerators = false;
                     this.previewApparelStuff.Add(apparel, defaultStuff);
                 }
                 else this.previewApparelStuff.Add(apparel, null);
@@ -387,7 +386,6 @@ namespace ChooseYourOutfit
                     option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
                     {
                         this.previewApparelStuff[apparel] = stuff;
-                        this.previewApparelStuff[apparel].stuffProps.allowColorGenerators = false;
                         this.ChangePreviewedApparels();
 
                     }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
@@ -663,7 +661,7 @@ namespace ChooseYourOutfit
             {
                 this.selStuffInt = selStuffDatabase[statsDrawn];
 
-                if (this.statsDrawn.stuffCategories != null)
+                if (this.selStuffInt != null)
                 {
                     this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
 
@@ -958,9 +956,11 @@ namespace ChooseYourOutfit
 
         private Apparel GetApparel(ThingDef tDef)
         {
-            var apparelThing = tDef.GetConcreteExample(this.previewApparelStuff[tDef]);
-            var apparelThingWithComps = (ThingWithComps)apparelThing;
-            var apparel = (Apparel)apparelThingWithComps;
+            var apparel = (Apparel)ThingMaker.MakeThing(tDef, this.previewApparelStuff[tDef]);
+            if (this.previewApparelStuff[tDef] != null)
+            {
+                apparel.DrawColor = tDef.GetColorForStuff(this.previewApparelStuff[tDef]);
+            }
             return apparel;
         }
 
