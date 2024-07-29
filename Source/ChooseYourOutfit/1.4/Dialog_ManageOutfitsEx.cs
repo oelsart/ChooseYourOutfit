@@ -48,7 +48,6 @@ namespace ChooseYourOutfit
                 var defaultStuff = GenStuff.DefaultStuffFor(apparel);
                 if (defaultStuff != null)
                 {
-                    defaultStuff.stuffProps.allowColorGenerators = false;
                     this.previewApparelStuff.Add(apparel, defaultStuff);
                 }
                 else this.previewApparelStuff.Add(apparel, null);
@@ -637,7 +636,7 @@ namespace ChooseYourOutfit
             {
                 this.selStuffInt = selStuffDatabase[statsDrawn];
 
-                if (this.statsDrawn.stuffCategories != null)
+                if (this.selStuffInt != null)
                 {
                     this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
 
@@ -932,11 +931,10 @@ namespace ChooseYourOutfit
 
         private Apparel GetApparel(ThingDef tDef)
         {
-            var apparelThing = tDef.GetConcreteExample(this.previewApparelStuff[tDef]);
-            var apparelThingWithComps = (ThingWithComps)apparelThing;
-            var apparel = (Apparel)apparelThingWithComps;
+            var apparel = (Apparel)ThingMaker.MakeThing(tDef, this.previewApparelStuff[tDef]);
             return apparel;
         }
+
         private void ChangePreviewedApparels()
         {
             this.preApparelsApparel.Clear();
