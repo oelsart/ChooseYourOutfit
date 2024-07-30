@@ -12,7 +12,10 @@ namespace ChooseYourOutfit
         public bool showAddBillsButton = true;
         public bool ignoreBillLimit = false;
         public bool showTooltips = true;
+        public bool showResearchedButton = true;
         public bool currentlyResearched = false;
+        public bool showInStorageButton = true;
+        public bool currentlyInStorage = false;
         public bool addFroatMenu = true;
 
         public override void ExposeData()
@@ -26,6 +29,9 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref ignoreBillLimit, "ignoreBillLimit", false);
             Scribe_Values.Look(ref showTooltips, "showTooltips", true);
             Scribe_Values.Look(ref currentlyResearched, "currentlyResearched", false);
+            Scribe_Values.Look(ref showResearchedButton, "showResearchedButton", true);
+            Scribe_Values.Look(ref currentlyInStorage, "currentlyInStorage", false);
+            Scribe_Values.Look(ref showInStorageButton, "showInStorageButton", true);
             Scribe_Values.Look(ref addFroatMenu, "addFroatMenu", true);
             base.ExposeData();
         }

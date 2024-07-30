@@ -5,6 +5,7 @@
   <CYO.LoadFilter>フィルター読込</CYO.LoadFilter>
   <CYO.ApplyFilter>フィルター適用</CYO.ApplyFilter>
   <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
+  <CYO.CurrentlyInStorage>貯蔵済みの衣服のみ</CYO.CurrentlyInStorage>
   <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
   <CYO.Preview>プレビュー</CYO.Preview>
   <CYO.RemoveApparelFromFilter>{0} を {1} から除外する</CYO.RemoveApparelFromFilter>
@@ -14,6 +15,7 @@
   
   <CYO.Tip.ColonistButton>プレビューに表示する入植者を選択します.\n衣服リストに表示される衣服はこのボタンで指定した入植者が着られるものに限定されます.</CYO.Tip.ColonistButton>
   <CYO.Tip.Researched>衣服リストに表示される衣服を現在研究済みのレシピを持つものに限定することができます.</CYO.Tip.Researched>
+  <CYO.Tip.InStorage>衣服リストをに表示される衣服を現在のマップのストレージに貯蔵されているものに限定することができます.</CYO.Tip.InStorage>
   <CYO.Tip.Checkbox>この衣服をプレビューに反映させるかどうかです.\n"加工台に加工指示を追加"ボタンで追加する衣服を指定する目的で使うこともできます.</CYO.Tip.Checkbox>
   <CYO.Tip.StuffIcon>プレビューに反映させる衣服の素材を指定できます.\n"加工台に加工指示を追加"ボタンで追加する衣服の素材を限定する目的で使うこともできます.</CYO.Tip.StuffIcon>
   <CYO.Tip.AddBills>現在マップ上に存在する加工台に,選択した衣服を作る加工指示を追加することができます.\n確認ダイアログでオプションを指定することができます.</CYO.Tip.AddBills>
@@ -43,6 +45,8 @@
   <CYO.Settings.ApparelListMode>衣服リストの内選択した衣服と一緒に着られないものを非表示にする.</CYO.Settings.ApparelListMode>
   <CYO.Settings.MoveToBottom>• それを一番下に移動させる.</CYO.Settings.MoveToBottom>
   <CYO.Settings.DontMoveIt>• それを移動させない.</CYO.Settings.DontMoveIt>
+  <CYO.Settings.ShowResearchedButton>"研究済みの衣服のみ"チェック項目を表示する.</CYO.Settings.ShowResearchedButton>
+  <CYO.Settings.ShowInStorageButton>"貯蔵済みの衣服のみ"チェック項目を表示する.</CYO.Settings.ShowInStorageButton>
   <CYO.Settings.ShowAddBillsButton>"加工台に加工指示を追加"ボタンを表示する.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>加工指示の最大数を無視する.</CYO.Settings.IgnoreBillLimit>
   <CYO.Settings.ShowTooltips>機能説明のためのツールチップを表示する.\n(このMOD特有の機能に関する説明だけが切り替えできます)</CYO.Settings.ShowTooltips>
