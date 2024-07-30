@@ -10,6 +10,8 @@
   <CYO.Preview>Preview</CYO.Preview>
   <CYO.RemoveApparelFromFilter>Remove {0} from {1}</CYO.RemoveApparelFromFilter>
   <CYO.AddApparelToFilter>Add {0} to {1}</CYO.AddApparelToFilter>
+  <CYO.AddApparelToAllPolicies>Add {0} to All Policies</CYO.AddApparelToAllPolicies>
+  <CYO.RemoveApparelFromAllPolicies>Remove {0} from All Policies</CYO.RemoveApparelFromAllPolicies>
   
   <CYO.WornApparels.ApplyToFilter>Apply To Filter</CYO.WornApparels.ApplyToFilter>
   

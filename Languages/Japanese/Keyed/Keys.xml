@@ -10,6 +10,8 @@
   <CYO.Preview>プレビュー</CYO.Preview>
   <CYO.RemoveApparelFromFilter>{0} を {1} から除外する</CYO.RemoveApparelFromFilter>
   <CYO.AddApparelToFilter>{0} を {1} に追加する</CYO.AddApparelToFilter>
+  <CYO.AddApparelToAllPolicies>全てのポリシーに {0} を追加する</CYO.AddApparelToAllPolicies>
+  <CYO.RemoveApparelFromAllPolicies>全てのポリシーから {0} を除外する</CYO.RemoveApparelFromAllPolicies>
   
   <CYO.WornApparels.ApplyToFilter>衣服をフィルターに適用</CYO.WornApparels.ApplyToFilter>
   

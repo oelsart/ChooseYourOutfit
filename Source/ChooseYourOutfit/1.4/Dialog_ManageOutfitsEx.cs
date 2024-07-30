@@ -182,7 +182,7 @@ namespace ChooseYourOutfit
             if (Input.GetMouseButtonUp(0))
             {
                 this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
-                if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) loadFilter(canWearAllowed);
+                if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) LoadFilter();
 
                 var outfit = this.SelectedOutfit;
                 if (this.selOutfitInt != outfit)
@@ -268,7 +268,7 @@ namespace ChooseYourOutfit
 
             if (ChooseYourOutfit.settings.syncFilter)
             {
-                applyFilter(canWearAllowed);
+                ApplyFilter();
             }
         }
 
@@ -307,7 +307,7 @@ namespace ChooseYourOutfit
         }
 
         //クオリティリストを生成
-        public IEnumerable<Widgets.DropdownMenuElement<QualityCategory>> GenerateQualityList(QualityCategory quality)
+        private IEnumerable<Widgets.DropdownMenuElement<QualityCategory>> GenerateQualityList(QualityCategory quality)
         {
             foreach (var cat in QualityUtility.AllQualityCategories)
             {
@@ -326,7 +326,7 @@ namespace ChooseYourOutfit
         }
 
         //素材リストを生成
-        public IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GenerateStuffList(ThingDef tDef)
+        private IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GenerateStuffList(ThingDef tDef)
         {
             foreach (var stuff in GenStuff.AllowedStuffsFor(this.statsDrawn))
             {
@@ -351,7 +351,7 @@ namespace ChooseYourOutfit
             yield break;
         }
 
-        public IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GeneratePreviewApparelStuffList(ThingDef apparel)
+        private IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GeneratePreviewApparelStuffList(ThingDef apparel)
         {
             foreach (var stuff in GenStuff.AllowedStuffsFor(apparel))
             {
@@ -366,6 +366,31 @@ namespace ChooseYourOutfit
                     payload = apparel
                 };
             }
+            yield break;
+        }
+
+        private IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GenerateContextMenu(ThingDef apparel)
+        {
+            yield return new Widgets.DropdownMenuElement<ThingDef>
+            {
+                option = new FloatMenuOption(string.Format("CYO.AddApparelToAllPolicies".Translate(), apparel.label), delegate ()
+                {
+                    Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, true));
+                    this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                    this.LoadFilter();
+                }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+                payload = apparel
+            };
+            yield return new Widgets.DropdownMenuElement<ThingDef>
+            {
+                option = new FloatMenuOption(string.Format("CYO.RemoveApparelFromAllPolicies".Translate(), apparel.label), delegate ()
+                {
+                    Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, false));
+                    this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                    this.LoadFilter();
+                }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+                payload = apparel
+            };
             yield break;
         }
 
@@ -453,11 +478,11 @@ namespace ChooseYourOutfit
                     {
                         if (Widgets.ButtonText(leftButtonRect, "CYO.LoadFilter".Translate()))
                         {
-                            this.loadFilter(canWearAllowed);
+                            this.LoadFilter();
                         }
                         if (Widgets.ButtonText(rightButtonRect, "CYO.ApplyFilter".Translate()))
                         {
-                            this.applyFilter(canWearAllowed);
+                            this.ApplyFilter();
                         }
                     }
                 });
@@ -542,6 +567,13 @@ namespace ChooseYourOutfit
                         {
                             Input.ResetInputAxes();
                             this.SelectApparel(apparel.Value);
+                        }
+                        if (Input.GetMouseButtonUp(1))
+                        {
+                            Input.ResetInputAxes();
+                            List<FloatMenuOption> options = (from opt in GenerateContextMenu(apparel.Value)
+                                                             select opt.option).ToList<FloatMenuOption>();
+                            Find.WindowStack.Add(new FloatMenu(options));
                         }
                     }
                     Widgets.DefIcon(curIconRect, apparel.Value);
@@ -1066,7 +1098,7 @@ namespace ChooseYourOutfit
             return result;
         }
 
-        private void loadFilter(IEnumerable<ThingDef> canWearAllowed)
+        private void LoadFilter()
         {
             HashSet<ThingDef> addedApparels = canWearAllowed.Where(a => !this.SelectedApparels.Contains(a)).ToHashSet();
             this.SelectedApparels = new ConcurrentBag<ThingDef>();
@@ -1083,7 +1115,7 @@ namespace ChooseYourOutfit
             this.ChangePreviewedApparels();
         }
 
-        private void applyFilter(IEnumerable<ThingDef> canWearAllowed)
+        private void ApplyFilter()
         {
             foreach (var a in canWearAllowed.OrderBy(a => a.label).Except(this.SelectedApparels.OrderBy(a => a.label))) this.SelectedOutfit.filter.SetAllow(a, false);
             foreach (var a in this.SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) this.SelectedOutfit.filter.SetAllow(a, true);
@@ -1127,7 +1159,7 @@ namespace ChooseYourOutfit
             this.canWearAllowed = SelectedOutfit?.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
             if (this.canWearAllowed != null)
             {
-                this.loadFilter(this.canWearAllowed);
+                this.LoadFilter();
                 this.layerListingRequest = true;
             }
         }
