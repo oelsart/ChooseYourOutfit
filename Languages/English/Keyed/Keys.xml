@@ -5,7 +5,7 @@
   <CYO.LoadFilter>Load Filter</CYO.LoadFilter>
   <CYO.ApplyFilter>Apply Filter</CYO.ApplyFilter>
   <CYO.CurrentlyResearched>Currently Researched</CYO.CurrentlyResearched>
-  <CYO.CurrentlyInStorage>Currently in Storage</CurrentlyInStorage>
+  <CYO.CurrentlyInStorage>Currently in Storage</CYO.CurrentlyInStorage>
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
   <CYO.RemoveApparelFromFilter>Remove {0} from {1}</CYO.RemoveApparelFromFilter>

@@ -923,8 +923,8 @@ namespace ChooseYourOutfit
 
             if (ChooseYourOutfit.settings.currentlyInStorage)
             {
-                var allThings = Find.CurrentMap.listerThings.AllThings;
-                list = list.Where(a => allThings.Any(t => t.def == a.Value && t.IsInAnyStorage()));
+                var allApparels = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Apparel);
+                list = list.Where(a => allApparels.Any(t => t.def == a.Value && t.IsInAnyStorage()));
             }
 
             if (statsReporter.SelectedEntry != null)
