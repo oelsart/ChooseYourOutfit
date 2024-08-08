@@ -38,7 +38,8 @@ namespace ChooseYourOutfit
             {
                 //this.selPawnButtonLabel = "AnyColonist".Translate().ToString();
                 //this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
-                this.SelectedPawn = Find.ColonistBar.Entries.FirstOrDefault().pawn;
+                this.SelectedPawn = Find.CurrentMap.mapPawns.FreeColonists.First();
+                if (this.SelectedPawn == null) Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).First();
             }
 
             foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
@@ -191,7 +192,7 @@ namespace ChooseYourOutfit
                     var pawn = this.SelectedPawn;
                     if (this.SelectedPawn.outfits.CurrentOutfit != this.selOutfitInt)
                     {
-                        pawn = Find.ColonistBar.Entries.Select(e => e.pawn).FirstOrFallback(p => p.outfits.CurrentOutfit == this.selOutfitInt, this.SelectedPawn);
+                        pawn = Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).FirstOrFallback(p => p.outfits.CurrentOutfit == this.selOutfitInt, this.SelectedPawn);
                         if (pawn != this.SelectedPawn)
                         {
                             InitializeByPawn(pawn);
@@ -286,13 +287,13 @@ namespace ChooseYourOutfit
                 payload = pawn
             };*/
 
-            foreach (var entry in Find.ColonistBar.Entries)
+            foreach (var colonist in Find.Maps.SelectMany(m => m.mapPawns.FreeColonists))
             {
                 yield return new Widgets.DropdownMenuElement<Pawn>
                 {
-                    option = new FloatMenuOption(entry.pawn.LabelShortCap, delegate ()
+                    option = new FloatMenuOption(colonist.LabelShortCap, delegate ()
                     {
-                        InitializeByPawn(entry.pawn);
+                        InitializeByPawn(colonist);
                         /*foreach (var apparel in allApparels)
                         {
                             this.overrideApparelColors[apparelDatabase[apparel]] = overrideApparelColors.FirstOrDefault(a => a.Key.def == apparel).Value;
