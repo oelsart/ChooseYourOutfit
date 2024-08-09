@@ -65,6 +65,30 @@ namespace ChooseYourOutfit
                 Log.Error("[ChooseYourOutfit] A Null Apparel Policy has been generated. Please contact the mod author when you get this.");
                 AccessTools.Field(typeof(OutfitDatabase), "outfits").SetValue(Current.Game.outfitDatabase, Current.Game.outfitDatabase.AllOutfits.Select((o, i) => o ?? new ApparelPolicy(i, "Delete This Policy")).ToList());
             }
+
+            if (ModsConfig.IsActive("mlie.prostheticnomissingbodyparts"))
+            {
+                Type ProsMod = AccessTools.TypeByName("ProstheticNoMissingBodyPartsMod");
+                Type ProsModSettings = AccessTools.TypeByName("ProstheticNoMissingBodyPartsSettings");
+                if (ProsMod == null || ProsModSettings == null) return;
+                Mod mod = LoadedModManager.GetMod(ProsMod);
+                if (mod == null) return;
+                object modSettings = AccessTools.Field(ProsMod, "modSettings").GetValue(mod);
+                if (modSettings == null) return;
+                var whitelistNames = new string[]
+                {
+                    "ArmsWhitelist",
+                    "LegsWhitelist",
+                    "HandsWhitelist",
+                    "FeetWhitelist"
+                };
+                foreach (var listName in whitelistNames)
+                {
+                    var whitelist = (List<string>)AccessTools.Field(ProsModSettings, listName).GetValue(modSettings);
+                    if (whitelist == null) continue;
+                    this.bodypartsWhiteList.AddRange(whitelist);
+                }
+            }
         }
 
         private static ThingFilter ApparelGlobalFilter
@@ -1092,22 +1116,10 @@ namespace ChooseYourOutfit
         private ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef>)> GetExistPartsAndButtons(ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> buttonColliders)
         {
             var result = new ConcurrentDictionary<string, (BodyPartRecord part, IEnumerable<BodyPartGroupDef> groups)>();
-            var whiteList = new HashSet<string>();
-            if (ModsConfig.IsActive("mlie.prostheticnomissingbodyparts"))
-            {
-                Type ProsMod = AccessTools.TypeByName("ProstheticNoMissingBodyPartsMod");
-                Type ProsModSettings = AccessTools.TypeByName("ProstheticNoMissingBodyPartsSettings");
-                Mod mod = LoadedModManager.GetMod(ProsMod);
-                object modSettings = AccessTools.Field(ProsMod, "modSettings").GetValue(mod);
-                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "ArmsWhitelist").GetValue(modSettings));
-                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "LegsWhitelist").GetValue(modSettings));
-                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "HandsWhitelist").GetValue(modSettings));
-                whiteList.AddRange((List<string>)AccessTools.Field(ProsModSettings, "FeetWhitelist").GetValue(modSettings));
-            }
             var hediffSet = this.SelectedPawn.health.hediffSet;
             var parts = this.SelectedPawn.def.race.body.AllParts.Where(p => !hediffSet.PartIsMissing(p) ||
             //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
-            hediffSet.hediffs.Any(h => whiteList.Contains(h.def.defName) && (h.Part == p.parent || h.Part == p.parent?.parent)));
+            hediffSet.hediffs.Any(h => this.bodypartsWhiteList.Contains(h.def.defName) && (h.Part == p.parent || h.Part == p.parent?.parent)));
             foreach (var (id, button) in this.buttonColliders)
             {
                 var folder = SelectedPawn.gender == Gender.Female || SelectedPawn.gender == Gender.Male ? SelectedPawn.gender : Gender.None;
@@ -1302,5 +1314,7 @@ namespace ChooseYourOutfit
         private readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
 
         public bool inDialogPortraitRequest = false;
+
+        private HashSet<string> bodypartsWhiteList = new HashSet<string>();
     }
 }
