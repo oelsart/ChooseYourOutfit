@@ -7,6 +7,7 @@ using UnityEngine;
 using Verse;
 using RimWorld;
 using HarmonyLib;
+using AwesomeInventory.Loadout;
 
 namespace ChooseYourOutfit
 {

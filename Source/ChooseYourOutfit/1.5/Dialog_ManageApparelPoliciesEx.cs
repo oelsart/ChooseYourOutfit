@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
@@ -41,7 +42,7 @@ namespace ChooseYourOutfit
                 //this.selPawnButtonLabel = "AnyColonist".Translate().ToString();
                 //this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
                 this.SelectedPawn = Find.CurrentMap.mapPawns.FreeColonists.First();
-                if (this.SelectedPawn == null) Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).First();
+                if (this.SelectedPawn == null) PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.First();
             }
 
             foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
@@ -68,13 +69,12 @@ namespace ChooseYourOutfit
 
             if (ModsConfig.IsActive("mlie.prostheticnomissingbodyparts"))
             {
-                Type ProsMod = AccessTools.TypeByName("ProstheticNoMissingBodyPartsMod");
                 Type ProsModSettings = AccessTools.TypeByName("ProstheticNoMissingBodyPartsSettings");
-                if (ProsMod == null || ProsModSettings == null) return;
-                Mod mod = LoadedModManager.GetMod(ProsMod);
-                if (mod == null) return;
-                object modSettings = AccessTools.Field(ProsMod, "modSettings").GetValue(mod);
+                if (ProsModSettings == null) return;
+                var readModSettings = AccessTools.Method(typeof(LoadedModManager), nameof(LoadedModManager.ReadModSettings)).MakeGenericMethod(ProsModSettings);
+                object modSettings = readModSettings.Invoke(null, new object[] { "mlie.prostheticnomissingbodyparts", "ProstheticNoMissingBodyPartsMod" });
                 if (modSettings == null) return;
+                var traverse = Traverse.Create(modSettings);
                 var whitelistNames = new string[]
                 {
                     "ArmsWhitelist",
@@ -84,7 +84,7 @@ namespace ChooseYourOutfit
                 };
                 foreach (var listName in whitelistNames)
                 {
-                    var whitelist = (List<string>)AccessTools.Field(ProsModSettings, listName).GetValue(modSettings);
+                    var whitelist = traverse.Field(listName).GetValue<List<string>>();
                     if (whitelist == null) continue;
                     this.bodypartsWhiteList.AddRange(whitelist);
                 }
@@ -233,7 +233,7 @@ namespace ChooseYourOutfit
 
             if (Input.GetMouseButtonUp(0))
             {
-                this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                 if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) LoadFilter();
                 if (this.selPolicyInt != this.SelectedPolicy)
                 {
@@ -241,7 +241,7 @@ namespace ChooseYourOutfit
                     var pawn = this.SelectedPawn;
                     if (this.SelectedPawn.outfits.CurrentApparelPolicy != this.selPolicyInt)
                     {
-                        pawn = Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).FirstOrFallback(p => p.outfits.CurrentApparelPolicy == this.selPolicyInt, this.SelectedPawn);
+                        pawn = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.FirstOrFallback(p => p.outfits.CurrentApparelPolicy == this.selPolicyInt, this.SelectedPawn);
                         if (pawn != this.SelectedPawn)
                         {
                             InitializeByPawn(pawn);
@@ -426,7 +426,7 @@ namespace ChooseYourOutfit
                 option = new FloatMenuOption(string.Format("CYO.AddApparelToAllPolicies".Translate(), apparel.label), delegate ()
                 {
                     Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, true));
-                    this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                    this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a =>a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                     this.LoadFilter();
                 }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                 payload = apparel
@@ -436,7 +436,7 @@ namespace ChooseYourOutfit
                 option = new FloatMenuOption(string.Format("CYO.RemoveApparelFromAllPolicies".Translate(), apparel.label), delegate ()
                 {
                     Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, false));
-                    this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                    this.canWearAllowed = SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                     this.LoadFilter();
                 }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                 payload = apparel
@@ -1137,7 +1137,7 @@ namespace ChooseYourOutfit
         
         private void LoadFilter()
         {
-            HashSet<ThingDef> addedApparels = canWearAllowed.Where(a => !this.SelectedApparels.Contains(a)).ToHashSet();
+            HashSet<ThingDef> addedApparels = canWearAllowed.Where(a => a != null && !this.SelectedApparels.Contains(a)).ToHashSet();
             this.SelectedApparels = new ConcurrentBag<ThingDef>();
             foreach (var a in canWearAllowed) SelectedApparels.Add(a);
 
@@ -1192,7 +1192,7 @@ namespace ChooseYourOutfit
             }
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
 
-            this.canWearAllowed = SelectedPolicy?.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+            this.canWearAllowed = SelectedPolicy?.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
             if (this.canWearAllowed != null)
             {
                 this.LoadFilter();

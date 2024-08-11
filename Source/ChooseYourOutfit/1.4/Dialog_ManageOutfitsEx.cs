@@ -39,7 +39,7 @@ namespace ChooseYourOutfit
                 //this.selPawnButtonLabel = "AnyColonist".Translate().ToString();
                 //this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
                 this.SelectedPawn = Find.CurrentMap.mapPawns.FreeColonists.First();
-                if (this.SelectedPawn == null) Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).First();
+                if (this.SelectedPawn == null) PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.First();
             }
 
             foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
@@ -105,7 +105,7 @@ namespace ChooseYourOutfit
         {
             get
             {
-                return (Outfit)AccessTools.Field(typeof(Dialog_ManageOutfits), "selOutfitInt").GetValue(this);
+                return this.selOutfitFieldRef(this);
             }
         }
 
@@ -206,7 +206,7 @@ namespace ChooseYourOutfit
 
             if (Input.GetMouseButtonUp(0))
             {
-                this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                 if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) LoadFilter();
 
                 var outfit = this.SelectedOutfit;
@@ -216,7 +216,7 @@ namespace ChooseYourOutfit
                     var pawn = this.SelectedPawn;
                     if (this.SelectedPawn.outfits.CurrentOutfit != this.selOutfitInt)
                     {
-                        pawn = Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).FirstOrFallback(p => p.outfits.CurrentOutfit == this.selOutfitInt, this.SelectedPawn);
+                        pawn = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.FirstOrFallback(p => p.outfits.CurrentOutfit == this.selOutfitInt, this.SelectedPawn);
                         if (pawn != this.SelectedPawn)
                         {
                             InitializeByPawn(pawn);
@@ -401,7 +401,7 @@ namespace ChooseYourOutfit
                 option = new FloatMenuOption(string.Format("CYO.AddApparelToAllPolicies".Translate(), apparel.label), delegate ()
                 {
                     Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, true));
-                    this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                    this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                     this.LoadFilter();
                 }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                 payload = apparel
@@ -411,7 +411,7 @@ namespace ChooseYourOutfit
                 option = new FloatMenuOption(string.Format("CYO.RemoveApparelFromAllPolicies".Translate(), apparel.label), delegate ()
                 {
                     Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, false));
-                    this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+                    this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
                     this.LoadFilter();
                 }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
                 payload = apparel
@@ -1114,7 +1114,7 @@ namespace ChooseYourOutfit
 
         private void LoadFilter()
         {
-            HashSet<ThingDef> addedApparels = canWearAllowed.Where(a => !this.SelectedApparels.Contains(a)).ToHashSet();
+            HashSet<ThingDef> addedApparels = canWearAllowed.Where(a => a != null && !this.SelectedApparels.Contains(a)).ToHashSet();
             this.SelectedApparels = new ConcurrentBag<ThingDef>();
             foreach (var a in canWearAllowed) SelectedApparels.Add(a);
 
@@ -1170,7 +1170,7 @@ namespace ChooseYourOutfit
             this.existParts = GetExistPartsAndButtons(this.buttonColliders);
             preApparelsApparel.Clear();
 
-            this.canWearAllowed = SelectedOutfit?.filter.AllowedThingDefs.Where(a => a.apparel?.PawnCanWear(this.SelectedPawn) ?? false).ToHashSet();
+            this.canWearAllowed = SelectedOutfit?.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
             if (this.canWearAllowed != null)
             {
                 this.LoadFilter();
@@ -1290,5 +1290,7 @@ namespace ChooseYourOutfit
         public bool inDialogPortraitRequest = false;
 
         private HashSet<string> bodypartsWhiteList = new HashSet<string>();
+
+        private AccessTools.FieldRef<Dialog_ManageOutfits, Outfit> selOutfitFieldRef = AccessTools.FieldRefAccess<Outfit>(typeof(Dialog_ManageOutfits), "selOutfitInt");
     }
 }

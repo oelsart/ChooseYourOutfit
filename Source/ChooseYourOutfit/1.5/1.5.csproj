@@ -41,6 +41,14 @@
       <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\1.5\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AwesomeInventoryCommon">
+      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\2669036490\1.5\Common\Assemblies\AwesomeInventoryCommon.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NotooShabby.RimWorldUtility">
+      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\2669036490\1.5\Common\Assemblies\NotooShabby.RimWorldUtility.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
