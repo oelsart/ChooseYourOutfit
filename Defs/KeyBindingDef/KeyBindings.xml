@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+	
+	<KeyBindingDef>
+		<category>ChooseYourOutfit</category>
+		<defName>OpenChooseYourOutfitDialog</defName>
+		<label>Open Choose Your Outfit Dialog</label>
+		<defaultKeyCodeA>None</defaultKeyCodeA>
+	</KeyBindingDef>
+	
+</Defs>

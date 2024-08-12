@@ -1,12 +1,11 @@
-﻿using System;
+﻿using HarmonyLib;
+using RimWorld;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Linq;
-using UnityEngine;
 using Verse;
-using RimWorld;
-using HarmonyLib;
 
 namespace ChooseYourOutfit
 {
@@ -119,6 +118,18 @@ namespace ChooseYourOutfit
             });
 
             return codes;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn), nameof(Pawn.GetGizmos))]
+    static class Patch_Pawn_GetGizmos
+    {
+        static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        {
+            if (__instance.IsFreeColonist)
+            {
+                __result = __result.AddItem(new Command_OpenCYODialog());
+            }
         }
     }
 }

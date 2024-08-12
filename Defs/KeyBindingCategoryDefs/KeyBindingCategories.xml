@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+	
+	<KeyBindingCategoryDef>
+		<defName>ChooseYourOutfit</defName>
+		<label>Choose Your Outfit</label>
+		<description>Shortcuts for Choose Your Outfit dialog.</description>
+		<checkForConflicts></checkForConflicts>
+	</KeyBindingCategoryDef>
+	
+</Defs>
