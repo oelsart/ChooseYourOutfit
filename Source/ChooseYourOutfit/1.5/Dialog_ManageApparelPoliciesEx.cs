@@ -32,10 +32,13 @@ namespace ChooseYourOutfit
             this.svg.Add(Gender.Male, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.Male + ".svg"));
 
             //毎Tickボタンの当たり判定を計算するのは忍びないので先に計算するためボタン周りのrectを先に決めています
-            this.rect5 = new Rect(Margin + 402f, Margin + 52f + this.OffsetHeaderY, 200f, this.windowRect.height);
+            this.panelDecrease = (1400f - this.InitialSize.x) / 8f;
+            this.rect5 = new Rect(Margin + 402f - this.panelDecrease, Margin + 52f + this.OffsetHeaderY, 200f - this.panelDecrease, this.windowRect.height);
             this.rect5.yMax = this.InitialSize.y;
             this.rect5.yMax -= Margin + Window.CloseButSize.y + 13f;
-            this.rect6 = new Rect(rect5.xMax + 12f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - 340f - Margin, rect5.height - 15f);
+            var infoWidth = 300f - this.panelDecrease * 4f;
+            this.rect6 = new Rect(rect5.xMax + 12f, this.rect5.y, this.InitialSize.x - rect5.x - rect5.width - infoWidth - 40f - Margin, rect5.height - 15f);
+            this.rect7 = new Rect(this.InitialSize.x - Margin * 2f - infoWidth, rect5.y, infoWidth, rect5.height - 15f);
 
             if (selectedPawn == null)
             {
@@ -169,7 +172,7 @@ namespace ChooseYourOutfit
         {
             get
             {
-                return new Vector2(ChooseYourOutfit.settings.disableAddedUI ? 700f : 1400f, 700f);
+                return new Vector2(ChooseYourOutfit.settings.disableAddedUI ? 700f : Math.Min(1400f, UI.screenWidth - 80f), 700f);
             }
         }
 
@@ -196,7 +199,7 @@ namespace ChooseYourOutfit
 
         protected override void DoContentsRect(Rect rect)
         {
-            if(!ChooseYourOutfit.settings.disableAddedUI) rect.width = 200f;
+            if (!ChooseYourOutfit.settings.disableAddedUI) rect.width = 200f - this.panelDecrease;
             ThingFilterUI.DoThingFilterConfigWindow(rect, this.thingFilterState, base.SelectedPolicy.filter, Dialog_ManageApparelPoliciesEx.ApparelGlobalFilter, 16, null, this.HiddenSpecialThingFilters(), false, false, false, null, null);
         }
 
@@ -215,8 +218,6 @@ namespace ChooseYourOutfit
 
         public override void DoWindowContents(Rect inRect)
         {
-            Task<ConcurrentQueue<Action>>[] tasks = new Task<ConcurrentQueue<Action>>[4];
-
             base.DoWindowContents(inRect);
             if (ChooseYourOutfit.settings.disableAddedUI) return;
 
@@ -250,9 +251,8 @@ namespace ChooseYourOutfit
                 }
             }
 
+            Task<ConcurrentQueue<Action>>[] tasks = new Task<ConcurrentQueue<Action>>[4];
             //右のインフォカード描画
-            Rect rect7 = new Rect(inRect.xMax - 300f, rect5.y, 300f, rect5.height - 15f);
-            
             if (this.statsDrawn != this.lastMouseovered)
             {
                 this.statsDrawn = this.lastMouseovered;
@@ -263,7 +263,7 @@ namespace ChooseYourOutfit
             //ちらつきを無くすため一番手前に持ってきました
 
             //apparelLayerのリストを描画
-            var layersRect = new Rect(rect5.x, rect5.y + 40f, 200f, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count(), 240f));
+            var layersRect = new Rect(rect5.x, rect5.y + 40f, rect5.width, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count(), 240f));
             if (layerListToShow.Count() == 0)
             {
                 Widgets.Label(layersRect, "CYO.NoApparels".Translate());
@@ -274,7 +274,7 @@ namespace ChooseYourOutfit
             }
 
             //apparelのリストを描画
-            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, 200f, rect5.height - layersRect.height - 67f))));
+            tasks[1] = (Task.Run(() => this.DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, rect5.width, rect5.height - layersRect.height - 67f))));
 
             var scale = this.rect6.height / this.svgViewBox.height;
             Rect rect8 = new Rect(this.rect6.x, this.rect6.y, this.rect6.width - this.svgViewBox.width * scale - 10f, this.rect6.height);
@@ -288,10 +288,10 @@ namespace ChooseYourOutfit
             //ポーンの体を描画するとこ
             //入植者選択ボタン
             Widgets.BeginGroup(rect6);
-            var colonistButtonRect = new Rect(0f, 0f, 150f, 35f);
+            var colonistButtonRect = new Rect(0f, 0f, rect8.width - 40f, 35f);
             var gearButtonRect = colonistButtonRect;
             gearButtonRect.x = colonistButtonRect.xMax + 5f;
-            gearButtonRect.xMax = rect8.width;
+            gearButtonRect.width = 35f;
 
             if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(colonistButtonRect, "CYO.Tip.ColonistButton".Translate());
             if (Widgets.ButtonText(colonistButtonRect, this.selPawnButtonLabel))
@@ -723,7 +723,7 @@ namespace ChooseYourOutfit
         public ConcurrentQueue<Action> DoInfoCard(Rect rect)
         {
             var drawer = new ConcurrentQueue<Action>();
-            var rect2 = new Rect(rect.x, rect.y, 145f, 35f);
+            var rect2 = new Rect(rect.x, rect.y, this.rect7.width / 2f - 2.5f, 35f);
 
             drawer.Enqueue(() =>
             {
@@ -745,7 +745,7 @@ namespace ChooseYourOutfit
                 {
                     this.selStuffButtonLabel = this.selStuffInt.LabelAsStuff;
 
-                    var rect3 = new Rect(rect.x + 155f, rect.y, 145f, 35f);
+                    var rect3 = new Rect(rect2.xMax + 5f, rect.y, rect2.width, 35f);
                     drawer.Enqueue(() =>
                     {
                         if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect3, "CYO.Tip.InfoStuff".Translate());
@@ -793,7 +793,7 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.showAddBillsButton)
             {
                 outerRect.yMax -= 30f;
-                var addBillsButtonRect = new Rect(outerRect.x + 3f, outerRect.yMax + 3f, outerRect.width - 6f, 24f);
+                var addBillsButtonRect = new Rect(outerRect.x - 6f, outerRect.yMax + 3f, outerRect.width + 12f, 24f);
                 drawer.Enqueue(() =>
                 {
                     if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(addBillsButtonRect, "CYO.Tip.AddBills".Translate());
@@ -843,13 +843,14 @@ namespace ChooseYourOutfit
 
                 if (!collapse[apparels.layer])
                 {
-                    var fromInclusive = (int)Math.Max((this.listScrollPosition.y - curY + outerRect.height) / itemRect.height - 1, 0);
-                    var toExclusive = (int)Math.Min(fromInclusive + outerRect.height / itemRect.height + 4, apparels.list.Count());
+                    //var fromInclusive = (int)Math.Max((this.listScrollPosition.y - curY + outerRect.height) / itemRect.height - 1, 0);
+                    //var toExclusive = (int)Math.Min(fromInclusive + outerRect.height / itemRect.height + 4, apparels.list.Count());
 
-                    for(var index = fromInclusive; index < toExclusive; index++)
+                    for(var index = 0; index < apparels.list.Count(); index++)
                     {
-                        var apparel = apparels.list.ElementAt(index);
                         var curApparelY = curY + index * itemRect.height;
+                        if (curApparelY < this.listScrollPosition.y + outerRect.height - itemRect.height - this.panelDecrease * 4f || curApparelY > this.listScrollPosition.y + outerRect.height * 2f - this.panelDecrease * 4f) continue;
+                        var apparel = apparels.list.ElementAt(index);
                         var curItemRect = new Rect(itemRect.x, curApparelY, itemRect.width, itemRect.height);
                         var curCheckBoxRect = new Rect(checkBoxRect.x, curApparelY, checkBoxRect.width, checkBoxRect.height);
                         var curStuffRect = new Rect(stuffRect.x, curApparelY, stuffRect.width, stuffRect.height);
@@ -1296,6 +1297,10 @@ namespace ChooseYourOutfit
         private Rect rect5;
 
         private Rect rect6;
+
+        private Rect rect7;
+
+        private float panelDecrease;
 
         public HashSet<ThingDef> allApparels;
 
