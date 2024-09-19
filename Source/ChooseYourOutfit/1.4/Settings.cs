@@ -16,6 +16,8 @@ namespace ChooseYourOutfit
         public bool currentlyResearched = false;
         public bool showInStorageButton = true;
         public bool currentlyInStorage = false;
+        public bool applyHitPoints = false;
+        public bool applyQuality = false;
         public bool addFroatMenu = true;
 
         public override void ExposeData()
@@ -31,6 +33,8 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref currentlyResearched, "currentlyResearched", false);
             Scribe_Values.Look(ref showResearchedButton, "showResearchedButton", true);
             Scribe_Values.Look(ref currentlyInStorage, "currentlyInStorage", false);
+            Scribe_Values.Look(ref applyHitPoints, "applyHitPoints", false);
+            Scribe_Values.Look(ref applyQuality, "applyQuality", false);
             Scribe_Values.Look(ref showInStorageButton, "showInStorageButton", true);
             Scribe_Values.Look(ref addFroatMenu, "addFroatMenu", true);
             base.ExposeData();

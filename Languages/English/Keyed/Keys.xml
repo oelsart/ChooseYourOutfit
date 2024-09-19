@@ -6,6 +6,8 @@
   <CYO.ApplyFilter>Apply Filter</CYO.ApplyFilter>
   <CYO.CurrentlyResearched>Currently Researched</CYO.CurrentlyResearched>
   <CYO.CurrentlyInStorage>Currently in Storage</CYO.CurrentlyInStorage>
+  <CYO.ApplyHitPoints>Apply Hit Points Filter</CYO.ApplyHitPoints>
+  <CYO.ApplyQuality>Apply Quality Filter</CYO.ApplyQuality>
   <CYO.SelectedApparels>Selected Apparels</CYO.SelectedApparels>
   <CYO.Preview>Preview</CYO.Preview>
   <CYO.RemoveApparelFromFilter>Remove {0} from {1}</CYO.RemoveApparelFromFilter>
@@ -18,6 +20,8 @@
   <CYO.Tip.ColonistButton>Select the colonist to show in the preview.\nThe apparels displayed in the apparel list is restricted to that can be worn by the colonist specified by this button.</CYO.Tip.ColonistButton>
   <CYO.Tip.Researched>The list of apparels can be restricted to those with recipes that have been currently researched.</CYO.Tip.Researched>
   <CYO.Tip.InStorage>This list can be restricted to those currently in storage for this map.</CYO.Tip.InStorage>
+  <CYO.Tip.ApplyHitPoints>Apply the hit points filter of the current policy to the "Currently in Storage" filter.</CYO.Tip.ApplyHitPoints>
+  <CYO.Tip.ApplyQuality>Apply the quality filter of the current policy to the "Currently in Storage" filter.</CYO.Tip.ApplyQuality>
   <CYO.Tip.Checkbox>Whether or not this apparel is reflected in the preview.\nThis is also possible to use to specify apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.Checkbox>
   <CYO.Tip.StuffIcon>Specify the material of this apparel to be reflected in the preview.\nThis is also possible to use to restrict the material of the apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.StuffIcon>
   <CYO.Tip.AddBills>Add to the worktables currently existing on the map the bills that will produce the selected apparels.\nYou can set the options in the confirmation dialog.</CYO.Tip.AddBills>

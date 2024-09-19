@@ -6,6 +6,8 @@
   <CYO.ApplyFilter>フィルター適用</CYO.ApplyFilter>
   <CYO.CurrentlyResearched>研究済みの衣服のみ</CYO.CurrentlyResearched>
   <CYO.CurrentlyInStorage>貯蔵済みの衣服のみ</CYO.CurrentlyInStorage>
+  <CYO.ApplyHitPoints>HPフィルターを適用</CYO.ApplyHitPoints>
+  <CYO.ApplyQuality>品質フィルターを適用</CYO.ApplyQuality>
   <CYO.SelectedApparels>選択した衣服</CYO.SelectedApparels>
   <CYO.Preview>プレビュー</CYO.Preview>
   <CYO.RemoveApparelFromFilter>{0} を {1} から除外する</CYO.RemoveApparelFromFilter>
@@ -18,6 +20,8 @@
   <CYO.Tip.ColonistButton>プレビューに表示する入植者を選択します.\n衣服リストに表示される衣服はこのボタンで指定した入植者が着られるものに限定されます.</CYO.Tip.ColonistButton>
   <CYO.Tip.Researched>衣服リストに表示される衣服を現在研究済みのレシピを持つものに限定することができます.</CYO.Tip.Researched>
   <CYO.Tip.InStorage>衣服リストをに表示される衣服を現在のマップのストレージに貯蔵されているものに限定することができます.</CYO.Tip.InStorage>
+  <CYO.Tip.ApplyHitPoints>"貯蔵済みの衣服のみ"フィルターに現在のポリシーのHPフィルターを適用します.</CYO.Tip.ApplyHitPoints>
+  <CYO.Tip.ApplyQuality>"貯蔵済みの衣服のみ"フィルターに現在のポリシーの品質フィルターを適用します.</CYO.Tip.ApplyQuality>
   <CYO.Tip.Checkbox>この衣服をプレビューに反映させるかどうかです.\n"加工台に加工指示を追加"ボタンで追加する衣服を指定する目的で使うこともできます.</CYO.Tip.Checkbox>
   <CYO.Tip.StuffIcon>プレビューに反映させる衣服の素材を指定できます.\n"加工台に加工指示を追加"ボタンで追加する衣服の素材を限定する目的で使うこともできます.</CYO.Tip.StuffIcon>
   <CYO.Tip.AddBills>現在マップ上に存在する加工台に,選択した衣服を作る加工指示を追加することができます.\n確認ダイアログでオプションを指定することができます.</CYO.Tip.AddBills>

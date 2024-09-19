@@ -25,6 +25,8 @@ namespace ChooseYourOutfit
             this.SelectedPawn = selectedPawn;
             this.SelectedPolicy = selectedPawn?.outfits.CurrentApparelPolicy;
             this.selPolicyInt = this.SelectedPolicy;
+            this.curFilterHPRange = this.SelectedPolicy?.filter.AllowedHitPointsPercents;
+            this.curFilterQualityRange = this.SelectedPolicy?.filter.AllowedQualityLevels;
             DefDatabase<ApparelLayerDef>.AllDefsListForReading.ForEach(l => collapse[l] = ChooseYourOutfit.settings.collapseByLayer);
 
             this.svg.Add(Gender.None, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.None + ".svg"));
@@ -222,15 +224,7 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.disableAddedUI) return;
 
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
-            if (SelectedPolicy == null) return;
-
-            if (this.layerListingRequest) this.layerListToShow = this.ListingLayerToShow();
-            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.SelectedLayers);
-            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
-
-            layerListingRequest = false;
-            apparelListingRequest = false;
-            selectedApparelListingRequest = false;
+            if (this.SelectedPolicy == null) return;
 
             if (Input.GetMouseButtonUp(0))
             {
@@ -238,6 +232,8 @@ namespace ChooseYourOutfit
                 if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) LoadFilter();
                 if (this.selPolicyInt != this.SelectedPolicy)
                 {
+                    apparelListingRequest = true;
+                    layerListingRequest = true;
                     this.selPolicyInt = this.SelectedPolicy;
                     var pawn = this.SelectedPawn;
                     if (this.SelectedPawn.outfits.CurrentApparelPolicy != this.selPolicyInt)
@@ -249,7 +245,27 @@ namespace ChooseYourOutfit
                         }
                     }
                 }
+                if (this.curFilterHPRange != this.SelectedPolicy.filter.AllowedHitPointsPercents)
+                {
+                    this.curFilterHPRange = this.SelectedPolicy.filter.AllowedHitPointsPercents;
+                    apparelListingRequest = true;
+                    layerListingRequest = true;
+                }
+                if (this.curFilterQualityRange != this.SelectedPolicy.filter.AllowedQualityLevels)
+                {
+                    this.curFilterQualityRange = this.SelectedPolicy.filter.AllowedQualityLevels;
+                    apparelListingRequest = true;
+                    layerListingRequest = true;
+                }
             }
+
+            if (this.layerListingRequest) this.layerListToShow = this.ListingLayerToShow();
+            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.SelectedLayers);
+            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+
+            layerListingRequest = false;
+            apparelListingRequest = false;
+            selectedApparelListingRequest = false;
 
             Task<ConcurrentQueue<Action>>[] tasks = new Task<ConcurrentQueue<Action>>[4];
             //右のインフォカード描画
@@ -560,6 +576,49 @@ namespace ChooseYourOutfit
             {
                 parentRect.height -= Text.LineHeight;
                 var filterLabelRect = new Rect(parentRect.x + 3f, parentRect.yMax, parentRect.width - Text.LineHeight - 6f, Text.LineHeight);
+                if (ChooseYourOutfit.settings.currentlyInStorage)
+                {
+                    filterLabelRect.xMin += 15f;
+                    if (!this.collapseInStorageMenu)
+                    {
+                        filterLabelRect.y -= Text.LineHeight * 2f;
+                        parentRect.height -= Text.LineHeight * 2f;
+                        var label1Rect = new Rect(filterLabelRect.x, filterLabelRect.yMax, filterLabelRect.width, Text.LineHeight);
+                        var check1Pos = new Vector2(label1Rect.xMax, label1Rect.y);
+                        var label2Rect = new Rect(filterLabelRect.x, label1Rect.yMax, filterLabelRect.width, Text.LineHeight);
+                        var check2Pos = new Vector2(label2Rect.xMax, label2Rect.y);
+                        drawer.Enqueue(() =>
+                        {
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(label1Rect, "CYO.Tip.ApplyHitPoints".Translate());
+                            Widgets.Label(label1Rect, "CYO.ApplyHitPoints".Translate());
+                            Widgets.Checkbox(check1Pos, ref ChooseYourOutfit.settings.applyHitPoints, 20f);
+                            if (Widgets.ButtonInvisible(new Rect(check1Pos, new Vector2(24f, 24f))))
+                            {
+                                this.apparelListingRequest = true;
+                                this.layerListingRequest = true;
+                            }
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(label2Rect, "CYO.Tip.ApplyQuality".Translate());
+                            Widgets.Label(label2Rect, "CYO.ApplyQuality".Translate());
+                            Widgets.Checkbox(check2Pos, ref ChooseYourOutfit.settings.applyQuality, 20f);
+                            if (Widgets.ButtonInvisible(new Rect(check2Pos, new Vector2(24f, 24f))))
+                            {
+                                this.apparelListingRequest = true;
+                                this.layerListingRequest = true;
+                            }
+                        });
+                    }
+                    var tex = this.collapseInStorageMenu ? TexButton.Reveal : TexButton.Collapse;
+                    var butRect = new Rect(filterLabelRect.x - 18f, filterLabelRect.y, Text.LineHeight, Text.LineHeight);
+                    drawer.Enqueue(() =>
+                    {
+                        if (Mouse.IsOver(butRect) && Input.GetMouseButtonUp(0))
+                        {
+                            Input.ResetInputAxes();
+                            this.collapseInStorageMenu = !this.collapseInStorageMenu;
+                        }
+                        Widgets.DrawTextureFitted(butRect, tex, 1f);
+                    });
+                }
                 var checkBoxPosition = new Vector2(parentRect.xMax - Text.LineHeight - 3f, parentRect.yMax);
                 drawer.Enqueue(() =>
                 {
@@ -977,7 +1036,20 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.currentlyInStorage)
             {
                 var allApparels = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Apparel);
-                list = list.Where(a => allApparels.Any(t => t.def == a.Value && t.IsInAnyStorage()));
+                var hpFilter = this.SelectedPolicy.filter.AllowedHitPointsPercents;
+                var quFilter = this.SelectedPolicy.filter.AllowedQualityLevels;
+                list = list.Where(a => allApparels.Any(t =>
+                    {
+                        if (ChooseYourOutfit.settings.applyHitPoints && !hpFilter.Includes((float)t.HitPoints / (float)t.MaxHitPoints))
+                        {
+                            return false;
+                        }
+                        if (ChooseYourOutfit.settings.applyQuality && t.TryGetQuality(out var qc) && !quFilter.Includes(qc))
+                        {
+                            return false;
+                        }
+                        return t.def == a.Value && t.IsInAnyStorage();
+                    }));
             }
 
             if (statsReporter.SelectedEntry != null)
@@ -1180,7 +1252,6 @@ namespace ChooseYourOutfit
             {
                 cantWearTogether.Add(apparel, allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body)).ToList());
             }
-            this.layerListToShow = ListingLayerToShow();
             if (pawn.gender == Gender.Female || pawn.gender == Gender.Male)
             {
                 this.buttonColliders = svgInterpreter.SVGToPolygons(this.svg[pawn.gender], this.rect6);
@@ -1197,6 +1268,7 @@ namespace ChooseYourOutfit
             if (this.canWearAllowed != null)
             {
                 this.LoadFilter();
+                this.apparelListingRequest = true;
                 this.layerListingRequest = true;
             }
         }
@@ -1321,5 +1393,11 @@ namespace ChooseYourOutfit
         public bool inDialogPortraitRequest = false;
 
         private HashSet<string> bodypartsWhiteList = new HashSet<string>();
+
+        private bool collapseInStorageMenu = true;
+
+        private FloatRange? curFilterHPRange;
+
+        private QualityRange? curFilterQualityRange;
     }
 }

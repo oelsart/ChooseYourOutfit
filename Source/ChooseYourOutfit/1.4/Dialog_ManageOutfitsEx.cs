@@ -1,14 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using HarmonyLib;
+using RimWorld;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
-using RimWorld;
-using HarmonyLib;
 
 namespace ChooseYourOutfit
 {
@@ -23,6 +23,8 @@ namespace ChooseYourOutfit
             this.listScrollPosition = default;
             this.SelectedPawn = selectedPawn;
             this.selOutfitInt = this.SelectedOutfit;
+            this.curFilterHPRange = this.SelectedOutfit?.filter.AllowedHitPointsPercents;
+            this.curFilterQualityRange = this.SelectedOutfit?.filter.AllowedQualityLevels;
             DefDatabase<ApparelLayerDef>.AllDefsListForReading.ForEach(l => collapse[l] = ChooseYourOutfit.settings.collapseByLayer);
 
             this.svg.Add(Gender.None, XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + Gender.None + ".svg"));
@@ -197,14 +199,6 @@ namespace ChooseYourOutfit
             //baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
             if (SelectedOutfit == null) return;
 
-            if (this.layerListingRequest) this.layerListToShow = this.ListingLayerToShow();
-            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.SelectedLayers);
-            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
-
-            layerListingRequest = false;
-            apparelListingRequest = false;
-            selectedApparelListingRequest = false;
-
             if (Input.GetMouseButtonUp(0))
             {
                 this.canWearAllowed = SelectedOutfit.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(this.SelectedPawn)).ToHashSet();
@@ -224,7 +218,27 @@ namespace ChooseYourOutfit
                         }
                     }
                 }
+                if (this.curFilterHPRange != this.SelectedOutfit.filter.AllowedHitPointsPercents)
+                {
+                    this.curFilterHPRange = this.SelectedOutfit.filter.AllowedHitPointsPercents;
+                    apparelListingRequest = true;
+                    layerListingRequest = true;
+                }
+                if (this.curFilterQualityRange != this.SelectedOutfit.filter.AllowedQualityLevels)
+                {
+                    this.curFilterQualityRange = this.SelectedOutfit.filter.AllowedQualityLevels;
+                    apparelListingRequest = true;
+                    layerListingRequest = true;
+                }
             }
+
+            if (this.layerListingRequest) this.layerListToShow = this.ListingLayerToShow();
+            if (this.apparelListingRequest) this.apparelListToShow = this.ListingApparelToShow(this.SelectedLayers);
+            if (this.selectedApparelListingRequest) this.selectedApparelListToShow = this.ListingSelectedApparelToShow(this.SelectedApparels);
+
+            layerListingRequest = false;
+            apparelListingRequest = false;
+            selectedApparelListingRequest = false;
 
             Task<ConcurrentQueue<Action>>[] tasks = new Task<ConcurrentQueue<Action>>[4];
             //右のインフォカード描画
@@ -535,6 +549,49 @@ namespace ChooseYourOutfit
             {
                 parentRect.height -= Text.LineHeight;
                 var filterLabelRect = new Rect(parentRect.x + 3f, parentRect.yMax, parentRect.width - Text.LineHeight - 6f, Text.LineHeight);
+                if (ChooseYourOutfit.settings.currentlyInStorage)
+                {
+                    filterLabelRect.xMin += 15f;
+                    if (!this.collapseInStorageMenu)
+                    {
+                        filterLabelRect.y -= Text.LineHeight * 2f;
+                        parentRect.height -= Text.LineHeight * 2f;
+                        var label1Rect = new Rect(filterLabelRect.x, filterLabelRect.yMax, filterLabelRect.width, Text.LineHeight);
+                        var check1Pos = new Vector2(label1Rect.xMax, label1Rect.y);
+                        var label2Rect = new Rect(filterLabelRect.x, label1Rect.yMax, filterLabelRect.width, Text.LineHeight);
+                        var check2Pos = new Vector2(label2Rect.xMax, label2Rect.y);
+                        drawer.Enqueue(() =>
+                        {
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(label1Rect, "CYO.Tip.ApplyHitPoints".Translate());
+                            Widgets.Label(label1Rect, "CYO.ApplyHitPoints".Translate());
+                            Widgets.Checkbox(check1Pos, ref ChooseYourOutfit.settings.applyHitPoints, 20f);
+                            if (Widgets.ButtonInvisible(new Rect(check1Pos, new Vector2(24f, 24f))))
+                            {
+                                this.apparelListingRequest = true;
+                                this.layerListingRequest = true;
+                            }
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(label2Rect, "CYO.Tip.ApplyQuality".Translate());
+                            Widgets.Label(label2Rect, "CYO.ApplyQuality".Translate());
+                            Widgets.Checkbox(check2Pos, ref ChooseYourOutfit.settings.applyQuality, 20f);
+                            if (Widgets.ButtonInvisible(new Rect(check2Pos, new Vector2(24f, 24f))))
+                            {
+                                this.apparelListingRequest = true;
+                                this.layerListingRequest = true;
+                            }
+                        });
+                    }
+                    var tex = this.collapseInStorageMenu ? TexButton.Reveal : TexButton.Collapse;
+                    var butRect = new Rect(filterLabelRect.x - 18f, filterLabelRect.y, Text.LineHeight, Text.LineHeight);
+                    drawer.Enqueue(() =>
+                    {
+                        if (Mouse.IsOver(butRect) && Input.GetMouseButtonUp(0))
+                        {
+                            Input.ResetInputAxes();
+                            this.collapseInStorageMenu = !this.collapseInStorageMenu;
+                        }
+                        Widgets.DrawTextureFitted(butRect, tex, 1f);
+                    });
+                }
                 var checkBoxPosition = new Vector2(parentRect.xMax - Text.LineHeight - 3f, parentRect.yMax);
                 drawer.Enqueue(() =>
                 {
@@ -552,6 +609,7 @@ namespace ChooseYourOutfit
             var outRect = parentRect;
             var viewRect = outRect;
             viewRect.height = Text.LineHeight * this.apparelListToShow?.Count() ?? 0f;
+            viewRect.width -= GenUI.ScrollBarWidth + 1f;
 
             Rect itemRect = parentRect;
             itemRect.height = Text.LineHeight;
@@ -560,11 +618,11 @@ namespace ChooseYourOutfit
             Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 10f, itemRect.height);
             infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
 
-            drawer.Enqueue(() => Widgets.BeginScrollView(outerRect, ref this.apparelsScrollPosition, viewRect, true));
+            drawer.Enqueue(() => Widgets.BeginScrollView(outRect, ref this.apparelsScrollPosition, viewRect, true));
 
             //画面に表示されるアパレルの範囲をあらかじめindexとして計算する
             var fromInclusive = (int)Math.Max((this.apparelsScrollPosition.y / itemRect.height), 0);
-            var toExclusive = (int)Math.Min((this.apparelsScrollPosition.y + outerRect.height) / itemRect.height + 1, this.apparelListToShow.Count);
+            var toExclusive = (int)Math.Min((this.apparelsScrollPosition.y + outRect.height) / itemRect.height + 1, this.apparelListToShow.Count);
 
             for (var index = fromInclusive; index < toExclusive; index++)
             {
@@ -950,7 +1008,20 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.currentlyInStorage)
             {
                 var allApparels = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Apparel);
-                list = list.Where(a => allApparels.Any(t => t.def == a.Value && t.IsInAnyStorage()));
+                var hpFilter = this.SelectedOutfit.filter.AllowedHitPointsPercents;
+                var quFilter = this.SelectedOutfit.filter.AllowedQualityLevels;
+                list = list.Where(a => allApparels.Any(t =>
+                {
+                    if (ChooseYourOutfit.settings.applyHitPoints && !hpFilter.Includes((float)t.HitPoints / (float)t.MaxHitPoints))
+                    {
+                        return false;
+                    }
+                    if (ChooseYourOutfit.settings.applyQuality && t.TryGetQuality(out var qc) && !quFilter.Includes(qc))
+                    {
+                        return false;
+                    }
+                    return t.def == a.Value && t.IsInAnyStorage();
+                }));
             }
 
             if (statsReporter.SelectedEntry != null)
@@ -1157,7 +1228,6 @@ namespace ChooseYourOutfit
             {
                 cantWearTogether.Add(apparel, allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body)).ToList());
             }
-            this.layerListToShow = ListingLayerToShow();
             if (pawn.gender == Gender.Female || pawn.gender == Gender.Male)
             {
                 this.buttonColliders = svgInterpreter.SVGToPolygons(this.svg[pawn.gender], this.rect6);
@@ -1175,6 +1245,7 @@ namespace ChooseYourOutfit
             if (this.canWearAllowed != null)
             {
                 this.LoadFilter();
+                this.apparelListingRequest = true;
                 this.layerListingRequest = true;
             }
         }
@@ -1297,5 +1368,11 @@ namespace ChooseYourOutfit
         private HashSet<string> bodypartsWhiteList = new HashSet<string>();
 
         private AccessTools.FieldRef<Dialog_ManageOutfits, Outfit> selOutfitFieldRef = AccessTools.FieldRefAccess<Outfit>(typeof(Dialog_ManageOutfits), "selOutfitInt");
+
+        private bool collapseInStorageMenu = true;
+
+        private FloatRange? curFilterHPRange;
+
+        private QualityRange? curFilterQualityRange;
     }
 }
