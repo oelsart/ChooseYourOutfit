@@ -1007,11 +1007,27 @@ namespace ChooseYourOutfit
             bool renderClothes = this.PreviewedApparels.Count != 0;
 
             this.inDialogPortraitRequest = true;
-            GUI.DrawTexture(rect, PortraitsCache.Get(this.SelectedPawn, rect.size, Rot4.South, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, renderClothes, null, null, false, null));
+            GUI.DrawTexture(rect, PortraitsCache.Get(this.SelectedPawn, rect.size, this.pawnPreviewRot, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, renderClothes, null, null, false, null));
             this.inDialogPortraitRequest = false;
 
             //renderTreeを返してあげる
             this.SelectedPawn.Drawer.renderer.renderTree = tmpRenderTree;
+
+            var rect1 = new Rect(rect.x, rect.y + 17.5f + (rect.height / 2f) - 12f, 20f, 20f);
+            Widgets.DrawTextureRotated(rect1.center, this.rotateIcon, -90f, 0.75f);
+            if (Mouse.IsOver(rect1) && Input.GetMouseButtonUp(0))
+            {
+                Input.ResetInputAxes();
+                this.pawnPreviewRot.Rotate(RotationDirection.Clockwise);
+            }
+
+            var rect2 = new Rect(rect.xMax - 20f, rect.y + 17.5f + (rect.height / 2f) - 12f, 20f, 20f);
+            Widgets.DrawTextureRotated(rect2.center, this.rotateIcon, 90f, 0.75f);
+            if (Mouse.IsOver(rect2) && Input.GetMouseButtonUp(0))
+            {
+                Input.ResetInputAxes();
+                this.pawnPreviewRot.Rotate(RotationDirection.Counterclockwise);
+            }
         }
 
         public HashSet<KeyValuePair<bool, ThingDef>> ListingApparelToShow(IEnumerable<ApparelLayerDef> layers)
@@ -1399,5 +1415,9 @@ namespace ChooseYourOutfit
         private FloatRange? curFilterHPRange;
 
         private QualityRange? curFilterQualityRange;
+
+        private Rot4 pawnPreviewRot = Rot4.South;
+
+        private readonly Texture2D rotateIcon = ContentFinder<Texture2D>.Get("UI/Misc/BarInstantMarker", true);
     }
 }

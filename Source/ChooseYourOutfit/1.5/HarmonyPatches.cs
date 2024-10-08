@@ -166,8 +166,8 @@ namespace ChooseYourOutfit
         }
     }
 
-    [HarmonyDebug]
     [HarmonyPatch(typeof(PawnRenderTree), "SetupApparelNodes")]
+    [HarmonyAfter("AB.HATweaker")]
     static class Patch_PawnRenderTree_SetupApparelNodes
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ILGenerator)
@@ -221,7 +221,7 @@ namespace ChooseYourOutfit
             {
                 var label4 = ILGenerator.DefineLabel();
                 codes[pos2].labels.Add(label4);
-                var pos3 = codes.FindLastIndex(pos2, c => c.opcode == OpCodes.Stloc_2);
+                var pos3 = codes.FindLastIndex(pos2, c => c.opcode == OpCodes.Stloc_2) + 1;
                 var label5 = ILGenerator.DefineLabel();
                 codes[pos3].labels.Add(label5);
 
