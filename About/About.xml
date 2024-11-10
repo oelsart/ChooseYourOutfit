@@ -26,4 +26,7 @@
     <li>Ludeon.Rimworld</li>
     <li>KamiKatze.MaterialFilter</li>
   </loadAfter>
+  <loadBefore>
+    <li>localghost.transmog</li>
+  </loadBefore>
 </ModMetaData>

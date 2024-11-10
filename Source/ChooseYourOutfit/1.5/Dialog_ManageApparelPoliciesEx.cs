@@ -96,18 +96,18 @@ namespace ChooseYourOutfit
             }
         }
 
-        private static ThingFilter ApparelGlobalFilter
-        {
-            get
-            {
-                if (Dialog_ManageApparelPoliciesEx.apparelGlobalFilter == null)
-                {
-                    Dialog_ManageApparelPoliciesEx.apparelGlobalFilter = new ThingFilter();
-                    Dialog_ManageApparelPoliciesEx.apparelGlobalFilter.SetAllow(ThingCategoryDefOf.Apparel, true, null, null);
-                }
-                return Dialog_ManageApparelPoliciesEx.apparelGlobalFilter;
-            }
-        }
+        //private static ThingFilter ApparelGlobalFilter
+        //{
+        //    get
+        //    {
+        //        if (Dialog_ManageApparelPoliciesEx.apparelGlobalFilter == null)
+        //        {
+        //            Dialog_ManageApparelPoliciesEx.apparelGlobalFilter = new ThingFilter();
+        //            Dialog_ManageApparelPoliciesEx.apparelGlobalFilter.SetAllow(ThingCategoryDefOf.Apparel, true, null, null);
+        //        }
+        //        return Dialog_ManageApparelPoliciesEx.apparelGlobalFilter;
+        //    }
+        //}
 
         public Pawn SelectedPawn
         {
@@ -202,7 +202,7 @@ namespace ChooseYourOutfit
         protected override void DoContentsRect(Rect rect)
         {
             if (!ChooseYourOutfit.settings.disableAddedUI) rect.width = 200f - this.panelDecrease;
-            ThingFilterUI.DoThingFilterConfigWindow(rect, this.thingFilterState, base.SelectedPolicy.filter, Dialog_ManageApparelPoliciesEx.ApparelGlobalFilter, 16, null, this.HiddenSpecialThingFilters(), false, false, false, null, null);
+            ThingFilterUI.DoThingFilterConfigWindow(rect, this.thingFilterState, base.SelectedPolicy.filter, (ThingFilter)this.ApparelGlobalFilter(null), 16, null, this.HiddenSpecialThingFilters(), false, false, false, null, null);
         }
 
         private IEnumerable<SpecialThingFilterDef> HiddenSpecialThingFilters()
@@ -1306,7 +1306,7 @@ namespace ChooseYourOutfit
 
         private readonly ThingFilterUI.UIState thingFilterState = new ThingFilterUI.UIState();
 
-        private static ThingFilter apparelGlobalFilter;
+        //private static ThingFilter apparelGlobalFilter;
 
         private Pawn selPawnInt;
 
@@ -1419,5 +1419,7 @@ namespace ChooseYourOutfit
         private Rot4 pawnPreviewRot = Rot4.South;
 
         private readonly Texture2D rotateIcon = ContentFinder<Texture2D>.Get("UI/Misc/BarInstantMarker", true);
+
+        private FastInvokeHandler ApparelGlobalFilter = MethodInvoker.GetHandler(AccessTools.PropertyGetter(typeof(Dialog_ManageApparelPolicies), "ApparelGlobalFilter"));
     }
 }
