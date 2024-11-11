@@ -1133,7 +1133,7 @@ namespace ChooseYourOutfit
         private Apparel GetApparel(ThingDef tDef)
         {
             var apparel = (Apparel)ThingMaker.MakeThing(tDef, this.previewApparelStuff[tDef]);
-            if (this.previewApparelStuff[tDef] != null)
+            if (this.previewApparelStuff[tDef] != null && apparel.HasComp<CompColorable>())
             {
                 apparel.DrawColor = tDef.GetColorForStuff(this.previewApparelStuff[tDef]);
             }
