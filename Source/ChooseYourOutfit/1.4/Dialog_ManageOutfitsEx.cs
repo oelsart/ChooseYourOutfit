@@ -731,9 +731,8 @@ namespace ChooseYourOutfit
 
                 drawer.Enqueue(() =>
                 {
-                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
-
                     GUI.DrawTexture(new Rect(pos, size), unfilledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * unhighlight + covered, 0f, 0f);
+                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
                 });
             });
 
@@ -1175,7 +1174,7 @@ namespace ChooseYourOutfit
                 this.unfilledPart[id] = ContentFinder<Texture2D>.Get($"ChooseYourOutfit/Body/{folder}/Unfilled/{id}");
                 this.filledPart[id] = ContentFinder<Texture2D>.Get($"ChooseYourOutfit/Body/{folder}/Filled/{id}");
 
-                var part = parts.FirstOrDefault(p => id.EqualsIgnoreCase(p.untranslatedCustomLabel?.Replace(" ", "_")) || id.EqualsIgnoreCase(p.def.defName));
+                var part = parts.FirstOrDefault(p => p.untranslatedCustomLabel?.Replace(" ", "_").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || p.def.defName.IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0);
                 if (part == null) continue;
                 var groups = part.groups;
                 groups.AddRange(DefDatabase<BodyPartGroupDef>.AllDefs.Where(g => part.Label.Replace(" ", "").EqualsIgnoreCase(g.defName)));

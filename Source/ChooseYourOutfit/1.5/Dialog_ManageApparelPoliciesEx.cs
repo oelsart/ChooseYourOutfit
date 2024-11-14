@@ -758,9 +758,8 @@ namespace ChooseYourOutfit
 
                 drawer.Enqueue(() =>
                 {
-                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
-
                     GUI.DrawTexture(new Rect(pos, size), unfilledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * unhighlight + covered, 0f, 0f);
+                    GUI.DrawTexture(new Rect(pos, size), filledPart[part.Key], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
                 });
             });
 
@@ -1014,7 +1013,7 @@ namespace ChooseYourOutfit
             this.SelectedPawn.Drawer.renderer.renderTree = tmpRenderTree;
 
             var rect1 = new Rect(rect.x, rect.y + 17.5f + (rect.height / 2f) - 12f, 20f, 20f);
-            Widgets.DrawTextureRotated(rect1.center, this.rotateIcon, -90f, 0.75f);
+            Widgets.DrawTextureFitted(rect1, TexUI.ArrowTexLeft, 0.75f);
             if (Mouse.IsOver(rect1) && Input.GetMouseButtonUp(0))
             {
                 Input.ResetInputAxes();
@@ -1022,7 +1021,7 @@ namespace ChooseYourOutfit
             }
 
             var rect2 = new Rect(rect.xMax - 20f, rect.y + 17.5f + (rect.height / 2f) - 12f, 20f, 20f);
-            Widgets.DrawTextureRotated(rect2.center, this.rotateIcon, 90f, 0.75f);
+            Widgets.DrawTextureFitted(rect2, TexUI.ArrowTexRight, 0.75f);
             if (Mouse.IsOver(rect2) && Input.GetMouseButtonUp(0))
             {
                 Input.ResetInputAxes();
@@ -1417,8 +1416,6 @@ namespace ChooseYourOutfit
         private QualityRange? curFilterQualityRange;
 
         private Rot4 pawnPreviewRot = Rot4.South;
-
-        private readonly Texture2D rotateIcon = ContentFinder<Texture2D>.Get("UI/Misc/BarInstantMarker", true);
 
         private FastInvokeHandler ApparelGlobalFilter = MethodInvoker.GetHandler(AccessTools.PropertyGetter(typeof(Dialog_ManageApparelPolicies), "ApparelGlobalFilter"));
     }
