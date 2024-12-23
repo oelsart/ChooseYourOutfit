@@ -9,6 +9,7 @@ namespace ChooseYourOutfit
         public bool syncFilter = true;
         public bool apparelListMode = false;
         public bool moveToBottom = false;
+        public bool hideUnregistrable = false;
         public bool showAddBillsButton = true;
         public bool ignoreBillLimit = false;
         public bool showTooltips = true;
@@ -27,6 +28,7 @@ namespace ChooseYourOutfit
             Scribe_Values.Look(ref syncFilter, "syncFilter", true);
             Scribe_Values.Look(ref apparelListMode, "apparelListMode", false);
             Scribe_Values.Look(ref moveToBottom, "moveToBottom", false);
+            Scribe_Values.Look(ref hideUnregistrable, "hideUnregistrable", false);
             Scribe_Values.Look(ref showAddBillsButton, "showAddBillsButton", true);
             Scribe_Values.Look(ref ignoreBillLimit, "ignoreBillLimit", false);
             Scribe_Values.Look(ref showTooltips, "showTooltips", true);

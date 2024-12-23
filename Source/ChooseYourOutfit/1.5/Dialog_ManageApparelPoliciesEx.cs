@@ -1067,6 +1067,12 @@ namespace ChooseYourOutfit
                     }));
             }
 
+            if (ChooseYourOutfit.settings.hideUnregistrable)
+            {
+                list = list.Where(a => a.Value.IsWithinCategory(ThingCategoryDefOf.Apparel) || a.Value.IsWithinCategory(ThingCategoryDefOf.ApparelArmor)
+                || (ModsConfig.IsActive("mlie.findagundamnit") && a.Value.IsWithinCategory(ThingCategoryDefOf.Weapons)));
+            }
+
             if (statsReporter.SelectedEntry != null)
             {
                 if (statsReporter.SelectedEntry.category == StatCategoryDefOf.EquippedStatOffsets)

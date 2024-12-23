@@ -34,6 +34,7 @@ namespace ChooseYourOutfit
                     listingStandard.Outdent(15f);
                     listingStandard.ColumnWidth = inRect.width;
                 }
+                listingStandard.CheckboxLabeled("CYO.Settings.HideUnregistrable".Translate(), ref settings.hideUnregistrable);
                 listingStandard.CheckboxLabeled("CYO.Settings.ShowResearchedButton".Translate(), ref settings.showResearchedButton);
                 listingStandard.CheckboxLabeled("CYO.Settings.ShowInStorageButton".Translate(), ref settings.showInStorageButton);
                 listingStandard.CheckboxLabeled("CYO.Settings.ShowAddBillsButton".Translate(), ref settings.showAddBillsButton);
