@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 using Verse;
 
@@ -10,38 +9,32 @@ namespace ChooseYourOutfit
 {
     public class Dialog_AddBillsToWorkTables : Window
     {
-        public Dialog_AddBillsToWorkTables(HashSet<ThingDef> apparels, Dictionary<ThingDef, ThingDef> stuff)
+        public Dialog_AddBillsToWorkTables(IEnumerable<ThingDef> apparels, Dictionary<ThingDef, ThingDef> stuff)
         {
-            this.forcePause = true;
-            this.doCloseX = true;
-            this.doCloseButton = true;
-            this.closeOnClickedOutside = true;
+            forcePause = true;
+            doCloseX = true;
+            doCloseButton = true;
+            closeOnClickedOutside = true;
 
-            this.Apparels = apparels.OrderByDescending(a => a.label).ToHashSet();
-            this.Stuff = stuff;
-            this.tryAddResult = TryAddBillsToWorkTables();
+            apparelsInt = apparels.OrderByDescending(a => a.label).ToList();
+            recipeExist = Apparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a)).ToHashSet();
+            stuffInt = stuff;
+            tryAddResult = TryAddBillsToWorkTables();
         }
 
-        private HashSet<ThingDef> Apparels
+        private List<ThingDef> Apparels
         {
             get
             {
                 return apparelsInt;
             }
-            set
-            {
-                apparelsInt = value;
-            }
         }
+
         private Dictionary<ThingDef, ThingDef> Stuff
         {
             get
             {
                 return stuffInt;
-            }
-            set
-            {
-                stuffInt = value;
             }
         }
 
@@ -49,7 +42,7 @@ namespace ChooseYourOutfit
         {
             get
             {
-                return this.Apparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a)).ToHashSet();
+                return recipeExist;
             }
         }
 
@@ -67,7 +60,7 @@ namespace ChooseYourOutfit
             outRect.yMax -= Margin + CloseButSize.y;
             var itemRect = new Rect(outRect.x, outRect.y, outRect.width, Text.LineHeight);
             var viewRect = new Rect(outRect.x, outRect.y, outRect.width, 0f);
-            viewRect.height = this.tryAddResult.Select(a => 1 + a.Value.Count).Sum() * itemRect.height;
+            viewRect.height = tryAddResult.Select(a => 1 + a.Value.Count).Sum() * itemRect.height;
 
             Widgets.AdjustRectsForScrollView(inRect, ref outRect, ref viewRect);
 
@@ -95,7 +88,7 @@ namespace ChooseYourOutfit
             var result = new Dictionary<TryAddBillsResult, HashSet<(ThingDef, Building_WorkTable)>>();
             foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, new HashSet<(ThingDef, Building_WorkTable)>());
 
-            foreach (var apparel in this.Apparels)
+            foreach (var apparel in Apparels)
             {
                 if (!RecipeExist.Contains(apparel))
                 {
@@ -153,7 +146,9 @@ namespace ChooseYourOutfit
             return result;
         }
 
-        private HashSet<ThingDef> apparelsInt;
+        private List<ThingDef> apparelsInt;
+
+        private HashSet<ThingDef> recipeExist;
 
         private Dictionary<ThingDef, ThingDef> stuffInt;
 

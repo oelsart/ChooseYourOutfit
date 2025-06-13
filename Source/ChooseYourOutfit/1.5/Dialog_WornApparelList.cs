@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using Verse;
-using RimWorld;
+﻿using RimWorld;
+using System.Linq;
 using UnityEngine;
+using Verse;
 using Verse.Sound;
-using System.Collections.Concurrent;
 
 namespace ChooseYourOutfit
 {
@@ -37,10 +36,10 @@ namespace ChooseYourOutfit
 
             Widgets.ListSeparator(ref num, inRect.width, "Apparel".Translate());
             foreach (Apparel apparel in from x in this.pawn.apparel.WornApparel
-                                       //where !x.def.apparel.layers.Contains(ApparelLayerDefOf.Belt)
-                                       select x into ap
-                                       orderby ap.def.apparel.bodyPartGroups[0].listOrder descending
-                                       select ap)
+                                            //where !x.def.apparel.layers.Contains(ApparelLayerDefOf.Belt)
+                                        select x into ap
+                                        orderby ap.def.apparel.bodyPartGroups[0].listOrder descending
+                                        select ap)
             {
                 Rect rect = new Rect(0f, num, Text.LineHeight, Text.LineHeight);
                 Widgets.ThingIcon(rect, apparel);

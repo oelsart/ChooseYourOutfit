@@ -85,6 +85,7 @@
     <Compile Include="Dialog_AddBillsToWorkTables.cs" />
     <Compile Include="Dialog_AddBillsConfirm.cs" />
     <Compile Include="Dialog_ManageOutfitsEx.cs" />
+    <Compile Include="ModCompat.cs" />
     <Compile Include="StatsReporter.cs" />
     <Compile Include="PolygonCollider.cs" />
     <Compile Include="HarmonyPatches.cs" />

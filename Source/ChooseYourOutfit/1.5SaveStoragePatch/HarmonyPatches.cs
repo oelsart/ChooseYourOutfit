@@ -1,11 +1,9 @@
-﻿using System;
-using System.Reflection;
-using System.Reflection.Emit;
-using Verse;
-using HarmonyLib;
-using SaveStorageSettings;
+﻿using HarmonyLib;
 using RimWorld;
+using System;
+using System.Reflection;
 using UnityEngine;
+using Verse;
 
 namespace ChooseYourOutfit.SaveStorageSettingsPatch
 {

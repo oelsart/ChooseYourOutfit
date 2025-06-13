@@ -1,5 +1,5 @@
-﻿using Verse;
-using UnityEngine;
+﻿using UnityEngine;
+using Verse;
 
 namespace ChooseYourOutfit
 {
@@ -29,8 +29,8 @@ namespace ChooseYourOutfit
                 {
                     listingStandard.Indent(15f);
                     listingStandard.ColumnWidth = inRect.width - 15f;
-                    if(listingStandard.RadioButton("CYO.Settings.MoveToBottom".Translate(), settings.moveToBottom)) settings.moveToBottom = true;
-                    if(listingStandard.RadioButton("CYO.Settings.DontMoveIt".Translate(), !settings.moveToBottom)) settings.moveToBottom = false;
+                    if (listingStandard.RadioButton("CYO.Settings.MoveToBottom".Translate(), settings.moveToBottom)) settings.moveToBottom = true;
+                    if (listingStandard.RadioButton("CYO.Settings.DontMoveIt".Translate(), !settings.moveToBottom)) settings.moveToBottom = false;
                     listingStandard.Outdent(15f);
                     listingStandard.ColumnWidth = inRect.width;
                 }

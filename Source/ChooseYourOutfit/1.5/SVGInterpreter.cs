@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
@@ -8,40 +6,37 @@ using Verse;
 
 namespace ChooseYourOutfit
 {
-    public class SVGInterpreter
+    public static class SVGInterpreter
     {
-        public ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>> SVGToPolygons(XDocument svg, Rect rect)
+        public static Dictionary<string, List<List<Vector2>>> SVGToPolygons(XDocument svg)
         {
-            var result = new ConcurrentDictionary<string, IEnumerable<IEnumerable<Vector2>>>();
+            var result = new Dictionary<string, List<List<Vector2>>>();
             XNamespace nspace = svg.Root.Name.Namespace;
             IEnumerable<XElement> paths = svg.Descendants(nspace + "path");
-            Rect viewBox = this.GetViewBox(svg);            
 
             foreach (var path in paths)
             {
                 var id = path.Attribute("id").Value;
-                var polygons = this.PathToPolygons(path.Attribute("d").Value, viewBox, rect);
+                var polygons = PathToPolygons(path.Attribute("d").Value);
                 result[id] = polygons;
             }
             return result;
         }
 
-        public Rect GetViewBox(XDocument svg)
+        public static Rect GetViewBox(XDocument svg)
         {
-            var value = svg.Root.Attribute("viewBox").Value.Split(' ').Select(float.Parse);
-            return new Rect(value.ElementAt(0), value.ElementAt(1), value.ElementAt(2), value.ElementAt(3));
+            var value = svg.Root.Attribute("viewBox").Value.Split(' ').Select(float.Parse).ToList();
+            return new Rect(value[0], value[1], value[2], value[3]);
         }
 
-        public IEnumerable<IEnumerable<Vector2>> PathToPolygons(string d, Rect viewBox, Rect rect)
+        public static List<List<Vector2>> PathToPolygons(string d)
         {
             IEnumerable<string> values = d.Split(' ');
             string mode = null;
             Vector2 current = Vector2.zero;
             Vector2 initial = Vector2.zero;
-            List<Vector2> polygon = new List<Vector2>();
-            float scale = Math.Min(rect.height / viewBox.height, rect.width / viewBox.width);
-            Vector2 offset = new Vector2(rect.width - viewBox.width * scale - viewBox.x,
-                rect.height / 2 - viewBox.height / 2 * scale - viewBox.y);
+            var result = new List<List<Vector2>>();
+            List<Vector2> polygon = null;
 
             foreach (var v in values)
             {
@@ -54,6 +49,7 @@ namespace ChooseYourOutfit
                     switch (mode)
                     {
                         case "M":
+                            polygon = new List<Vector2>();
                             initial.x = f[0];
                             initial.y = f[1];
                             current = initial;
@@ -61,6 +57,7 @@ namespace ChooseYourOutfit
                             break;
 
                         case "m":
+                            polygon = new List<Vector2>();
                             initial.x += f[0];
                             initial.y += f[1];
                             current = initial;
@@ -70,33 +67,33 @@ namespace ChooseYourOutfit
                         case "L":
                             current.x = f[0];
                             current.y = f[1];
-                            polygon.Add(current);
+                            polygon?.Add(current);
                             break;
 
                         case "l":
                             current.x += f[0];
                             current.y += f[1];
-                            polygon.Add(current);
+                            polygon?.Add(current);
                             break;
 
                         case "H":
                             current.x = f[0];
-                            polygon.Add(current);
+                            polygon?.Add(current);
                             break;
 
                         case "h":
                             current.x += f[0];
-                            polygon.Add(current);
+                            polygon?.Add(current);
                             break;
 
                         case "V":
                             current.y = f[0];
-                            polygon.Add(current);
+                            polygon?.Add(current);
                             break;
 
                         case "v":
                             current.y += f[0];
-                            polygon.Add(current);
+                            polygon?.Add(current);
                             break;
 
                         default:
@@ -107,15 +104,18 @@ namespace ChooseYourOutfit
                 else if (v == "Z" || v == "z")
                 {
                     current = initial;
-                    polygon.Add(current);
-                    yield return polygon.Select(p => p * scale + offset);
-                    polygon = new List<Vector2>();
+                    if (polygon != null)
+                    {
+                        polygon?.Add(current);
+                        result.Add(polygon);
+                    }
                 }
                 else
                 {
                     mode = v;
                 }
             }
+            return result;
         }
     }
 }

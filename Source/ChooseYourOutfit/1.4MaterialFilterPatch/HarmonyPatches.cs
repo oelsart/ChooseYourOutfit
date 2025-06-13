@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HarmonyLib;
+using MaterialFilter;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
-using HarmonyLib;
-using MaterialFilter;
-using System.Collections.Generic;
 
 namespace ChooseYourOutfit.MaterialFilterPatch
 {

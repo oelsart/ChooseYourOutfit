@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using Verse;
-using RimWorld;
+﻿using RimWorld;
+using System.Linq;
 using UnityEngine;
+using Verse;
 using Verse.Sound;
 
 namespace ChooseYourOutfit

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
   <name>Choose Your Outfit</name>
-  <packageId>oels.chooseyouroutfit.experimental</packageId>
+  <packageId>oels.chooseyouroutfit</packageId>
   <author>OELS</author>
   <description>衣服のポリシー作成をグラフィカルに行うことができるMODです。
   This mod allows for the creation of apparel policies graphically.

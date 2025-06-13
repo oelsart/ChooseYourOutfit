@@ -93,6 +93,7 @@
     <Compile Include="Dialog_AddBillsConfirm.cs" />
     <Compile Include="Dialog_AddBillsToWorkTables.cs" />
     <Compile Include="Dialog_WornApparelList.cs" />
+    <Compile Include="ModCompat.cs" />
     <Compile Include="StatsReporter.cs" />
     <Compile Include="PolygonCollider.cs" />
     <Compile Include="Dialog_ManageApparelPoliciesEx.cs" />
