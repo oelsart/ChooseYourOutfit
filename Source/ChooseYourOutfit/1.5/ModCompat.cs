@@ -35,23 +35,30 @@ namespace ChooseYourOutfit
             {
                 if (Active)
                 {
-                    Mod = (Mod)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:_mod")?.GetValue(null);
-                    if (Mod == null)
+                    try
                     {
-                        Log.Warning("[ChooseYourOutfit] Not found: ProstheticNoMissingBodyPartsMod");
-                        return;
+                        Mod = (Mod)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:_mod")?.GetValue(null);
+                        if (Mod == null)
+                        {
+                            Log.Warning("[ChooseYourOutfit] Not found: ProstheticNoMissingBodyPartsMod");
+                            return;
+                        }
+                        Settings = (ModSettings)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:_settings")?.GetValue(Mod);
+                        if (Settings == null)
+                        {
+                            Log.Warning("[ChooseYourOutfit] Not found: ProstheticNoMissingBodyPartsSettings");
+                            return;
+                        }
+                        var t_ProstheticNoMissingBodyPartsSettings = AccessTools.TypeByName("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsSettings");
+                        ArmsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "ArmsWhitelist");
+                        FeetWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "FeetWhitelist");
+                        HandsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "HandsWhitelist");
+                        LegsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "LegsWhitelist");
                     }
-                    Settings = (ModSettings)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:_settings")?.GetValue(Mod);
-                    if (Settings == null)
+                    catch (Exception e)
                     {
-                        Log.Warning("[ChooseYourOutfit] Not found: ProstheticNoMissingBodyPartsSettings");
-                        return;
+                        Log.Error($"[ChooseYourOutfit] ProstheticNoMissingBodyParts compatibility is broken: {e}");
                     }
-                    var t_ProstheticNoMissingBodyPartsSettings = AccessTools.TypeByName("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsSettings");
-                    ArmsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "ArmsWhitelist");
-                    FeetWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "FeetWhitelist");
-                    HandsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "HandsWhitelist");
-                    LegsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "LegsWhitelist");
                 }
             }
 
@@ -88,26 +95,33 @@ namespace ChooseYourOutfit
             {
                 if (Active)
                 {
-                    Original = AccessTools.Method(typeof(Dialog_ManageApparelPolicies), "DoContentsRect");
-                    var t_Patch = AccessTools.TypeByName("SaveStorageSettings.Patch_Dialog_ManageApparelPolicies_DoContentsRect");
-                    Postfix = AccessTools.Method(t_Patch, "Postfix");
-                    GetSelectedPolicy = AccessTools.MethodDelegate<Func<Dialog_ManageApparelPolicies, ApparelPolicy>>(
-                        AccessTools.Method(t_Patch, "GetSelectedPolicy"));
-                    SetApparelPolicy = AccessTools.MethodDelegate<Action<Dialog_ManageApparelPolicies, ApparelPolicy>>(
-                        AccessTools.Method(t_Patch, "SetApparelPolicy"));
-                    LoadFilterDialog = AccessTools.TypeByName("SaveStorageSettings.Dialog.LoadFilterDialog");
-                    SaveFilterDialog = AccessTools.TypeByName("SaveStorageSettings.Dialog.SaveFilterDialog");
+                    try
+                    {
+                        Original = AccessTools.Method(typeof(Dialog_ManageApparelPolicies), "DoContentsRect");
+                        var t_Patch = AccessTools.TypeByName("SaveStorageSettings.Patch_Dialog_ManageApparelPolicies_DoContentsRect");
+                        Postfix = AccessTools.Method(t_Patch, "Postfix");
+                        GetSelectedPolicy = AccessTools.MethodDelegate<Func<Dialog_ManageApparelPolicies, ApparelPolicy>>(
+                            AccessTools.Method(t_Patch, "GetSelectedPolicy"));
+                        SetApparelPolicy = AccessTools.MethodDelegate<Action<Dialog_ManageApparelPolicies, ApparelPolicy>>(
+                            AccessTools.Method(t_Patch, "SetApparelPolicy"));
+                        LoadFilterDialog = AccessTools.TypeByName("SaveStorageSettings.Dialog.LoadFilterDialog");
+                        SaveFilterDialog = AccessTools.TypeByName("SaveStorageSettings.Dialog.SaveFilterDialog");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"[ChooseYourOutfit] SaveStorageSettings compatibility is broken: {e}");
+                    }
                 }
             }
 
             public static void SaveStorageButtons(Dialog_ManageApparelPolicies dialog, Rect inRect)
             {
+                if (!Active) return;
+
                 Window GetDialog(Type type, string str, ThingFilter filter)
                 {
                     return (Window)Activator.CreateInstance(type, AccessTools.all, null, new object[] { str, filter }, null);
                 }
-
-                if (!Active) return;
 
                 if (Widgets.ButtonText(new Rect(inRect.xMax - 300f, 15f, 140f, 35f), "SaveStorageSettings.LoadAsNew".Translate(), true, false, true, null))
                 {
@@ -126,6 +140,77 @@ namespace ChooseYourOutfit
                     {
                         Find.WindowStack.Add(GetDialog(SaveFilterDialog, "Apparel_Management", selectedPolicy.filter));
                     }
+                }
+            }
+        }
+
+        public static class Outfitted
+        {
+            public static bool Active = ModsConfig.IsActive("homiru.Outfitted");
+
+            public static Type Dialog_ManageApparelPolicies_DoContentsRect_Patch;
+
+            public static MethodInfo Original;
+
+            public static MethodInfo Postfix;
+
+            static Outfitted()
+            {
+                if (Active)
+                {
+                    try
+                    {
+                        Dialog_ManageApparelPolicies_DoContentsRect_Patch = GenTypes.GetTypeInAnyAssembly("Outfitted.Dialog_ManageApparelPolicies_DoContentsRect_Patch", "Outfitted");
+                        Original = AccessTools.Method(typeof(Dialog_ManageApparelPolicies), "DoContentsRect");
+                        Postfix = AccessTools.Method(Dialog_ManageApparelPolicies_DoContentsRect_Patch, "Postfix");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"[ChooseYourOutfit] Outfitted compatibility is broken: {e}");
+                    }
+                }
+            }
+
+            public static void OutfittedButton(Dialog_ManageApparelPolicies dialog, Rect inRect)
+            {
+                if (!Active) return;
+
+                var dx = SaveStorageSettings.Active ? 445f : 140f;
+                var buttonRect = new Rect(inRect.xMax - dx, 15f, 140f, 35f);
+                if (Widgets.ButtonText(buttonRect, "Outfitted", true, false, true, null))
+                {
+                    var rect = new Rect(UI.MousePositionOnUIInverted, new Vector2(320f, 450f));
+                    if (rect.xMax > Screen.width)
+                    {
+                        rect.x -= rect.width;
+                    }
+                    var dialog2 = new Dialog()
+                    {
+                        windowRect = rect,
+                        draggable = true,
+                        closeOnCancel = true,
+                        closeOnClickedOutside = true,
+                        forceCatchAcceptAndCancelEventEvenIfUnfocused = true
+                    };
+                    dialog2.doWindowFunc = () =>
+                    {
+                        var rect2 = dialog2.windowRect.AtZero();
+                        rect2.y -= 70f;
+                        rect2.height += 80f;
+                        Widgets.BeginGroup(rect2);
+                        ReversePatch_Dialog_ManageApparelPolicies_DoContentsRect_Patch_Postfix.DoContent(rect.LeftPart(0f).AtZero(), dialog);
+                        Widgets.EndGroup();
+                    };
+
+                    Find.WindowStack.Add(dialog2);
+                }
+            }
+
+            public class Dialog : ImmediateWindow
+            {
+                protected override void SetInitialSizeAndPosition()
+                {
+                    this.windowRect = this.windowRect.Rounded();
                 }
             }
         }

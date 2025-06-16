@@ -25,9 +25,8 @@ namespace ChooseYourOutfit.MaterialFilterPatch
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType == typeof(MaterialFilterWindow));
-            codes.RemoveAt(pos);
-            codes.Insert(pos, new CodeInstruction(OpCodes.Newobj, AccessTools.Constructor(typeof(MaterialFilterWindowForApparel)
-                , new Type[] { typeof(ThingFilter), typeof(float), typeof(float), typeof(WindowLayer) })));
+            codes[pos].operand = AccessTools.Constructor(typeof(MaterialFilterWindowForApparel),
+                new [] { typeof(ThingFilter), typeof(float), typeof(float), typeof(WindowLayer) });
             return codes;
         }
     }

@@ -17,7 +17,11 @@ namespace ChooseYourOutfit
         static HarmonyPatches()
         {
             Instance = new Harmony("com.harmony.rimworld.chooseyouroutfit");
-            Instance.PatchAll();
+            Instance.PatchAllUncategorized();
+            if (Outfitted.Active)
+            {
+                Instance.PatchCategory("OELS.ChooseYourOutfit.Outfitted");
+            }
         }
 
         public static Harmony Instance { get; private set; }
@@ -278,6 +282,44 @@ namespace ChooseYourOutfit
             {
                 __result = __result.AddItem(new Command_OpenCYODialog());
             }
+        }
+    }
+
+    [HarmonyPatchCategory("OELS.ChooseYourOutfit.Outfitted")]
+    [HarmonyPatch("Outfitted.Dialog_ManageApparelPolicies_DoContentsRect_Patch", "Postfix")]
+    public static class ReversePatch_Dialog_ManageApparelPolicies_DoContentsRect_Patch_Postfix
+    {
+        [HarmonyReversePatch]
+        public static void DoContent(Rect rect, Dialog_ManageApparelPolicies __instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var original = AccessTools.Method(Outfitted.Dialog_ManageApparelPolicies_DoContentsRect_Patch, "DrawCloneButton");
+                var patch = AccessTools.Method(typeof(ReversePatch_Dialog_ManageApparelPolicies_DoContentsRect_Patch_DrawCloneButton), "DrawCloneButton");
+                return instructions.MethodReplacer(original, patch);
+            }
+            _ = Transpiler(null);
+            throw new NotImplementedException();
+        }
+    }
+
+    [HarmonyPatchCategory("OELS.ChooseYourOutfit.Outfitted")]
+    [HarmonyPatch("Outfitted.Dialog_ManageApparelPolicies_DoContentsRect_Patch", "DrawCloneButton")]
+    public static class ReversePatch_Dialog_ManageApparelPolicies_DoContentsRect_Patch_DrawCloneButton
+    {
+        [HarmonyReversePatch]
+        public static void DrawCloneButton(ApparelPolicy selectedOutfit)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = instructions.FirstOrDefault(c => c.LoadsConstant(700f));
+                if (code != null) code.operand = 10f;
+                code = instructions.FirstOrDefault(c => c.LoadsConstant(0f));
+                if (code != null) code.operand = 80f;
+                return instructions;
+            }
+            _ = Transpiler(null);
+            throw new NotImplementedException();
         }
     }
 }

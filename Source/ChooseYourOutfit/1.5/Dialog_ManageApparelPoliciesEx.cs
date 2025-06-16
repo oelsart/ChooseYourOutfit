@@ -34,6 +34,8 @@ namespace ChooseYourOutfit
         //選択されたポーンを受け取ってOutfit情報だけをDialog_ManageOutfitsのコンストラクタに渡す
         public Dialog_ManageApparelPoliciesEx(Pawn selectedPawn) : base(selectedPawn?.outfits.CurrentApparelPolicy)
         {
+            if (ChooseYourOutfit.settings.disableAddedUI) return;
+
             statsReporter = new StatsReporter(this);
             layersScrollPosition = default;
             apparelsScrollPosition = default;
@@ -94,6 +96,11 @@ namespace ChooseYourOutfit
             {
                 HarmonyPatches.Instance.Unpatch(SaveStorageSettings.Original, SaveStorageSettings.Postfix);
             }
+
+            if (Outfitted.Active && !ChooseYourOutfit.settings.disableAddedUI)
+            {
+                HarmonyPatches.Instance.Unpatch(Outfitted.Original, Outfitted.Postfix);
+            }
         }
 
         public Pawn SelectedPawn
@@ -145,13 +152,20 @@ namespace ChooseYourOutfit
         {
             get
             {
-                return new Vector2(ChooseYourOutfit.settings.disableAddedUI ? 700f : Math.Min(1400f, UI.screenWidth - 80f), 700f);
+                return ChooseYourOutfit.settings.disableAddedUI ? base.InitialSize : new Vector2(Math.Min(1400f, UI.screenWidth - 80f), 700f);
             }
         }
 
         protected override void DoContentsRect(Rect rect)
         {
-            if (!ChooseYourOutfit.settings.disableAddedUI) rect.width = 200f - panelDecrease;
+            if (!ChooseYourOutfit.settings.disableAddedUI)
+            {
+                rect.width = 200f - panelDecrease;
+                if (Outfitted.Active)
+                {
+                    rect.width *= 2f;
+                }
+            }
             base.DoContentsRect(rect);
         }
 
@@ -234,13 +248,13 @@ namespace ChooseYourOutfit
             }
 
             //apparelのリストを描画
-            tasks[1] = (Task.Run(() => DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, rect5.width, rect5.height - layersRect.height - 67f))));
+            tasks[1] = Task.Run(() => DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, rect5.width, rect5.height - layersRect.height - 67f)));
 
             var scale = rect6.height / svgViewBox.height;
             Rect rect8 = new Rect(rect6.x, rect6.y, rect6.width - svgViewBox.width * scale - 10f, rect6.height);
 
             //選択したapparelのリストを描画
-            tasks[2] = (Task.Run(() => DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width))));
+            tasks[2] = Task.Run(() => DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width)));
 
             //実際のポーンの見た目プレビュー
             DoOutfitPreview(new Rect(rect8.x, rect8.y, rect8.width, rect8.width));
@@ -277,6 +291,7 @@ namespace ChooseYourOutfit
             }
 
             SaveStorageSettings.SaveStorageButtons(this, inRect);
+            Outfitted.OutfittedButton(this, inRect);
 
             if (ChooseYourOutfit.settings.syncFilter)
             {
@@ -1170,11 +1185,18 @@ namespace ChooseYourOutfit
 
         private void GetExistPartsAndButtons()
         {
-            existParts.Clear();
             var hediffSet = SelectedPawn.health.hediffSet;
-            var parts = SelectedPawn.def.race.body.AllParts.Where(p => !hediffSet.PartIsMissing(p) ||
-            //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
-            hediffSet.hediffs.Any(h => bodypartsWhiteList.Contains(h.def.defName) && (h.Part == p.parent || h.Part == p.parent?.parent)));
+            bool ExistPart(BodyPartRecord part)
+            {
+                if (!hediffSet.PartIsMissing(part)) return true;
+                if (!ProstheticNoMissingBodyParts.Active) return false;
+
+                //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
+                return hediffSet.hediffs.Any(h => bodypartsWhiteList.Contains(h.def.defName) && (h.Part == part.parent || h.Part == part.parent?.parent));
+            }
+
+            existParts.Clear();
+            var parts = SelectedPawn.def.race.body.AllParts.Where(ExistPart);
             foreach (var (id, button) in buttonColliders)
             {
                 var folder = SelectedPawn.gender == Gender.Female || SelectedPawn.gender == Gender.Male ? SelectedPawn.gender : Gender.None;
@@ -1251,7 +1273,10 @@ namespace ChooseYourOutfit
             GetExistPartsAndButtons();
 
             canWearAllowed.Clear();
-            canWearAllowed.AddRange(SelectedPolicy?.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(SelectedPawn)));
+            if (SelectedPolicy != null)
+            {
+                canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(SelectedPawn)));
+            }
             LoadFilter();
             layerListingRequest = true;
         }
@@ -1272,7 +1297,11 @@ namespace ChooseYourOutfit
 
             if (SaveStorageSettings.Active && !ChooseYourOutfit.settings.disableAddedUI)
             {
-                HarmonyPatches.Instance.Patch(SaveStorageSettings.Original, SaveStorageSettings.Postfix);
+                HarmonyPatches.Instance.Patch(SaveStorageSettings.Original, postfix: SaveStorageSettings.Postfix);
+            }
+            if (Outfitted.Active && !ChooseYourOutfit.settings.disableAddedUI)
+            {
+                HarmonyPatches.Instance.Patch(Outfitted.Original, postfix: Outfitted.Postfix);
             }
         }
 
