@@ -61,8 +61,8 @@ namespace ChooseYourOutfit
             {
                 //this.selPawnButtonLabel = "AnyColonist".Translate().ToString();
                 //this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
-                selPawnInt = Find.CurrentMap.mapPawns.FreeColonists.First();
-                if (SelectedPawn == null) PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.First();
+                selPawnInt = Find.CurrentMap.mapPawns.FreeColonists.FirstOrDefault();
+                if (selPawnInt == null) selPawnInt = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.FirstOrDefault();
             }
 
             foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
