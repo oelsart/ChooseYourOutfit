@@ -27,7 +27,7 @@ namespace ChooseYourOutfit
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             //置き換え後のoperandとしてDialog_ManageOutfitsExのコンストラクタを取得
-            var operand = AccessTools.GetDeclaredConstructors(typeof(Dialog_ManageOutfitsEx)).First();
+            var operand = AccessTools.Constructor(typeof(Dialog_ManageOutfitsEx), new[] { typeof(Pawn) });
             //Dialog_ManageOutfitsのコンストラクタをoperandに持つNewobjの場所を検索
             int pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && (c.operand as ConstructorInfo).DeclaringType.Equals(typeof(Dialog_ManageOutfits)));
             //新しいoperandに置き換え
@@ -44,7 +44,7 @@ namespace ChooseYourOutfit
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             //置き換え後のoperandとしてDialog_ManageOutfitsExのコンストラクタを取得
-            var operand = AccessTools.GetDeclaredConstructors(typeof(Dialog_ManageOutfitsEx)).First();
+            var operand = AccessTools.Constructor(typeof(Dialog_ManageOutfitsEx), new[] { typeof(Pawn) });
             //Dialog_ManageOutfitsのコンストラクタをoperandに持つNewobjの場所を検索
             int pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && (c.operand as ConstructorInfo).DeclaringType.Equals(typeof(Dialog_ManageOutfits)));
             //新しいoperandに置き換え
