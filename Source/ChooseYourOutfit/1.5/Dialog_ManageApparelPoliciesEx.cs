@@ -61,8 +61,8 @@ namespace ChooseYourOutfit
             {
                 //this.selPawnButtonLabel = "AnyColonist".Translate().ToString();
                 //this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
-                selPawnInt = Find.CurrentMap.mapPawns.FreeColonists.First();
-                if (SelectedPawn == null) PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.First();
+                selPawnInt = Find.CurrentMap.mapPawns.FreeColonists.FirstOrDefault();
+                if (selPawnInt == null) selPawnInt = PawnsFinder.AllMapsCaravansAndTravellingTransporters_AliveSpawned_FreeColonists.FirstOrDefault();
             }
 
             foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
@@ -189,7 +189,7 @@ namespace ChooseYourOutfit
                     var pawn = SelectedPawn;
                     if (SelectedPawn.outfits.CurrentApparelPolicy != selPolicyInt)
                     {
-                        pawn = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.FirstOrFallback(p => p.outfits.CurrentApparelPolicy == selPolicyInt, SelectedPawn);
+                        pawn = PawnsFinder.AllMapsCaravansAndTravellingTransporters_AliveSpawned_FreeColonists.FirstOrFallback(p => p.outfits.CurrentApparelPolicy == selPolicyInt, SelectedPawn);
                         if (pawn != SelectedPawn)
                         {
                             InitializeByPawn(pawn);

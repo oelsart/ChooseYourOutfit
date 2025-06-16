@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.5", "1.5\1.5.csproj", "{6C2E00C6-46AE-4174-AD9B-AA78D70CB6BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChooseYourOutfit", "1.5\ChooseYourOutfit.csproj", "{6C2E00C6-46AE-4174-AD9B-AA78D70CB6BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.4", "1.4\1.4.csproj", "{0F32AAE6-AB1A-47BF-A3DD-0EF93140F19D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.5MaterialFilterPatch", "1.5MaterialFilterPatch\1.5MaterialFilterPatch.csproj", "{CA111DB1-C851-436D-BCEC-E7B080D2F4BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialFilterPatch", "1.5MaterialFilterPatch\MaterialFilterPatch.csproj", "{CA111DB1-C851-436D-BCEC-E7B080D2F4BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.4MaterialFilterPatch", "1.4MaterialFilterPatch\1.4MaterialFilterPatch.csproj", "{B122AE48-0D08-477B-BA5E-81DF490C3AEB}"
 EndProject
