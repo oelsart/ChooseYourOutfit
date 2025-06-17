@@ -9,4 +9,9 @@
     <li>1.5</li>
     <li IfModActive="KamiKatze.MaterialFilter">1.5/MaterialFilter</li>
   </v1.5>
+  <v1.6>
+    <li>/</li>
+    <li>1.6</li>
+    <li IfModActive="KamiKatze.MaterialFilter">1.6/MaterialFilter</li>
+  </v1.6>
 </loadFolders>

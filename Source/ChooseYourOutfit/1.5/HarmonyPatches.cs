@@ -45,7 +45,7 @@ namespace ChooseYourOutfit
     }
 
     //new Dialog_ManageApparelPoliciesをnew Dialog_ManageApparelPoliciesExに置き換え、渡すのをpawnにする
-    [HarmonyPatch()]
+    [HarmonyPatch]
     static class Patch_PawnColumnWorker_Outfit_Button_GenerateMenu
     {
         static MethodInfo TargetMethod()
@@ -89,15 +89,20 @@ namespace ChooseYourOutfit
         {
             var codes = instructions.ToList();
             var m_LabelEllipses = AccessTools.Method(typeof(Widgets), "LabelEllipses");
-            var pos = codes.FindIndex(c => c.Calls(m_LabelEllipses)) - 2;
-            var window = AccessTools.CreateInstance<Dialog_ManageApparelPolicies>();
+            var pos = codes.FindIndex(c => c.Calls(m_LabelEllipses));
+            var window = AccessTools.CreateInstance<Dialog_ManageApparelPoliciesEx>();
             var margin = (float)AccessTools.Property(window.GetType(), "Margin").GetValue(window);
             var local = generator.DeclareLocal(typeof(float));
 
+            var label = generator.DefineLabel();
+            codes[pos].labels.Add(label);
             codes.InsertRange(pos, new[]
             {
-                CodeInstruction.LoadLocal(12),
-                CodeInstruction.Call(typeof(Text), "CalcSize"),
+                CodeInstruction.LoadArgument(0),
+                CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
+                new CodeInstruction(OpCodes.Brfalse_S, label),
+                new CodeInstruction(OpCodes.Dup),
+                CodeInstruction.Call(typeof(Text), nameof(Text.CalcSize)),
                 CodeInstruction.LoadField(typeof(Vector2), "x"),
                 new CodeInstruction(OpCodes.Ldc_R4, margin),
                 new CodeInstruction(OpCodes.Ldc_R4, 194f),
@@ -108,27 +113,38 @@ namespace ChooseYourOutfit
                 new CodeInstruction(OpCodes.Stloc_S, local),
                 CodeInstruction.LoadLocal(4, true),
                 new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
-                CodeInstruction.Call(typeof(Rect), "set_xMax")
+                new CodeInstruction(OpCodes.Call, AccessTools.PropertySetter(typeof(Rect), nameof(Rect.xMax)))
             });
 
             var pos2 = codes.FindIndex(pos, c => c.LoadsConstant("DeletePolicyTip"));
+            var label2 = generator.DefineLabel();
+            var set_x = AccessTools.PropertySetter(typeof(Rect), nameof(Rect.x));
+            codes[pos2].labels.Add(label2);
             codes.InsertRange(pos2, new[]
             {
+                CodeInstruction.LoadArgument(0),
+                CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
+                new CodeInstruction(OpCodes.Brfalse_S, label2),
                 CodeInstruction.LoadLocal(7, true),
                 new CodeInstruction(OpCodes.Ldloc_S, local),
-                CodeInstruction.Call(typeof(Rect), "set_x"),
+                new CodeInstruction(OpCodes.Call, set_x),
                 CodeInstruction.LoadLocal(6, true),
                 new CodeInstruction(OpCodes.Ldloc_S, local),
                 new CodeInstruction(OpCodes.Ldc_R4, 42f),
                 new CodeInstruction(OpCodes.Add),
-                CodeInstruction.Call(typeof(Rect), "set_x"),
+                new CodeInstruction(OpCodes.Call, set_x),
                 CodeInstruction.LoadLocal(5, true),
                 new CodeInstruction(OpCodes.Ldloc_S, local),
                 new CodeInstruction(OpCodes.Ldc_R4, 84f),
                 new CodeInstruction(OpCodes.Add),
-                CodeInstruction.Call(typeof(Rect), "set_x")
+                new CodeInstruction(OpCodes.Call, set_x),
             });
             return codes;
+        }
+
+        static bool MoveButtons(Dialog_ManagePolicies<ApparelPolicy> dialog)
+        {
+            return !ChooseYourOutfit.settings.disableAddedUI && dialog is Dialog_ManageApparelPoliciesEx;
         }
     }
 
@@ -154,10 +170,19 @@ namespace ChooseYourOutfit
         }
     }
 
-    [HarmonyPatch(typeof(PawnRenderTree), "SetupApparelNodes")]
+    [HarmonyPatch]
     [HarmonyAfter("AB.HATweaker")]
     static class Patch_PawnRenderTree_SetupApparelNodes
     {
+        static MethodBase TargetMethod()
+        {
+            return AccessTools.FindIncludingInnerTypes(typeof(DynamicPawnRenderNodeSetup_Apparel), t =>
+            {
+                if (!t.Name.Contains("<GetDynamicNodes>")) return null;
+                return t.GetDeclaredMethods().FirstOrDefault(m => m.Name.Contains("MoveNext"));
+            });
+        }
+
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> codes = instructions.ToList();
@@ -169,7 +194,7 @@ namespace ChooseYourOutfit
             codes[0].labels.Add(label);
             codes.InsertRange(0, new[]
             {
-                CodeInstruction.Call(typeof(Find), "get_WindowStack"),
+                new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(Find), nameof(Find.WindowStack))),
                 new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
                 new CodeInstruction(OpCodes.Stloc_S, window),
                 new CodeInstruction(OpCodes.Ldloc_S, window),
@@ -179,8 +204,9 @@ namespace ChooseYourOutfit
                 new CodeInstruction(OpCodes.Brfalse_S, label),
                 new CodeInstruction(OpCodes.Ldloc_S, window),
                 CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
-                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(List<Apparel>), "Count")),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(List<Apparel>), nameof(List<Apparel>.Count))),
                 new CodeInstruction(OpCodes.Brtrue_S, label),
+                new CodeInstruction(OpCodes.Ldc_I4_0),
                 new CodeInstruction(OpCodes.Ret)
             });
 
