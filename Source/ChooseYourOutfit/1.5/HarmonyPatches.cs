@@ -92,7 +92,7 @@ namespace ChooseYourOutfit
             var pos = codes.FindIndex(c => c.Calls(m_LabelEllipses));
             var window = AccessTools.CreateInstance<Dialog_ManageApparelPoliciesEx>();
             var margin = (float)AccessTools.Property(window.GetType(), "Margin").GetValue(window);
-            var local = generator.DeclareLocal(typeof(float));
+            var root = generator.DeclareLocal(typeof(float));
 
             var label = generator.DefineLabel();
             codes[pos].labels.Add(label);
@@ -110,7 +110,7 @@ namespace ChooseYourOutfit
                 new CodeInstruction(OpCodes.Add),
                 new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
                 CodeInstruction.Call(typeof(Math), "Min", new Type[] { typeof(float), typeof(float) }),
-                new CodeInstruction(OpCodes.Stloc_S, local),
+                new CodeInstruction(OpCodes.Stloc_S, root),
                 CodeInstruction.LoadLocal(4, true),
                 new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
                 new CodeInstruction(OpCodes.Call, AccessTools.PropertySetter(typeof(Rect), nameof(Rect.xMax)))
@@ -118,26 +118,35 @@ namespace ChooseYourOutfit
 
             var pos2 = codes.FindIndex(pos, c => c.LoadsConstant("DeletePolicyTip"));
             var label2 = generator.DefineLabel();
-            var set_x = AccessTools.PropertySetter(typeof(Rect), nameof(Rect.x));
+            var label3 = generator.DefineLabel();
+            var offset = generator.DeclareLocal(typeof(float));
+            var m_OffsetButton = AccessTools.Method(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(OffsetButton));
             codes[pos2].labels.Add(label2);
             codes.InsertRange(pos2, new[]
             {
                 CodeInstruction.LoadArgument(0),
                 CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
                 new CodeInstruction(OpCodes.Brfalse_S, label2),
-                CodeInstruction.LoadLocal(7, true),
-                new CodeInstruction(OpCodes.Ldloc_S, local),
-                new CodeInstruction(OpCodes.Call, set_x),
+                new CodeInstruction(OpCodes.Ldc_R4, 0f),
+                new CodeInstruction(OpCodes.Stloc_S, offset),
+                CodeInstruction.LoadLocal(13),
+                new CodeInstruction(OpCodes.Brtrue_S, label3),
+                CodeInstruction.LoadLocal(8, true),
+                new CodeInstruction(OpCodes.Ldloc_S, root),
+                new CodeInstruction(OpCodes.Ldloca_S, offset),
+                new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
+                CodeInstruction.LoadLocal(7, true).WithLabels(label3),
+                new CodeInstruction(OpCodes.Ldloc_S, root),
+                new CodeInstruction(OpCodes.Ldloca_S, offset),
+                new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
                 CodeInstruction.LoadLocal(6, true),
-                new CodeInstruction(OpCodes.Ldloc_S, local),
-                new CodeInstruction(OpCodes.Ldc_R4, 42f),
-                new CodeInstruction(OpCodes.Add),
-                new CodeInstruction(OpCodes.Call, set_x),
+                new CodeInstruction(OpCodes.Ldloc_S, root),
+                new CodeInstruction(OpCodes.Ldloca_S, offset),
+                new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
                 CodeInstruction.LoadLocal(5, true),
-                new CodeInstruction(OpCodes.Ldloc_S, local),
-                new CodeInstruction(OpCodes.Ldc_R4, 84f),
-                new CodeInstruction(OpCodes.Add),
-                new CodeInstruction(OpCodes.Call, set_x),
+                new CodeInstruction(OpCodes.Ldloc_S, root),
+                new CodeInstruction(OpCodes.Ldloca_S, offset),
+                new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
             });
             return codes;
         }
@@ -145,6 +154,12 @@ namespace ChooseYourOutfit
         static bool MoveButtons(Dialog_ManagePolicies<ApparelPolicy> dialog)
         {
             return !ChooseYourOutfit.settings.disableAddedUI && dialog is Dialog_ManageApparelPoliciesEx;
+        }
+
+        static void OffsetButton(ref Rect rect, float root, ref float offset)
+        {
+            rect.x = root + offset;
+            offset += 42f;
         }
     }
 
