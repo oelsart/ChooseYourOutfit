@@ -11,6 +11,11 @@ namespace ChooseYourOutfit
 {
     public static class ModCompat
     {
+        public static bool AnyNull(params object[] args)
+        {
+            return args.Any(arg => arg == null);
+        }
+
         public static bool AnimalControls = ModsConfig.IsActive("avilmask.AnimalControls");
 
         public static bool ABHATweaker = ModsConfig.IsActive("AB.HATweaker");
@@ -37,18 +42,8 @@ namespace ChooseYourOutfit
                 {
                     try
                     {
-                        Mod = (Mod)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:_mod")?.GetValue(null);
-                        if (Mod == null)
-                        {
-                            Log.Warning("[ChooseYourOutfit] Not found: ProstheticNoMissingBodyPartsMod");
-                            return;
-                        }
-                        Settings = (ModSettings)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:_settings")?.GetValue(Mod);
-                        if (Settings == null)
-                        {
-                            Log.Warning("[ChooseYourOutfit] Not found: ProstheticNoMissingBodyPartsSettings");
-                            return;
-                        }
+                        Mod = (Mod)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:mod")?.GetValue(null);
+                        Settings = (ModSettings)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:settings")?.GetValue(Mod);
                         var t_ProstheticNoMissingBodyPartsSettings = AccessTools.TypeByName("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsSettings");
                         ArmsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "ArmsWhitelist");
                         FeetWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "FeetWhitelist");
@@ -58,6 +53,15 @@ namespace ChooseYourOutfit
                     catch (Exception e)
                     {
                         Log.Error($"[ChooseYourOutfit] ProstheticNoMissingBodyParts compatibility is broken: {e}");
+                        Active = false;
+                    }
+                    finally
+                    {
+                        if (AnyNull(Settings, ArmsWhitelist, FeetWhitelist, HandsWhitelist, LegsWhitelist))
+                        {
+                            Log.Error($"[ChooseYourOutfit] ProstheticNoMissingBodyParts compatibility is broken.");
+                            Active = false;
+                        }
                     }
                 }
             }
@@ -66,6 +70,7 @@ namespace ChooseYourOutfit
             {
                 get
                 {
+                    if (!Active) return Enumerable.Empty<string>();
                     return ArmsWhitelist(Settings)
                         .Concat(FeetWhitelist(Settings))
                         .Concat(HandsWhitelist(Settings))
@@ -110,6 +115,15 @@ namespace ChooseYourOutfit
                     catch (Exception e)
                     {
                         Log.Error($"[ChooseYourOutfit] SaveStorageSettings compatibility is broken: {e}");
+                        Active = false;
+                    }
+                    finally
+                    {
+                        if (AnyNull(Original, Postfix, GetSelectedPolicy, SetApparelPolicy, LoadFilterDialog, SaveFilterDialog))
+                        {
+                            Log.Error($"[ChooseYourOutfit] SaveStorageSettings compatibility is broken.");
+                            Active = false;
+                        }
                     }
                 }
             }
@@ -167,6 +181,15 @@ namespace ChooseYourOutfit
                     catch (Exception e)
                     {
                         Log.Error($"[ChooseYourOutfit] Outfitted compatibility is broken: {e}");
+                        Active = false;
+                    }
+                    finally
+                    {
+                        if (AnyNull(Original, Postfix))
+                        {
+                            Log.Error($"[ChooseYourOutfit] Outfitted compatibility is broken.");
+                            Active = false;
+                        }
                     }
                 }
             }
