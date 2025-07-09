@@ -79,17 +79,17 @@ namespace ChooseYourOutfit
                 selStuffDatabase.Add(apparel, defaultStuff);
             }
 
+            if (ProstheticNoMissingBodyParts.Active)
+            {
+                bodypartsWhiteList = ProstheticNoMissingBodyParts.GetWhitelist.ToHashSet();
+            }
+
             InitializeByPawn(SelectedPawn);
 
             if (Current.Game.outfitDatabase.AllOutfits.Any(outfit => outfit == null))
             {
                 Log.Error("[ChooseYourOutfit] A Null Apparel Policy has been generated. Please contact the mod author when you get this.");
                 Current.Game.outfitDatabase.AllOutfits.RemoveAll(outfit => outfit == null);
-            }
-
-            if (ProstheticNoMissingBodyParts.Active)
-            {
-                bodypartsWhiteList = ProstheticNoMissingBodyParts.GetWhitelist.ToHashSet();
             }
 
             if (SaveStorageSettings.Active && !ChooseYourOutfit.settings.disableAddedUI)
@@ -1192,7 +1192,7 @@ namespace ChooseYourOutfit
                 if (!ProstheticNoMissingBodyParts.Active) return false;
 
                 //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
-                return hediffSet.hediffs.Any(h => bodypartsWhiteList.Contains(h.def.defName) && (h.Part == part.parent || h.Part == part.parent?.parent));
+                return hediffSet.hediffs.Any(h => h != null && bodypartsWhiteList.Contains(h.def.defName) && (h.Part == part?.parent || h.Part == part?.parent?.parent));
             }
 
             existParts.Clear();
