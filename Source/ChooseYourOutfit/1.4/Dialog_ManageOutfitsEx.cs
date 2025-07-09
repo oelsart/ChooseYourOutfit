@@ -75,6 +75,11 @@ namespace ChooseYourOutfit
                 selStuffDatabase.Add(apparel, defaultStuff);
             }
 
+            if (ProstheticNoMissingBodyParts.Active)
+            {
+                bodypartsWhiteList = ProstheticNoMissingBodyParts.GetWhitelist.ToHashSet();
+            }
+
             InitializeByPawn(SelectedPawn);
 
             if (Current.Game.outfitDatabase.AllOutfits.Any(outfit => outfit == null))
@@ -82,13 +87,6 @@ namespace ChooseYourOutfit
                 Log.Error("[ChooseYourOutfit] A Null Apparel Policy has been generated. Please contact the mod author when you get this.");
                 Current.Game.outfitDatabase.AllOutfits.RemoveAll(outfit => outfit == null);
             }
-
-            if (ProstheticNoMissingBodyParts.Active)
-            {
-                bodypartsWhiteList = ProstheticNoMissingBodyParts.GetWhitelist.ToHashSet();
-            }
-
-
         }
 
         public Pawn SelectedPawn

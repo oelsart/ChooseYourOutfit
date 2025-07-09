@@ -52,6 +52,7 @@ namespace ChooseYourOutfit
                     }
                     catch (Exception e)
                     {
+                        Active = false;
                         Log.Error($"[ChooseYourOutfit] ProstheticNoMissingBodyParts compatibility is broken: {e}");
                         Active = false;
                     }
@@ -114,6 +115,7 @@ namespace ChooseYourOutfit
                     }
                     catch (Exception e)
                     {
+                        Active = false;
                         Log.Error($"[ChooseYourOutfit] SaveStorageSettings compatibility is broken: {e}");
                         Active = false;
                     }
