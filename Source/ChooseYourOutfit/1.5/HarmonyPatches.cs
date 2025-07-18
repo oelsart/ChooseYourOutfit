@@ -186,7 +186,7 @@ namespace ChooseYourOutfit
     }
 
     [HarmonyPatch]
-    [HarmonyAfter("AB.HATweaker")]
+    [HarmonyAfter("AB.HATweaker", "cat2002.showhair")]
     static class Patch_PawnRenderTree_SetupApparelNodes
     {
         static MethodBase TargetMethod()
@@ -270,7 +270,7 @@ namespace ChooseYourOutfit
     }
 
     [HarmonyPatch(typeof(PawnRenderTree), "AdjustParms")]
-    [HarmonyAfter("net.velc.rimworld.mod.hds", "AB.HATweaker")]
+    [HarmonyAfter("net.velc.rimworld.mod.hds", "AB.HATweaker", "cat2002.showhair")]
     static class Patch_PawnRenderTree_AdjustParms
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
