@@ -15,10 +15,10 @@ namespace ChooseYourOutfit
             this.title = title;
             this.confirm = confirm;
             this.onConfirm = onConfirm;
-            this.forcePause = true;
-            this.closeOnAccept = false;
-            this.closeOnClickedOutside = true;
-            this.absorbInputAroundWindow = true;
+            forcePause = true;
+            closeOnAccept = false;
+            closeOnClickedOutside = true;
+            absorbInputAroundWindow = true;
         }
 
         public override Vector2 InitialSize
@@ -39,14 +39,14 @@ namespace ChooseYourOutfit
                 Event.current.Use();
             }
             Rect rect = inRect;
-            rect.width = inRect.width / 2f - 5f;
+            rect.width = (inRect.width / 2f) - 5f;
             rect.yMin = inRect.yMax - Dialog_AddBillsConfirm.ButtonSize.y - 10f;
             Rect rect2 = inRect;
             rect2.xMin = rect.xMax + 10f;
             rect2.yMin = inRect.yMax - Dialog_AddBillsConfirm.ButtonSize.y - 10f;
             Rect rect3 = inRect;
             rect3.y += 4f;
-            rect3.yMax = rect2.y - 10f - Text.LineHeight * 3;
+            rect3.yMax = rect2.y - 10f - (Text.LineHeight * 3);
             Rect rect4 = inRect;
             rect4.y = rect3.yMax;
             rect4.height = Text.LineHeight;
@@ -57,7 +57,7 @@ namespace ChooseYourOutfit
 
             using (new TextBlock(TextAnchor.UpperCenter))
             {
-                Widgets.Label(rect3, this.title);
+                Widgets.Label(rect3, title);
             }
             Widgets.CheckboxLabeled(rect4, "CYO.AddBillsConfirm.RestrictToPreviewedApparels".Translate(), ref restrictToPreviewedApparels);
             Widgets.CheckboxLabeled(rect5, "CYO.AddBillsConfirm.RestrictToPreviewedStuffs".Translate(), ref restrictToPreviewedStuffs);
@@ -66,9 +66,9 @@ namespace ChooseYourOutfit
             {
                 Find.WindowStack.TryRemove(this, true);
             }
-            if (Widgets.ButtonText(rect2, this.confirm, true, true, true, null) || flag)
+            if (Widgets.ButtonText(rect2, confirm, true, true, true, null) || flag)
             {
-                Action action = this.onConfirm;
+                Action action = onConfirm;
                 if (action != null)
                 {
                     action();

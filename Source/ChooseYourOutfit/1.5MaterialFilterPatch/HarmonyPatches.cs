@@ -22,10 +22,10 @@ namespace ChooseYourOutfit.MaterialFilterPatch
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            List<CodeInstruction> codes = [.. instructions];
             int pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType == typeof(MaterialFilterWindow));
             codes[pos].operand = AccessTools.Constructor(typeof(MaterialFilterWindowForApparel),
-                new [] { typeof(ThingFilter), typeof(float), typeof(float), typeof(WindowLayer) });
+                [typeof(ThingFilter), typeof(float), typeof(float), typeof(WindowLayer)]);
             return codes;
         }
     }

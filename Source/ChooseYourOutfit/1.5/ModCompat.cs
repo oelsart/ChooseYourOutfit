@@ -136,7 +136,7 @@ namespace ChooseYourOutfit
 
                 Window GetDialog(Type type, string str, ThingFilter filter)
                 {
-                    return (Window)Activator.CreateInstance(type, AccessTools.all, null, new object[] { str, filter }, null);
+                    return (Window)Activator.CreateInstance(type, AccessTools.all, null, [str, filter], null);
                 }
 
                 if (Widgets.ButtonText(new Rect(inRect.xMax - 300f, 15f, 140f, 35f), "SaveStorageSettings.LoadAsNew".Translate(), true, false, true, null))
@@ -235,7 +235,7 @@ namespace ChooseYourOutfit
             {
                 protected override void SetInitialSizeAndPosition()
                 {
-                    this.windowRect = this.windowRect.Rounded();
+                    windowRect = windowRect.Rounded();
                 }
             }
         }

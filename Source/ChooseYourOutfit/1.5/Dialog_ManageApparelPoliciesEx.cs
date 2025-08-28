@@ -16,6 +16,118 @@ namespace ChooseYourOutfit
     [StaticConstructorOnStartup]
     public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     {
+        private Pawn selPawnInt;
+
+        private PawnRenderTree selPawnRenderTree;
+
+        private ApparelPolicy selPolicyInt;
+
+        private Dictionary<string, (BodyPartRecord, List<BodyPartGroupDef>)> existParts = [];
+
+        private string selPawnButtonLabel = "AnyColonist".Translate();
+
+        private QualityCategory selQualityInt = QualityCategory.Normal;
+
+        private string selQualityButtonLabel = QualityCategory.Normal.GetLabel();
+
+        private ThingDef selStuffInt;
+
+        private Dictionary<ThingDef, ThingDef> selStuffDatabase = [];
+
+        private string selStuffButtonLabel;
+
+        private Vector2 layersScrollPosition;
+
+        private Vector2 apparelsScrollPosition;
+
+        private Vector2 listScrollPosition;
+
+        private List<ApparelLayerDef> layerListToShow = [];
+
+        public bool layerListingRequest;
+
+        private ThingDef statsDrawn;
+
+        private ThingDef mouseovered;
+
+        private ThingDef lastMouseovered;
+
+        private ThingDef mouseoveredSelectedApparel;
+
+        private HashSet<ApparelLayerDef> selLayersInt = [];
+
+        private HashSet<ThingDef> selApparelsInt = [];
+
+        private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = [];
+
+        private List<KeyValuePair<bool, ThingDef>> apparelListToShow = [];
+
+        public bool apparelListingRequest;
+
+        private Dictionary<ApparelLayerDef, HashSet<ThingDef>> selectedApparelListToShow = [];
+
+        public bool selectedApparelListingRequest;
+
+        private Dictionary<ApparelLayerDef, bool> collapse = [];
+
+        private List<ThingDef> preApparelsInt = [];
+
+        public List<Apparel> preApparelsApparel = [];
+
+        //private Dictionary<ThingDef, Apparel> apparelDatabase = new Dictionary<ThingDef, Apparel>();
+
+        private IEnumerable<BodyPartGroupDef> selBodyPartGroupsInt;
+
+        private IEnumerable<BodyPartGroupDef> highlightedGroups;
+
+        private Rect svgViewBox;
+
+        private Rect rect5;
+
+        private Rect rect6;
+
+        private Rect rect7;
+
+        private float panelDecrease;
+
+        private Dictionary<string, Vector2[][]> buttonColliders = [];
+
+        public HashSet<ThingDef> allApparels = [];
+
+        private HashSet<ThingDef> canWearAllowed = [];
+
+        private StatsReporter statsReporter;
+
+        //private Dictionary<Apparel, Color> overrideApparelColors = new Dictionary<Apparel, Color>();
+
+        private Dictionary<ThingDef, ThingDef> previewApparelStuff = [];
+
+        public bool inDialogPortraitRequest = false;
+
+        private HashSet<string> bodypartsWhiteList;
+
+        private bool collapseInStorageMenu = true;
+
+        private FloatRange? curFilterHPRange;
+
+        private QualityRange? curFilterQualityRange;
+
+        private Rot4 pawnPreviewRot = Rot4.South;
+
+        private List<ApparelLayerDef> OrderedLayerDefs;
+
+        private ConcurrentDictionary<Action, bool> bodyPartsDrawer = new();
+
+        private static readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
+
+        private static Dictionary<Gender, XDocument> SVGs = [];
+
+        private static Dictionary<Gender, Dictionary<string, List<List<Vector2>>>> Colliders = [];
+
+        private static Dictionary<(Gender, string), Texture2D> unfilledParts = [];
+
+        private static Dictionary<(Gender, string), Texture2D> filledParts = [];
+
         static Dialog_ManageApparelPoliciesEx()
         {
             foreach (Gender gender in Enum.GetValues(typeof(Gender)))
@@ -46,16 +158,19 @@ namespace ChooseYourOutfit
             curFilterHPRange = SelectedPolicy?.filter.AllowedHitPointsPercents;
             curFilterQualityRange = SelectedPolicy?.filter.AllowedQualityLevels;
             DefDatabase<ApparelLayerDef>.AllDefsListForReading.ForEach(l => collapse[l] = ChooseYourOutfit.settings.collapseByLayer);
-            OrderedLayerDefs = DefDatabase<ApparelLayerDef>.AllDefs.OrderByDescending(l => l.drawOrder).ToList();
+            OrderedLayerDefs = [.. DefDatabase<ApparelLayerDef>.AllDefs.OrderByDescending(l => l.drawOrder)];
 
             //毎Tickボタンの当たり判定を計算するのは忍びないので先に計算するためボタン周りのrectを先に決めています
             panelDecrease = (1400f - InitialSize.x) / 8f;
-            rect5 = new Rect(Margin + 402f - panelDecrease, Margin + 52f + OffsetHeaderY, 200f - panelDecrease, windowRect.height);
-            rect5.yMax = InitialSize.y;
+            Rect rect = new(Margin + 402f - panelDecrease, Margin + 52f + OffsetHeaderY, 200f - panelDecrease, windowRect.height)
+            {
+                yMax = InitialSize.y
+            };
+            rect5 = rect;
             rect5.yMax -= Margin + Window.CloseButSize.y + 13f;
-            var infoWidth = 300f - panelDecrease * 4f;
+            var infoWidth = 300f - (panelDecrease * 4f);
             rect6 = new Rect(rect5.xMax + 12f, rect5.y, InitialSize.x - rect5.x - rect5.width - infoWidth - 40f - Margin, rect5.height - 15f);
-            rect7 = new Rect(InitialSize.x - Margin * 2f - infoWidth, rect5.y, infoWidth, rect5.height - 15f);
+            rect7 = new Rect(InitialSize.x - (Margin * 2f) - infoWidth, rect5.y, infoWidth, rect5.height - 15f);
 
             if (selectedPawn == null)
             {
@@ -81,7 +196,7 @@ namespace ChooseYourOutfit
 
             if (ProstheticNoMissingBodyParts.Active)
             {
-                bodypartsWhiteList = ProstheticNoMissingBodyParts.GetWhitelist.ToHashSet();
+                bodypartsWhiteList = [.. ProstheticNoMissingBodyParts.GetWhitelist];
             }
 
             InitializeByPawn(SelectedPawn);
@@ -237,7 +352,7 @@ namespace ChooseYourOutfit
             //ちらつきを無くすため一番手前に持ってきました
 
             //apparelLayerのリストを描画
-            var layersRect = new Rect(rect5.x, rect5.y + 40f, rect5.width, Math.Min(Text.LineHeight + Text.LineHeight * layerListToShow.Count, 240f));
+            var layersRect = new Rect(rect5.x, rect5.y + 40f, rect5.width, Math.Min(Text.LineHeight + (Text.LineHeight * layerListToShow.Count), 240f));
             if (layerListToShow.Count == 0)
             {
                 Widgets.Label(layersRect, "CYO.NoApparels".Translate());
@@ -251,7 +366,7 @@ namespace ChooseYourOutfit
             tasks[1] = Task.Run(() => DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, rect5.width, rect5.height - layersRect.height - 67f)));
 
             var scale = rect6.height / svgViewBox.height;
-            Rect rect8 = new Rect(rect6.x, rect6.y, rect6.width - svgViewBox.width * scale - 10f, rect6.height);
+            Rect rect8 = new Rect(rect6.x, rect6.y, rect6.width - (svgViewBox.width * scale) - 10f, rect6.height);
 
             //選択したapparelのリストを描画
             tasks[2] = Task.Run(() => DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width)));
@@ -270,8 +385,8 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(colonistButtonRect, "CYO.Tip.ColonistButton".Translate());
             if (Widgets.ButtonText(colonistButtonRect, selPawnButtonLabel))
             {
-                List<FloatMenuOption> options = (from opt in GeneratePawnList(SelectedPawn)
-                                                 select opt.option).ToList();
+                List<FloatMenuOption> options = [.. from opt in GeneratePawnList(SelectedPawn)
+                                                 select opt.option];
                 Find.WindowStack.Add(new FloatMenu(options));
             }
 
@@ -425,7 +540,7 @@ namespace ChooseYourOutfit
         //服のレイヤーリストを描画
         public IEnumerable<Action> DoLayerList(Rect outerRect)
         {
-            var viewRect = new Rect(outerRect.x, outerRect.y, outerRect.width, Text.LineHeight + Text.LineHeight * layerListToShow.Count);
+            var viewRect = new Rect(outerRect.x, outerRect.y, outerRect.width, Text.LineHeight + (Text.LineHeight * layerListToShow.Count));
             viewRect.width -= GenUI.ScrollBarWidth + 1f;
 
             yield return () => Widgets.BeginGroup(outerRect);
@@ -458,7 +573,7 @@ namespace ChooseYourOutfit
 
             foreach (var (layer, i) in layerListToShow.Select((l, i) => (l, i)))
             {
-                var curRect = new Rect(itemRect.x, itemRect.y + (i + 1) * itemRect.height, itemRect.width, itemRect.height);
+                var curRect = new Rect(itemRect.x, itemRect.y + ((i + 1) * itemRect.height), itemRect.width, itemRect.height);
 
                 yield return () =>
                 {
@@ -499,8 +614,8 @@ namespace ChooseYourOutfit
             if (ChooseYourOutfit.settings.syncFilter is false)
             {
                 parentRect.height -= 30f;
-                var leftButtonRect = new Rect(parentRect.x + 3f, parentRect.yMax + 3f, parentRect.width / 2 - 4.5f, 24f);
-                var rightButtonRect = new Rect(parentRect.x + parentRect.width / 2 + 1.5f, parentRect.yMax + 3f, parentRect.width / 2 - 4.5f, 24f);
+                var leftButtonRect = new Rect(parentRect.x + 3f, parentRect.yMax + 3f, (parentRect.width / 2) - 4.5f, 24f);
+                var rightButtonRect = new Rect(parentRect.x + (parentRect.width / 2) + 1.5f, parentRect.yMax + 3f, (parentRect.width / 2) - 4.5f, 24f);
                 yield return () =>
                 {
                     using (new TextBlock(GameFont.Tiny))
@@ -607,8 +722,8 @@ namespace ChooseYourOutfit
             yield return () => Widgets.BeginScrollView(outRect, ref apparelsScrollPosition, viewRect, true);
 
             //画面に表示されるアパレルの範囲をあらかじめindexとして計算する
-            var fromInclusive = (int)Math.Max((apparelsScrollPosition.y / itemRect.height), 0);
-            var toExclusive = (int)Math.Min((apparelsScrollPosition.y + outRect.height) / itemRect.height + 1, apparelListToShow.Count);
+            var fromInclusive = (int)Math.Max(apparelsScrollPosition.y / itemRect.height, 0);
+            var toExclusive = (int)Math.Min(((apparelsScrollPosition.y + outRect.height) / itemRect.height) + 1, apparelListToShow.Count);
 
             for (var index = fromInclusive; index < toExclusive; index++)
             {
@@ -640,8 +755,8 @@ namespace ChooseYourOutfit
                         if (Input.GetMouseButtonUp(1))
                         {
                             Input.ResetInputAxes();
-                            List<FloatMenuOption> options = (from opt in GenerateContextMenu(apparel.Value)
-                                                             select opt.option).ToList();
+                            List<FloatMenuOption> options = [.. from opt in GenerateContextMenu(apparel.Value)
+                                                             select opt.option];
                             Find.WindowStack.Add(new FloatMenu(options));
                         }
                     }
@@ -662,8 +777,10 @@ namespace ChooseYourOutfit
             Parallel.ForEach(existParts, (KeyValuePair<string, (BodyPartRecord part, List<BodyPartGroupDef> groups)> part) =>
             {
                 if (buttonColliders[part.Key].Length == 0) Log.Error("[ChooseYourOutfit]Path does not contain any polygons. It may not be closed.");
-                var pos = new Vector2(buttonColliders[part.Key].Min(p => p.Min(v => v.x)), buttonColliders[part.Key].Min(p => p.Min(v => v.y)));
-                var size = new Vector2(buttonColliders[part.Key].Max(p => p.Max(v => v.x)), buttonColliders[part.Key].Max(p => p.Max(v => v.y))) - pos;
+                float VectorX(Vector2 v) => v.x;
+                float VectorY(Vector2 v) => v.y;
+                var pos = new Vector2(buttonColliders[part.Key].Min(p => p.Min(VectorX)), buttonColliders[part.Key].Min(p => p.Min(VectorY)));
+                var size = new Vector2(buttonColliders[part.Key].Max(p => p.Max(VectorX)), buttonColliders[part.Key].Max(p => p.Max(VectorY))) - pos;
 
                 var isInPolygon = false;
 
@@ -719,12 +836,12 @@ namespace ChooseYourOutfit
                     var unfilled = unfilledParts[(drawGender, part.Key)];
                     if (unfilled != null)
                     {
-                        GUI.DrawTexture(new Rect(pos, size), unfilled, ScaleMode.ScaleToFit, true, 0f, color * unhighlight + covered, 0f, 0f);
+                        GUI.DrawTexture(new Rect(pos, size), unfilled, ScaleMode.ScaleToFit, true, 0f, (color * unhighlight) + covered, 0f, 0f);
                     }
                     var filled = filledParts[(drawGender, part.Key)];
                     if (filled != null)
                     {
-                        GUI.DrawTexture(new Rect(pos, size), filledParts[(drawGender, part.Key)], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
+                        GUI.DrawTexture(new Rect(pos, size), filledParts[(drawGender, part.Key)], ScaleMode.ScaleToFit, true, 0f, (color * alpha * unhighlight) + covered, 0f, 0f);
                     }
                 }, true);
             });
@@ -745,15 +862,15 @@ namespace ChooseYourOutfit
         //情報カードを描画
         public IEnumerable<Action> DoInfoCard(Rect rect)
         {
-            var rect2 = new Rect(rect.x, rect.y, rect7.width / 2f - 2.5f, 35f);
+            var rect2 = new Rect(rect.x, rect.y, (rect7.width / 2f) - 2.5f, 35f);
 
             yield return () =>
             {
                 if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect2, "CYO.Tip.InfoQuality".Translate());
                 if (Widgets.ButtonText(rect2, selQualityButtonLabel))
                 {
-                    List<FloatMenuOption> options = (from opt in GenerateQualityList(selQualityInt)
-                                                     select opt.option).ToList();
+                    List<FloatMenuOption> options = [.. from opt in GenerateQualityList(selQualityInt)
+                                                     select opt.option];
                     Find.WindowStack.Add(new FloatMenu(options));
                 }
             };
@@ -773,8 +890,8 @@ namespace ChooseYourOutfit
                         if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(rect3, "CYO.Tip.InfoStuff".Translate());
                         if (Widgets.ButtonText(rect3, selStuffButtonLabel))
                         {
-                            List<FloatMenuOption> options = (from opt in GenerateStuffList(selStuffInt)
-                                                             select opt.option).ToList();
+                            List<FloatMenuOption> options = [.. from opt in GenerateStuffList(selStuffInt)
+                                                             select opt.option];
                             Find.WindowStack.Add(new FloatMenu(options));
                         }
                     };
@@ -797,8 +914,8 @@ namespace ChooseYourOutfit
         {
             if (SelectedApparels.Count == 0) yield break;
 
-            Rect rect1 = new Rect(outerRect.x, outerRect.y, outerRect.width - Text.LineHeight * 2 - 12f - GenUI.ScrollBarWidth + 1f, Text.LineHeight);
-            Rect rect2 = new Rect(outerRect.xMax - Text.LineHeight * 2 - 12f - GenUI.ScrollBarWidth, outerRect.y, Text.LineHeight * 2 + 12f + GenUI.ScrollBarWidth - 2f, Text.LineHeight);
+            Rect rect1 = new Rect(outerRect.x, outerRect.y, outerRect.width - (Text.LineHeight * 2) - 12f - GenUI.ScrollBarWidth + 1f, Text.LineHeight);
+            Rect rect2 = new Rect(outerRect.xMax - (Text.LineHeight * 2) - 12f - GenUI.ScrollBarWidth, outerRect.y, (Text.LineHeight * 2) + 12f + GenUI.ScrollBarWidth - 2f, Text.LineHeight);
             yield return () =>
             {
                 Widgets.DrawBoxSolidWithOutline(rect1, new Color(0.18f, 0.18f, 0.2f), new Color(0.36f, 0.36f, 0.4f));
@@ -835,7 +952,7 @@ namespace ChooseYourOutfit
             itemRect.height = Text.LineHeight;
             viewRect.height = (selectedApparelListToShow.Count + selectedApparelListToShow.Where(l => !collapse[l.Key]).Select(l => l.Value.Count).Sum()) * itemRect.height;
             Rect checkBoxRect = new Rect(itemRect.xMax - itemRect.height, itemRect.y, itemRect.height, itemRect.height);
-            Rect stuffRect = new Rect(itemRect.xMax - itemRect.height * 2, itemRect.y, itemRect.height, itemRect.height);
+            Rect stuffRect = new Rect(itemRect.xMax - (itemRect.height * 2), itemRect.y, itemRect.height, itemRect.height);
             var curY = itemRect.y;
             var anyMouseOvered = false;
 
@@ -871,8 +988,8 @@ namespace ChooseYourOutfit
 
                     foreach (var (apparel, index) in apparels.Value.Select((a, i) => (a, i)))
                     {
-                        var curApparelY = curY + index * itemRect.height;
-                        if (curApparelY < listScrollPosition.y + outerRect.height - itemRect.height - panelDecrease * 4f || curApparelY > listScrollPosition.y + outerRect.height * 2f - panelDecrease * 4f) continue;
+                        var curApparelY = curY + (index * itemRect.height);
+                        if (curApparelY < listScrollPosition.y + outerRect.height - itemRect.height - (panelDecrease * 4f) || curApparelY > listScrollPosition.y + (outerRect.height * 2f) - (panelDecrease * 4f)) continue;
 
                         var curItemRect = new Rect(itemRect.x, curApparelY, itemRect.width, itemRect.height);
                         var curCheckBoxRect = new Rect(checkBoxRect.x, curApparelY, checkBoxRect.width, checkBoxRect.height);
@@ -915,8 +1032,8 @@ namespace ChooseYourOutfit
                                 else if (previewApparelStuff[apparel] != null && Mouse.IsOver(curStuffRect) && Input.GetMouseButtonUp(0)) //ここをDownにするとウィンドウが開いた瞬間閉じる
                                 {
                                     Input.ResetInputAxes();
-                                    List<FloatMenuOption> options = (from opt in GeneratePreviewApparelStuffList(apparel)
-                                                                     select opt.option).ToList();
+                                    List<FloatMenuOption> options = [.. from opt in GeneratePreviewApparelStuffList(apparel)
+                                                                     select opt.option];
                                     Find.WindowStack.Add(new FloatMenu(options));
                                     GeneratePreviewApparelStuffList(apparel);
                                 }
@@ -934,8 +1051,8 @@ namespace ChooseYourOutfit
 
                         yield return () =>
                         {
-                            Widgets.Label(curItemRect, apparel.label.Truncate(curItemRect.width - curItemRect.height * 2));
-                            TooltipHandler.TipRegion(new Rect(curItemRect.x, curItemRect.y, itemRect.width - itemRect.height * 2, itemRect.height), apparel.label + "\n\n" + apparel.DescriptionDetailed);
+                            Widgets.Label(curItemRect, apparel.label.Truncate(curItemRect.width - (curItemRect.height * 2)));
+                            TooltipHandler.TipRegion(new Rect(curItemRect.x, curItemRect.y, itemRect.width - (itemRect.height * 2), itemRect.height), apparel.label + "\n\n" + apparel.DescriptionDetailed);
                             if (previewApparelStuff[apparel] != null)
                             {
                                 Widgets.DefIcon(curStuffRect.ContractedBy(2f), previewApparelStuff[apparel]);
@@ -963,15 +1080,19 @@ namespace ChooseYourOutfit
             //renderTreeを保存しておく
             var tmpRenderTree = SelectedPawn.Drawer.renderer.renderTree;
 
-            SelectedPawn.Drawer.renderer.renderTree = selPawnRenderTree;
-            bool renderClothes = PreviewedApparels.Count != 0;
-
-            inDialogPortraitRequest = true;
-            GUI.DrawTexture(rect, PortraitsCache.Get(SelectedPawn, rect.size, pawnPreviewRot, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, renderClothes, null, null, false, null));
-            inDialogPortraitRequest = false;
-
-            //renderTreeを返してあげる
-            SelectedPawn.Drawer.renderer.renderTree = tmpRenderTree;
+            try
+            {
+                SelectedPawn.Drawer.renderer.renderTree = selPawnRenderTree;
+                inDialogPortraitRequest = true;
+                GUI.DrawTexture(rect, PortraitsCache.Get(SelectedPawn, rect.size, pawnPreviewRot, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, PreviewedApparels.Count != 0, null, null, false, null));
+            }
+            finally
+            {
+                inDialogPortraitRequest = false;
+                //renderTreeを返してあげる
+                SelectedPawn.Drawer.renderer.renderTree = tmpRenderTree;
+                PortraitsCache.Clear();
+            }
 
             var rect1 = new Rect(rect.x, rect.y + 17.5f + (rect.height / 2f) - 12f, 20f, 20f);
             Widgets.DrawTextureFitted(rect1, TexUI.ArrowTexLeft, 0.75f);
@@ -998,8 +1119,8 @@ namespace ChooseYourOutfit
                 .Where(a => a.apparel.bodyPartGroups.Any(g => SelectedBodypartGroups?.Contains(g) ?? true))
                 .OrderByDescending(a => a.label)
                 .GroupBy(a => SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
-                SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
-                ApparelUtility.HasPartsToWear(SelectedPawn, a))
+                (SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
+                ApparelUtility.HasPartsToWear(SelectedPawn, a)))
                 .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)))
                 .OrderByDescending(a => a.Value.label);
 
@@ -1061,7 +1182,7 @@ namespace ChooseYourOutfit
             {
                 if (!selectedApparelListToShow.TryGetValue(layer, out var list) || list == null)
                 {
-                    selectedApparelListToShow[layer] = new HashSet<ThingDef>();
+                    selectedApparelListToShow[layer] = [];
                 }
                 selectedApparelListToShow[layer].Clear();
                 selectedApparelListToShow[layer].AddRange(SelectedApparels.Where(a => a.apparel.layers.Contains(layer)).OrderByDescending(a => a.label));
@@ -1123,6 +1244,7 @@ namespace ChooseYourOutfit
 
         private void ChangePreviewedApparels()
         {
+            preApparelsApparel.ForEach(a => a.Destroy());
             preApparelsApparel.Clear();
             preApparelsApparel.AddRange(PreviewedApparels.Select(p => GetApparel(p))); //drawOrderのためにここは一度リセットして再追加している
             selPawnRenderTree.rootNode = null;
@@ -1154,7 +1276,7 @@ namespace ChooseYourOutfit
             if (label == "Ingredients".Translate())
             {
                 RecipeDef recipeDef = recipes.FirstOrDefault<RecipeDef>();
-                List<string> tmpCostList = new List<string>();
+                List<string> tmpCostList = [];
                 if (recipeDef != null && !recipeDef.ingredients.NullOrEmpty<IngredientCount>())
                 {
                     for (int j = 0; j < recipeDef.ingredients.Count; j++)
@@ -1249,7 +1371,7 @@ namespace ChooseYourOutfit
             cantWearTogether.Clear();
             foreach (var apparel in allApparels)
             {
-                cantWearTogether.Add(apparel, allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body)).ToList());
+                cantWearTogether.Add(apparel, [.. allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body))]);
             }
             Gender gender;
             if (pawn.gender == Gender.Female || pawn.gender == Gender.Male)
@@ -1262,12 +1384,12 @@ namespace ChooseYourOutfit
             }
             svgViewBox = SVGInterpreter.GetViewBox(SVGs[pawn.gender]);
             float scale = Math.Min(rect6.height / svgViewBox.height, rect6.width / svgViewBox.width);
-            Vector2 offset = new Vector2(rect6.width - svgViewBox.width * scale - svgViewBox.x,
-                rect6.height / 2f - svgViewBox.height / 2f * scale - svgViewBox.y);
+            Vector2 offset = new Vector2(rect6.width - (svgViewBox.width * scale) - svgViewBox.x,
+                (rect6.height / 2f) - (svgViewBox.height / 2f * scale) - svgViewBox.y);
 
             foreach (var pair in Colliders[pawn.gender])
             {
-                buttonColliders[pair.Key] = pair.Value.Select(l => l.Select(v => v * scale + offset).ToArray()).ToArray();
+                buttonColliders[pair.Key] = [.. pair.Value.Select(l => l.Select(v => (v * scale) + offset).ToArray())];
             }
 
             GetExistPartsAndButtons();
@@ -1304,119 +1426,5 @@ namespace ChooseYourOutfit
                 HarmonyPatches.Instance.Patch(Outfitted.Original, postfix: Outfitted.Postfix);
             }
         }
-
-        private Pawn selPawnInt;
-
-        private PawnRenderTree selPawnRenderTree;
-
-        private ApparelPolicy selPolicyInt;
-
-        private Dictionary<string, (BodyPartRecord, List<BodyPartGroupDef>)> existParts = new Dictionary<string, (BodyPartRecord, List<BodyPartGroupDef>)>();
-
-        private string selPawnButtonLabel = "AnyColonist".Translate();
-
-        private QualityCategory selQualityInt = QualityCategory.Normal;
-
-        private string selQualityButtonLabel = QualityCategory.Normal.GetLabel();
-
-        private ThingDef selStuffInt;
-
-        private Dictionary<ThingDef, ThingDef> selStuffDatabase = new Dictionary<ThingDef, ThingDef>();
-
-        private string selStuffButtonLabel;
-
-        private Vector2 layersScrollPosition;
-
-        private Vector2 apparelsScrollPosition;
-
-        private Vector2 listScrollPosition;
-
-        private List<ApparelLayerDef> layerListToShow = new List<ApparelLayerDef>();
-
-        public bool layerListingRequest;
-
-        private ThingDef statsDrawn;
-
-        private ThingDef mouseovered;
-
-        private ThingDef lastMouseovered;
-
-        private ThingDef mouseoveredSelectedApparel;
-
-        private HashSet<ApparelLayerDef> selLayersInt = new HashSet<ApparelLayerDef>();
-
-        private HashSet<ThingDef> selApparelsInt = new HashSet<ThingDef>();
-
-        private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new Dictionary<ThingDef, List<ThingDef>>();
-
-        private List<KeyValuePair<bool, ThingDef>> apparelListToShow = new List<KeyValuePair<bool, ThingDef>>();
-
-        public bool apparelListingRequest;
-
-        private Dictionary<ApparelLayerDef, HashSet<ThingDef>> selectedApparelListToShow = new Dictionary<ApparelLayerDef, HashSet<ThingDef>>();
-
-        public bool selectedApparelListingRequest;
-
-        private Dictionary<ApparelLayerDef, bool> collapse = new Dictionary<ApparelLayerDef, bool>();
-
-        private List<ThingDef> preApparelsInt = new List<ThingDef>();
-
-        public List<Apparel> preApparelsApparel = new List<Apparel>();
-
-        //private Dictionary<ThingDef, Apparel> apparelDatabase = new Dictionary<ThingDef, Apparel>();
-
-        private IEnumerable<BodyPartGroupDef> selBodyPartGroupsInt;
-
-        private IEnumerable<BodyPartGroupDef> highlightedGroups;
-
-        private Rect svgViewBox;
-
-        private Rect rect5;
-
-        private Rect rect6;
-
-        private Rect rect7;
-
-        private float panelDecrease;
-
-        private Dictionary<string, Vector2[][]> buttonColliders = new Dictionary<string, Vector2[][]>();
-
-        public HashSet<ThingDef> allApparels = new HashSet<ThingDef>();
-
-        private HashSet<ThingDef> canWearAllowed = new HashSet<ThingDef>();
-
-        private StatsReporter statsReporter;
-
-        //private Dictionary<Apparel, Color> overrideApparelColors = new Dictionary<Apparel, Color>();
-
-        private Dictionary<ThingDef, ThingDef> previewApparelStuff = new Dictionary<ThingDef, ThingDef>();
-
-        private readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
-
-        public bool inDialogPortraitRequest = false;
-
-        private HashSet<string> bodypartsWhiteList;
-
-        private bool collapseInStorageMenu = true;
-
-        private FloatRange? curFilterHPRange;
-
-        private QualityRange? curFilterQualityRange;
-
-        private Rot4 pawnPreviewRot = Rot4.South;
-
-        private FastInvokeHandler ApparelGlobalFilter = MethodInvoker.GetHandler(AccessTools.PropertyGetter(typeof(Dialog_ManageApparelPolicies), "ApparelGlobalFilter"));
-
-        private List<ApparelLayerDef> OrderedLayerDefs;
-
-        private ConcurrentDictionary<Action, bool> bodyPartsDrawer = new ConcurrentDictionary<Action, bool>();
-
-        private static Dictionary<Gender, XDocument> SVGs = new Dictionary<Gender, XDocument>();
-
-        private static Dictionary<Gender, Dictionary<string, List<List<Vector2>>>> Colliders = new Dictionary<Gender, Dictionary<string, List<List<Vector2>>>>();
-
-        private static Dictionary<(Gender, string), Texture2D> unfilledParts = new Dictionary<(Gender, string), Texture2D>();
-
-        private static Dictionary<(Gender, string), Texture2D> filledParts = new Dictionary<(Gender, string), Texture2D>();
     }
 }

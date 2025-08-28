@@ -7,16 +7,16 @@ namespace ChooseYourOutfit.MaterialFilterPatch
     {
         public MaterialFilterWindowForApparel(ThingFilter __filter, float __top, float __left, WindowLayer __layer) : base(__filter, __top, __left, __layer)
         {
-            this.dialog = Find.WindowStack.WindowOfType<Dialog_ManageApparelPoliciesEx>();
+            dialog = Find.WindowStack.WindowOfType<Dialog_ManageApparelPoliciesEx>();
         }
 
         public override void PreOpen()
         {
             base.PreOpen();
-            this.DoWindowContents(this.windowRect); //DoWindowContents内でwindowRect.widthを変更しているようなので一回実行してからwidthを取得する
-            offset = this.windowRect.width / 2;
+            DoWindowContents(windowRect); //DoWindowContents内でwindowRect.widthを変更しているようなので一回実行してからwidthを取得する
+            offset = windowRect.width / 2;
             dialog.windowRect.x -= offset;
-            this.windowRect.x -= offset;
+            windowRect.x -= offset;
         }
 
         public override void PostClose()

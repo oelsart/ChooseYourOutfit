@@ -14,17 +14,17 @@ namespace ChooseYourOutfit
             this.pawn = pawn;
             this.apparelPolicy = apparelPolicy;
 
-            this.layer = WindowLayer.Dialog;
-            this.closeOnClickedOutside = true;
-            this.drawShadow = false;
-            this.preventCameraMotion = false;
+            layer = WindowLayer.Dialog;
+            closeOnClickedOutside = true;
+            drawShadow = false;
+            preventCameraMotion = false;
             SoundDefOf.FloatMenu_Open.PlayOneShotOnCamera(null);
         }
         public override Vector2 InitialSize
         {
             get
             {
-                return new Vector2(300f, Widgets.ListSeparatorHeight + pawn.apparel.WornApparelCount * itemHeight + 29f + Margin * 2);
+                return new Vector2(300f, Widgets.ListSeparatorHeight + (pawn.apparel.WornApparelCount * itemHeight) + 29f + (Margin * 2));
             }
         }
 
@@ -35,7 +35,7 @@ namespace ChooseYourOutfit
             if (!Find.WindowStack.IsOpen<Dialog_ManageApparelPoliciesEx>()) Find.WindowStack.TryRemove(this, true);
 
             Widgets.ListSeparator(ref num, inRect.width, "Apparel".Translate());
-            foreach (Apparel apparel in from x in this.pawn.apparel.WornApparel
+            foreach (Apparel apparel in from x in pawn.apparel.WornApparel
                                             //where !x.def.apparel.layers.Contains(ApparelLayerDefOf.Belt)
                                         select x into ap
                                         orderby ap.def.apparel.bodyPartGroups[0].listOrder descending
@@ -59,14 +59,14 @@ namespace ChooseYourOutfit
                     string text2 = apparel.LabelNoParenthesisCap.AsTipTitle() + GenLabel.LabelExtras(apparel, true, true) + "\n\n" + apparel.DescriptionDetailed;
                     if (apparel.def.useHitPoints)
                     {
-                        text2 = string.Concat(new object[]
-                        {
+                        text2 = string.Concat(
+                        [
                         text2,
                         "\n",
                         apparel.HitPoints,
                         " / ",
                         apparel.MaxHitPoints
-                        });
+                        ]);
                     }
                     TooltipHandler.TipRegion(rect, text2);
                 }
@@ -77,7 +77,7 @@ namespace ChooseYourOutfit
             if (Widgets.ButtonText(buttonRect, "CYO.WornApparels.ApplyToFilter".Translate()))
             {
                 apparelPolicy.filter.SetDisallowAll();
-                foreach (var apparel in this.pawn.apparel.WornApparel)
+                foreach (var apparel in pawn.apparel.WornApparel)
                 {
                     apparelPolicy.filter.SetAllow(apparel.def, true);
                 }
@@ -87,9 +87,9 @@ namespace ChooseYourOutfit
 
         protected override void SetInitialSizeAndPosition()
         {
-            Vector2 initialSize = this.InitialSize;
-            this.windowRect = new Rect(UI.MousePositionOnUIInverted, initialSize);
-            this.windowRect = this.windowRect.Rounded();
+            Vector2 initialSize = InitialSize;
+            windowRect = new Rect(UI.MousePositionOnUIInverted, initialSize);
+            windowRect = windowRect.Rounded();
         }
 
         private Pawn pawn;

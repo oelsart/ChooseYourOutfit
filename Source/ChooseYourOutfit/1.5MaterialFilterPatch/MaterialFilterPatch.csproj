@@ -2,45 +2,35 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
+	  <LangVersion>preview</LangVersion>
     <RootNamespace>ChooseYourOutfit.MaterialFilterPatch</RootNamespace>
     <AssemblyName>MaterialFilterPatch</AssemblyName>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<Platforms>AnyCPU;ARM64;x64</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <OutputPath>..\..\..\1.6\MaterialFilter\</OutputPath>
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DebugType>none</DebugType>
     <OutputPath>..\..\..\1.6\MaterialFilter\Assemblies\</OutputPath>
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\1.5\1.5.csproj">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4543" />
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\1.5\ChooseYourOutfit.csproj">
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\1.6\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MaterialFilter">
       <HintPath>..\..\..\..\..\..\..\workshop\content\294100\1541305730\1.5\Assemblies\MaterialFilter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

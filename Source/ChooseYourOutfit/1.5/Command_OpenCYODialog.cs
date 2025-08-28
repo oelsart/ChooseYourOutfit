@@ -8,8 +8,8 @@ namespace ChooseYourOutfit
     {
         public Command_OpenCYODialog()
         {
-            this.hotKey = DefDatabase<KeyBindingDef>.GetNamed("OpenChooseYourOutfitDialog");
-            this.action = () =>
+            hotKey = DefDatabase<KeyBindingDef>.GetNamed("OpenChooseYourOutfitDialog");
+            action = () =>
             {
                 var pawn = Find.Selector.SingleSelectedThing as Pawn;
                 if (pawn != null)
@@ -17,23 +17,23 @@ namespace ChooseYourOutfit
                     Find.WindowStack.Add(new Dialog_ManageApparelPoliciesEx(pawn));
                 }
             };
-            this.Order = float.MaxValue;
+            Order = float.MaxValue;
         }
 
         protected override GizmoResult GizmoOnGUIInt(Rect butRect, GizmoRenderParms parms)
         {
-            KeyCode keyCode = (this.hotKey == null) ? KeyCode.None : this.hotKey.MainKey;
+            KeyCode keyCode = (hotKey == null) ? KeyCode.None : hotKey.MainKey;
             if (keyCode != KeyCode.None && !GizmoGridDrawer.drawnHotKeys.Contains(keyCode))
             {
-                if (this.hotKey.KeyDownEvent)
+                if (hotKey.KeyDownEvent)
                 {
                     GizmoResult result;
-                    if (!TutorSystem.AllowAction(this.TutorTagSelect))
+                    if (!TutorSystem.AllowAction(TutorTagSelect))
                     {
                         return new GizmoResult(GizmoState.Mouseover, null);
                     }
                     result = new GizmoResult(GizmoState.Interacted, Event.current);
-                    TutorSystem.Notify_Event(this.TutorTagSelect);
+                    TutorSystem.Notify_Event(TutorTagSelect);
                     Event.current.Use();
                     return result;
                 }

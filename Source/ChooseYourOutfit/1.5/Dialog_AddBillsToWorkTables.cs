@@ -16,8 +16,8 @@ namespace ChooseYourOutfit
             doCloseButton = true;
             closeOnClickedOutside = true;
 
-            apparelsInt = apparels.OrderByDescending(a => a.label).ToList();
-            recipeExist = Apparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a)).ToHashSet();
+            apparelsInt = [.. apparels.OrderByDescending(a => a.label)];
+            recipeExist = [.. Apparels.Where(a => DefDatabase<RecipeDef>.AllDefs.Where(r => r.AvailableNow).Any(r => r.ProducedThingDef == a))];
             stuffInt = stuff;
             tryAddResult = TryAddBillsToWorkTables();
         }
@@ -59,8 +59,10 @@ namespace ChooseYourOutfit
             var outRect = inRect;
             outRect.yMax -= Margin + CloseButSize.y;
             var itemRect = new Rect(outRect.x, outRect.y, outRect.width, Text.LineHeight);
-            var viewRect = new Rect(outRect.x, outRect.y, outRect.width, 0f);
-            viewRect.height = tryAddResult.Select(a => 1 + a.Value.Count).Sum() * itemRect.height;
+            var viewRect = new Rect(outRect.x, outRect.y, outRect.width, 0f)
+            {
+                height = tryAddResult.Select(a => 1 + a.Value.Count).Sum() * itemRect.height
+            };
 
             Widgets.AdjustRectsForScrollView(inRect, ref outRect, ref viewRect);
 
@@ -86,7 +88,7 @@ namespace ChooseYourOutfit
         private Dictionary<TryAddBillsResult, HashSet<(ThingDef, Building_WorkTable)>> TryAddBillsToWorkTables()
         {
             var result = new Dictionary<TryAddBillsResult, HashSet<(ThingDef, Building_WorkTable)>>();
-            foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, new HashSet<(ThingDef, Building_WorkTable)>());
+            foreach (TryAddBillsResult r in Enum.GetValues(typeof(TryAddBillsResult))) result.Add(r, []);
 
             foreach (var apparel in Apparels)
             {

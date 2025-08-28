@@ -49,7 +49,7 @@ namespace ChooseYourOutfit
                     switch (mode)
                     {
                         case "M":
-                            polygon = new List<Vector2>();
+                            polygon = [];
                             initial.x = f[0];
                             initial.y = f[1];
                             current = initial;
@@ -57,7 +57,7 @@ namespace ChooseYourOutfit
                             break;
 
                         case "m":
-                            polygon = new List<Vector2>();
+                            polygon = [];
                             initial.x += f[0];
                             initial.y += f[1];
                             current = initial;

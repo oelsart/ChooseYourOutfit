@@ -14,7 +14,7 @@ namespace ChooseYourOutfit
             var isIn = false;
             for (var i = 0; i < n; i++)
             {
-                var nxt = (i + 1);
+                var nxt = i + 1;
                 if (nxt >= n) nxt = 0;
                 var a = polygon[i] - p;
                 var b = polygon[nxt] - p;
@@ -38,7 +38,7 @@ namespace ChooseYourOutfit
         /// </summary>
         private static float CrossProduct(Vector2 u, Vector2 v)
         {
-            return u.x * v.y - u.y * v.x;
+            return (u.x * v.y) - (u.y * v.x);
         }
     }
 }

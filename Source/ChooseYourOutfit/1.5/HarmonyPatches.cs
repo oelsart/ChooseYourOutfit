@@ -14,6 +14,8 @@ namespace ChooseYourOutfit
     [StaticConstructorOnStartup]
     class HarmonyPatches
     {
+        public static Harmony Instance { get; private set; }
+
         static HarmonyPatches()
         {
             Instance = new Harmony("com.harmony.rimworld.chooseyouroutfit");
@@ -23,8 +25,6 @@ namespace ChooseYourOutfit
                 Instance.PatchCategory("OELS.ChooseYourOutfit.Outfitted");
             }
         }
-
-        public static Harmony Instance { get; private set; }
     }
 
     //new Dialog_ManageApparelPoliciesをnew Dialog_ManageApparelPoliciesExに置き換える
@@ -33,9 +33,9 @@ namespace ChooseYourOutfit
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = instructions.ToList();
+            List<CodeInstruction> codes = [.. instructions];
             //置き換え後のoperandとしてDialog_ManageApparelPoliciesExのコンストラクタを取得
-            var operand = AccessTools.Constructor(typeof(Dialog_ManageApparelPoliciesEx), new Type[] { typeof(Pawn) });
+            var operand = AccessTools.Constructor(typeof(Dialog_ManageApparelPoliciesEx), [typeof(Pawn)]);
             //Dialog_ManageApparelPoliciesのコンストラクタをoperandに持つNewobjの場所を検索
             int pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType.Equals(typeof(Dialog_ManageApparelPolicies)));
             //新しいoperandに置き換え
@@ -61,9 +61,9 @@ namespace ChooseYourOutfit
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = instructions.ToList();
+            List<CodeInstruction> codes = [.. instructions];
             //置き換え後のoperandとしてDialog_ManageApparelPoliciesExのコンストラクタを取得
-            var operand = AccessTools.Constructor(typeof(Dialog_ManageApparelPoliciesEx), new Type[] { typeof(Pawn) });
+            var operand = AccessTools.Constructor(typeof(Dialog_ManageApparelPoliciesEx), [typeof(Pawn)]);
             //Dialog_ManageApparelPoliciesのコンストラクタをoperandに持つNewobjの場所を検索
             var pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && ((ConstructorInfo)c.operand).DeclaringType.Equals(typeof(Dialog_ManageApparelPolicies)));
             //新しいoperandに置き換え
@@ -109,7 +109,7 @@ namespace ChooseYourOutfit
                 new CodeInstruction(OpCodes.Add),
                 new CodeInstruction(OpCodes.Add),
                 new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
-                CodeInstruction.Call(typeof(Math), "Min", new Type[] { typeof(float), typeof(float) }),
+                CodeInstruction.Call(typeof(Math), "Min", [typeof(float), typeof(float)]),
                 new CodeInstruction(OpCodes.Stloc_S, root),
                 CodeInstruction.LoadLocal(4, true),
                 new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
@@ -200,7 +200,7 @@ namespace ChooseYourOutfit
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            List<CodeInstruction> codes = instructions.ToList();
+            List<CodeInstruction> codes = [.. instructions];
             var label = generator.DefineLabel();
             var window = generator.DeclareLocal(typeof(Dialog_ManageApparelPoliciesEx));
 
@@ -355,9 +355,9 @@ namespace ChooseYourOutfit
             IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 var code = instructions.FirstOrDefault(c => c.LoadsConstant(700f));
-                if (code != null) code.operand = 10f;
+                code?.operand = 10f;
                 code = instructions.FirstOrDefault(c => c.LoadsConstant(0f));
-                if (code != null) code.operand = 80f;
+                code?.operand = 80f;
                 return instructions;
             }
             _ = Transpiler(null);

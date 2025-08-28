@@ -1,66 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
+		<LangVersion>preview</LangVersion>
 		<AssemblyTitle>ChooseYourOutfit</AssemblyTitle>
 		<Product>ChooseYourOutfit</Product>
 		<AssemblyName>ChooseYourOutfit</AssemblyName>
 		<RootNamespace>ChooseYourOutfit</RootNamespace>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-		<PlatformTarget>x64</PlatformTarget>
-		<OutputPath>E:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ChooseYourOutfitExperimental\1.6\Assemblies</OutputPath>
+		<OutputPath>..\..\..\1.6\Assemblies</OutputPath>
+		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 	  <DebugType>none</DebugType>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 	  <DebugType>none</DebugType>
 	</PropertyGroup>
-
 	<ItemGroup>
-		<Reference Include="0Harmony">
-		  <HintPath>..\..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-		<Reference Include="Assembly-CSharp">
-		  <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\1.6\Assembly-CSharp.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine">
-		  <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>E:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.AnimationModule">
-			<HintPath>E:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.IMGUIModule">
-		  <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.InputLegacyModule">
-		  <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.InputModule">
-		  <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputModule.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.TextRenderingModule">
-		  <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.UIModule">
-			<HintPath>E:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
+	  <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4543" />
+	  <PackageReference Include="Lib.Harmony.Ref" Version="2.4.1" />
 	</ItemGroup>
 
 	<ItemGroup>

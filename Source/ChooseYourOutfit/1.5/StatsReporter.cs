@@ -13,40 +13,40 @@ namespace ChooseYourOutfit
         public void Reset(float width, ThingDef def, ThingDef stuff, QualityCategory quality)
         {
 
-            this.scrollPosition = default(Vector2);
-            this.scrollPositioner.Arm(false);
-            this.mousedOverEntry = null;
-            this.cachedDrawEntries.Clear();
-            this.cachedEntryValues.Clear();
-            this.cachedEntryHeights.Clear();
+            scrollPosition = default;
+            scrollPositioner.Arm(false);
+            mousedOverEntry = null;
+            cachedDrawEntries.Clear();
+            cachedEntryValues.Clear();
+            cachedEntryHeights.Clear();
 
-            BuildableDef buildableDef = def as BuildableDef;
+            BuildableDef buildableDef = def;
             StatRequest req = (buildableDef != null) ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
-            this.specialDisplayStats = def.SpecialDisplayStats(req);
+            specialDisplayStats = def.SpecialDisplayStats(req);
 
-            if (this.cachedDrawEntries.NullOrEmpty<StatDrawEntry>())
+            if (cachedDrawEntries.NullOrEmpty<StatDrawEntry>())
             {
                 ThingWithComps thing = def.GetConcreteExample(stuff) as ThingWithComps;
                 CompQuality compQuality = thing.GetComp<CompQuality>();
                 compQuality?.SetQuality(quality, ArtGenerationContext.Colony);
-                this.cachedDrawEntries.AddRange(specialDisplayStats);
-                this.cachedDrawEntries.AddRange(from r in this.StatsToDraw(thing)
-                                                where r.ShouldDisplay()
-                                                select r);
-                this.FinalizeCachedDrawEntries(this.cachedDrawEntries);
+                cachedDrawEntries.AddRange(specialDisplayStats);
+                cachedDrawEntries.AddRange(from r in StatsToDraw(thing)
+                                           where r.ShouldDisplay()
+                                           select r);
+                FinalizeCachedDrawEntries(cachedDrawEntries);
             }
 
-            for (int i = 0; i < this.cachedDrawEntries.Count; i++)
+            for (int i = 0; i < cachedDrawEntries.Count; i++)
             {
                 using (new TextBlock(GameFont.Small))
                 {
-                    this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
+                    cachedEntryHeights.Add(Text.CalcHeight(cachedEntryValues[i], (width / 2) - GenUI.ScrollBarWidth - 8f));
                 }
             }
 
             using (new TextBlock(GameFont.Medium))
             {
-                this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
+                titleHeight = Text.CalcHeight(def.label, width) + 5f;
             }
         }
 
@@ -59,7 +59,7 @@ namespace ChooseYourOutfit
             }
         }
 
-        public StatDrawEntry SelectedEntry { get { return this.selectedEntry; } }
+        public StatDrawEntry SelectedEntry { get { return selectedEntry; } }
 
         private IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
         {
@@ -77,8 +77,8 @@ namespace ChooseYourOutfit
         {
             dialog.apparelListingRequest = true;
             dialog.layerListingRequest = true;
-            if (this.selectedEntry == this.mousedOverEntry && this.selectedEntry != null) this.selectedEntry = null;
-            else this.selectedEntry = rec;
+            if (selectedEntry == mousedOverEntry && selectedEntry != null) selectedEntry = null;
+            else selectedEntry = rec;
             if (playSound)
             {
                 SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
@@ -88,36 +88,36 @@ namespace ChooseYourOutfit
         public IEnumerable<Action> DrawStatsWorker(Rect rect)
         {
             Rect rect2 = new Rect(rect);
-            rect2.yMin += this.titleHeight;
-            Rect viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, this.listHeight);
+            rect2.yMin += titleHeight;
+            Rect viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, listHeight);
             var anyMouseOvered = false;
 
             float num = 0f;
             string b = null;
-            yield return () => Widgets.BeginScrollView(rect2, ref this.scrollPosition, viewRect, true);
+            yield return () => Widgets.BeginScrollView(rect2, ref scrollPosition, viewRect, true);
 
-            foreach (var group in this.cachedDrawEntries.GroupBy(e => pinnedEntry.Contains(e)).OrderByDescending(g => g.Key == true))
+            foreach (var group in cachedDrawEntries.GroupBy(e => pinnedEntry.Contains(e)).OrderByDescending(g => g.Key == true))
             {
                 foreach (var ent in group)
                 {
-                    var i = this.cachedDrawEntries.IndexOf(ent);
+                    var i = cachedDrawEntries.IndexOf(ent);
 
                     if (group.Key == false && ent.category.LabelCap != b)
                     {
                         var tmp = num;
-                        yield return () => this.ListSeparator(tmp, viewRect.width, ent.category);
+                        yield return () => ListSeparator(tmp, viewRect.width, ent.category);
                         b = ent.category.LabelCap;
                         num += Widgets.ListSeparatorHeight;
                     }
 
                     if (collapse[ent.category.LabelCap]) continue;
 
-                    var statRect = new Rect(8f, num, viewRect.width, this.cachedEntryHeights[i]);
+                    var statRect = new Rect(8f, num, viewRect.width, cachedEntryHeights[i]);
                     yield return () =>
                     {
                         if (Mouse.IsOver(statRect) && specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
                         {
-                            this.mousedOverEntry = ent;
+                            mousedOverEntry = ent;
                             if (ChooseYourOutfit.settings.showTooltips)
                             {
                                 var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
@@ -129,14 +129,14 @@ namespace ChooseYourOutfit
                         }
                     };
 
-                    var pinRect = new Rect(viewRect.width * 0.55f - 24f, num, 24f, 24f);
+                    var pinRect = new Rect((viewRect.width * 0.55f) - 24f, num, 24f, 24f);
                     var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
-                    var drawResult = this.Draw(ent, 8f, num, viewRect.width, this.selectedEntry == ent, false, false, () =>
+                    var drawResult = Draw(ent, 8f, num, viewRect.width, selectedEntry == ent, false, false, () =>
                     {
                         if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
                         {
                             Input.ResetInputAxes();
-                            this.SelectEntry(ent, true);
+                            SelectEntry(ent, true);
                         }
                     }, () =>
                     {
@@ -169,7 +169,7 @@ namespace ChooseYourOutfit
                                 dialog.apparelListingRequest = true;
                             }
                         }
-                    }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
+                    }, scrollPosition, rect2, cachedEntryValues[i]);
 
                     foreach (var draw in drawResult) yield return draw;
 
@@ -183,47 +183,47 @@ namespace ChooseYourOutfit
                         yield return () => GUI.DrawTexture(sortButtonRect, SortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp);
                     }
 
-                    num += this.cachedEntryHeights[i];
+                    num += cachedEntryHeights[i];
                 }
             }
-            this.listHeight = num;
+            listHeight = num;
             yield return () => Widgets.EndScrollView();
 
-            if (anyMouseOvered is false) this.mousedOverEntry = null;
+            if (anyMouseOvered is false) mousedOverEntry = null;
         }
 
         private void FinalizeCachedDrawEntries(IEnumerable<StatDrawEntry> original)
         {
-            this.cachedDrawEntries = (from sd in original
+            cachedDrawEntries = [.. from sd in original
                                       orderby sd.category.displayOrder, sd.DisplayPriorityWithinCategory descending, sd.LabelCap
-                                      select sd).ToList<StatDrawEntry>();
-            this.quickSearchWidget.noResultsMatched = !this.cachedDrawEntries.Any<StatDrawEntry>();
-            foreach (StatDrawEntry statDrawEntry in this.cachedDrawEntries)
+                                      select sd];
+            quickSearchWidget.noResultsMatched = !cachedDrawEntries.Any<StatDrawEntry>();
+            foreach (StatDrawEntry statDrawEntry in cachedDrawEntries)
             {
-                this.cachedEntryValues.Add(statDrawEntry.ValueString);
-                var ent = this.pinnedEntry.FirstOrDefault((StatDrawEntry e) => e.Same(statDrawEntry));
-                if (ent != null) this.pinnedEntry.Replace(ent, statDrawEntry);
+                cachedEntryValues.Add(statDrawEntry.ValueString);
+                var ent = pinnedEntry.FirstOrDefault((StatDrawEntry e) => e.Same(statDrawEntry));
+                if (ent != null) pinnedEntry.Replace(ent, statDrawEntry);
             }
-            if (this.selectedEntry != null)
+            if (selectedEntry != null)
             {
-                this.selectedEntry = this.cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(this.selectedEntry));
+                selectedEntry = cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(selectedEntry));
             }
-            if (this.quickSearchWidget.filter.Active)
+            if (quickSearchWidget.filter.Active)
             {
-                foreach (StatDrawEntry sd2 in this.cachedDrawEntries)
+                foreach (StatDrawEntry sd2 in cachedDrawEntries)
                 {
-                    if (this.Matches(sd2))
+                    if (Matches(sd2))
                     {
-                        this.selectedEntry = sd2;
-                        this.scrollPositioner.Arm(true);
+                        selectedEntry = sd2;
+                        scrollPositioner.Arm(true);
                         break;
                     }
                 }
             }
-            if (this.SortingEntry.entry != null)
+            if (SortingEntry.entry != null)
             {
-                var ent = this.cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(this.SortingEntry.entry));
-                if (ent != null) this.SortingEntry.entry = ent;
+                var ent = cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(SortingEntry.entry));
+                if (ent != null) SortingEntry.entry = ent;
             }
         }
 
@@ -231,7 +231,7 @@ namespace ChooseYourOutfit
         {
             float num = width * 0.45f;
             string text = valueCached ?? entry.ValueString;
-            Rect rect = new Rect(x, y, width, cachedEntryHeights[this.cachedDrawEntries.IndexOf(entry)]);
+            Rect rect = new Rect(x, y, width, cachedEntryHeights[cachedDrawEntries.IndexOf(entry)]);
             if (y - scrollPosition.y + rect.height >= 0f && y - scrollPosition.y <= scrollOutRect.height)
             {
                 GUI.color = Color.white;
@@ -287,16 +287,16 @@ namespace ChooseYourOutfit
 
         public bool Matches(StatDrawEntry sd)
         {
-            return this.quickSearchWidget.filter.Matches(sd.LabelCap);
+            return quickSearchWidget.filter.Matches(sd.LabelCap);
         }
 
         public void SelectEntry(int index)
         {
-            if (index < 0 || index > this.cachedDrawEntries.Count)
+            if (index < 0 || index > cachedDrawEntries.Count)
             {
                 return;
             }
-            this.SelectEntry(this.cachedDrawEntries[index], true);
+            SelectEntry(cachedDrawEntries[index], true);
         }
 
         public void ListSeparator(float curY, float width, StatCategoryDef category)
@@ -333,11 +333,11 @@ namespace ChooseYourOutfit
 
         private float listHeight;
 
-        private List<StatDrawEntry> cachedDrawEntries = new List<StatDrawEntry>();
+        private List<StatDrawEntry> cachedDrawEntries = [];
 
-        private List<string> cachedEntryValues = new List<string>();
+        private List<string> cachedEntryValues = [];
 
-        private List<float> cachedEntryHeights = new List<float>();
+        private List<float> cachedEntryHeights = [];
 
         private IEnumerable<StatDrawEntry> specialDisplayStats;
 
@@ -347,9 +347,9 @@ namespace ChooseYourOutfit
 
         public (StatDrawEntry entry, bool descending) SortingEntry;
 
-        private Dictionary<string, bool> collapse = new Dictionary<string, bool>();
+        private Dictionary<string, bool> collapse = [];
 
-        private List<StatDrawEntry> pinnedEntry = new List<StatDrawEntry>();
+        private List<StatDrawEntry> pinnedEntry = [];
 
         private readonly Texture2D PinTex = ContentFinder<Texture2D>.Get("UI/Icons/Pin", true);
     }
