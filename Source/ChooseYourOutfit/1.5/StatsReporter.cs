@@ -55,8 +55,7 @@ namespace ChooseYourOutfit
             this.dialog = dialog;
             foreach (var statCategory in DefDatabase<StatCategoryDef>.AllDefs)
             {
-                if (statCategory.LabelCap == null) continue;
-                collapse[statCategory.LabelCap] = false;
+                collapse[statCategory.defName] = false;
             }
         }
 
@@ -88,35 +87,35 @@ namespace ChooseYourOutfit
 
         public IEnumerable<Action> DrawStatsWorker(Rect rect)
         {
-            Rect rect2 = new Rect(rect);
+            var rect2 = rect;
             rect2.yMin += titleHeight;
-            Rect viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, listHeight);
+            var viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, listHeight);
             var anyMouseOvered = false;
 
             float num = 0f;
             string b = null;
             yield return () => Widgets.BeginScrollView(rect2, ref scrollPosition, viewRect, true);
 
-            foreach (var group in cachedDrawEntries.GroupBy(e => pinnedEntry.Contains(e)).OrderByDescending(g => g.Key == true))
+            foreach (var group in cachedDrawEntries.GroupBy(pinnedEntry.Contains).OrderByDescending(g => g.Key == true))
             {
                 foreach (var ent in group)
                 {
                     var i = cachedDrawEntries.IndexOf(ent);
 
-                    if (group.Key == false && ent.category.LabelCap != b)
+                    if (group.Key == false && ent.category.defName != b)
                     {
                         var tmp = num;
                         yield return () => ListSeparator(tmp, viewRect.width, ent.category);
-                        b = ent.category.LabelCap;
+                        b = ent.category.defName;
                         num += Widgets.ListSeparatorHeight;
                     }
 
-                    if (collapse[ent.category.LabelCap]) continue;
+                    if (collapse[ent.category.defName]) continue;
 
                     var statRect = new Rect(8f, num, viewRect.width, cachedEntryHeights[i]);
                     yield return () =>
                     {
-                        if (Mouse.IsOver(statRect) && specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
+                        if (Mouse.IsOver(statRect) && specialDisplayStats.Any(e => e.Same(ent)))
                         {
                             mousedOverEntry = ent;
                             if (ChooseYourOutfit.settings.showTooltips)
@@ -134,7 +133,7 @@ namespace ChooseYourOutfit
                     var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
                     var drawResult = Draw(ent, 8f, num, viewRect.width, selectedEntry == ent, false, false, () =>
                     {
-                        if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
+                        if (specialDisplayStats.Any(e => e.Same(ent)) && !Mouse.IsOver(sortButtonRect))
                         {
                             Input.ResetInputAxes();
                             SelectEntry(ent, true);
@@ -198,11 +197,11 @@ namespace ChooseYourOutfit
             cachedDrawEntries = [.. from sd in original
                                       orderby sd.category.displayOrder, sd.DisplayPriorityWithinCategory descending, sd.LabelCap
                                       select sd];
-            quickSearchWidget.noResultsMatched = !cachedDrawEntries.Any<StatDrawEntry>();
+            quickSearchWidget.noResultsMatched = !cachedDrawEntries.Any();
             foreach (StatDrawEntry statDrawEntry in cachedDrawEntries)
             {
                 cachedEntryValues.Add(statDrawEntry.ValueString);
-                var ent = pinnedEntry.FirstOrDefault((StatDrawEntry e) => e.Same(statDrawEntry));
+                var ent = pinnedEntry.FirstOrDefault(e => e.Same(statDrawEntry));
                 if (ent != null) pinnedEntry.Replace(ent, statDrawEntry);
             }
             if (selectedEntry != null)
@@ -308,14 +307,14 @@ namespace ChooseYourOutfit
             Rect rect1 = new Rect(0f, curY, 20f, 20f);
             Rect rect2 = new Rect(25f, curY, width - 25f, 30f);
             Text.Anchor = TextAnchor.UpperLeft;
-            Texture2D tex = collapse[category.LabelCap] ? TexButton.Reveal : TexButton.Collapse;
+            Texture2D tex = collapse[category.defName] ? TexButton.Reveal : TexButton.Collapse;
             if (Mouse.IsOver(rect1) && Input.GetMouseButtonUp(0))
             {
                 Input.ResetInputAxes();
-                collapse[category.LabelCap] = !collapse[category.LabelCap];
+                collapse[category.defName] = !collapse[category.defName];
             }
             Widgets.DrawTextureFitted(rect1, tex, 1f);
-            Widgets.Label(rect2, category.LabelCap);
+            Widgets.Label(rect2, category.defName);
             curY += 20f;
             GUI.color = Widgets.SeparatorLineColor;
             Widgets.DrawLineHorizontal(0f, curY, width);
