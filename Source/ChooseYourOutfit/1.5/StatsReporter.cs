@@ -55,11 +55,12 @@ namespace ChooseYourOutfit
             this.dialog = dialog;
             foreach (var statCategory in DefDatabase<StatCategoryDef>.AllDefs)
             {
+                if (statCategory.LabelCap == null) continue;
                 collapse[statCategory.LabelCap] = false;
             }
         }
 
-        public StatDrawEntry SelectedEntry { get { return selectedEntry; } }
+        public StatDrawEntry SelectedEntry => selectedEntry;
 
         private IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
         {
