@@ -1,11 +1,11 @@
-﻿using HarmonyLib;
-using RimWorld;
+﻿using RimWorld;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -15,15 +15,13 @@ namespace ChooseYourOutfit;
 
 [StaticConstructorOnStartup]
 [HotSwap]
-public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
+public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 {
-    private Pawn selPawnInt;
-
     private PawnRenderTree selPawnRenderTree;
 
     private ApparelPolicy selPolicyInt;
 
-    private Dictionary<string, (BodyPartRecord, List<BodyPartGroupDef>)> existParts = [];
+    private readonly Dictionary<string, (BodyPartRecord, List<BodyPartGroupDef>)> existParts = [];
 
     private string selPawnButtonLabel = "AnyColonist".Translate();
 
@@ -33,7 +31,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 
     private ThingDef selStuffInt;
 
-    private Dictionary<ThingDef, ThingDef> selStuffDatabase = [];
+    private readonly Dictionary<ThingDef, ThingDef> selStuffDatabase = [];
 
     private string selStuffButtonLabel;
 
@@ -43,7 +41,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 
     private Vector2 listScrollPosition;
 
-    private List<ApparelLayerDef> layerListToShow = [];
+    private readonly List<ApparelLayerDef> layerListToShow = [];
 
     public bool layerListingRequest;
 
@@ -55,29 +53,21 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 
     private ThingDef mouseoveredSelectedApparel;
 
-    private HashSet<ApparelLayerDef> selLayersInt = [];
+    private readonly Dictionary<ThingDef, List<ThingDef>> cantWearTogether = [];
 
-    private HashSet<ThingDef> selApparelsInt = [];
-
-    private Dictionary<ThingDef, List<ThingDef>> cantWearTogether = [];
-
-    private List<KeyValuePair<bool, ThingDef>> apparelListToShow = [];
+    private readonly List<KeyValuePair<bool, ThingDef>> apparelListToShow = [];
 
     public bool apparelListingRequest;
 
-    private Dictionary<ApparelLayerDef, HashSet<ThingDef>> selectedApparelListToShow = [];
+    private readonly Dictionary<ApparelLayerDef, HashSet<ThingDef>> selectedApparelListToShow = [];
 
     public bool selectedApparelListingRequest;
 
-    private Dictionary<ApparelLayerDef, bool> collapse = [];
+    private readonly Dictionary<ApparelLayerDef, bool> collapse = [];
 
-    private List<ThingDef> preApparelsInt = [];
-
-    public List<Apparel> preApparelsApparel = [];
+    public readonly List<Apparel> preApparelsApparel = [];
 
     //private Dictionary<ThingDef, Apparel> apparelDatabase = new Dictionary<ThingDef, Apparel>();
-
-    private IEnumerable<BodyPartGroupDef> selBodyPartGroupsInt;
 
     private IEnumerable<BodyPartGroupDef> highlightedGroups;
 
@@ -89,23 +79,24 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 
     private Rect rect7;
 
-    private float panelDecrease;
+    private readonly float panelDecrease;
 
-    private Dictionary<string, Vector2[][]> buttonColliders = [];
+    private readonly Dictionary<string, Vector2[][]> buttonColliders = [];
 
-    public HashSet<ThingDef> allApparels = [];
+    public readonly HashSet<ThingDef> allApparels = [];
 
-    private HashSet<ThingDef> canWearAllowed = [];
+    private readonly HashSet<ThingDef> canWearAllowed = [];
 
-    private StatsReporter statsReporter;
+    private readonly StatsReporter statsReporter;
 
     //private Dictionary<Apparel, Color> overrideApparelColors = new Dictionary<Apparel, Color>();
 
-    private Dictionary<ThingDef, ThingDef> previewApparelStuff = [];
+    private readonly Dictionary<ThingDef, ThingDef> previewApparelStuff = [];
+    
+    [UsedImplicitly]
+    public bool inDialogPortraitRequest;
 
-    public bool inDialogPortraitRequest = false;
-
-    private HashSet<string> bodypartsWhiteList;
+    private readonly HashSet<string> bodypartsWhiteList;
 
     private bool collapseInStorageMenu = true;
 
@@ -115,19 +106,19 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 
     private Rot4 pawnPreviewRot = Rot4.South;
 
-    private List<ApparelLayerDef> OrderedLayerDefs;
+    private readonly List<ApparelLayerDef> OrderedLayerDefs;
 
-    private ConcurrentDictionary<Action, bool> bodyPartsDrawer = new();
+    private readonly ConcurrentDictionary<Action, bool> bodyPartsDrawer = new();
 
-    private static readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists", true);
+    private static readonly Texture2D ForColonistsTex = ContentFinder<Texture2D>.Get("UI/Commands/ForColonists");
 
-    private static Dictionary<Gender, XDocument> SVGs = [];
+    private static readonly Dictionary<Gender, XDocument> SVGs = [];
 
-    private static Dictionary<Gender, Dictionary<string, List<List<Vector2>>>> Colliders = [];
+    private static readonly Dictionary<Gender, Dictionary<string, List<List<Vector2>>>> Colliders = [];
 
-    private static Dictionary<(Gender, string), Texture2D> unfilledParts = [];
+    private static readonly Dictionary<(Gender, string), Texture2D> unfilledParts = [];
 
-    private static Dictionary<(Gender, string), Texture2D> filledParts = [];
+    private static readonly Dictionary<(Gender, string), Texture2D> filledParts = [];
 
     static Dialog_ManageApparelPoliciesEx()
     {
@@ -153,7 +144,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         layersScrollPosition = default;
         apparelsScrollPosition = default;
         listScrollPosition = default;
-        selPawnInt = selectedPawn;
+        SelectedPawn = selectedPawn;
         SelectedPolicy = selectedPawn?.outfits.CurrentApparelPolicy;
         selPolicyInt = SelectedPolicy;
         curFilterHPRange = SelectedPolicy?.filter.AllowedHitPointsPercents;
@@ -177,8 +168,8 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         {
             //this.selPawnButtonLabel = "AnyColonist".Translate().ToString();
             //this.buttonColliders = SVGInterpreter.SVGToPolygons(this.svg[Gender.None], this.rect6);
-            selPawnInt = Find.CurrentMap.mapPawns.FreeColonists.FirstOrDefault();
-            if (selPawnInt == null) selPawnInt = PawnsFinder.AllMapsCaravansAndTravellingTransporters_AliveSpawned_FreeColonists.FirstOrDefault();
+            SelectedPawn = Find.CurrentMap.mapPawns.FreeColonists.FirstOrDefault() ?? PawnsFinder
+                .AllMapsCaravansAndTravellingTransporters_AliveSpawned_FreeColonists.FirstOrDefault();
         }
 
         foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
@@ -186,11 +177,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
             //this.apparelDatabase.Add(apparel, GetApparel(apparel, SelectedPawn));
             //this.overrideApparelColors.Add(apparelDatabase[apparel], Color.white);
             var defaultStuff = GenStuff.DefaultStuffFor(apparel);
-            if (defaultStuff != null)
-            {
-                previewApparelStuff.Add(apparel, defaultStuff);
-            }
-            else previewApparelStuff.Add(apparel, null);
+            previewApparelStuff.Add(apparel, defaultStuff);
 
             selStuffDatabase.Add(apparel, defaultStuff);
         }
@@ -221,64 +208,24 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     }
 
     // Outfittedパッチでgetterを使いたいのでpublicに公開
-    new public ApparelPolicy SelectedPolicy
+    public new ApparelPolicy SelectedPolicy
     {
         get => base.SelectedPolicy;
-        protected set => base.SelectedPolicy = value;
+        private set => base.SelectedPolicy = value;
     }
 
-    public Pawn SelectedPawn
-    {
-        get
-        {
-            return selPawnInt;
-        }
-    }
+    public Pawn SelectedPawn { get; private set; }
 
-    public HashSet<ApparelLayerDef> SelectedLayers
-    {
-        get
-        {
-            return selLayersInt;
-        }
-    }
+    public HashSet<ApparelLayerDef> SelectedLayers { get; private set; } = [];
 
-    public HashSet<ThingDef> SelectedApparels
-    {
-        get
-        {
-            return selApparelsInt;
-        }
-    }
+    public HashSet<ThingDef> SelectedApparels { get; } = [];
 
-    public List<ThingDef> PreviewedApparels
-    {
-        get
-        {
-            return preApparelsInt;
-        }
-    }
+    public List<ThingDef> PreviewedApparels { get; } = [];
 
-    public IEnumerable<BodyPartGroupDef> SelectedBodypartGroups
-    {
-        get
-        {
-            return selBodyPartGroupsInt;
-        }
-        set
-        {
-            selBodyPartGroupsInt = value;
-        }
-    }
+    public IEnumerable<BodyPartGroupDef> SelectedBodypartGroups { get; set; }
 
     //ManageOutfitsダイアログのウィンドウサイズを変更
-    public override Vector2 InitialSize
-    {
-        get
-        {
-            return ChooseYourOutfit.settings.disableAddedUI ? base.InitialSize : new Vector2(Math.Min(1400f, UI.screenWidth - 80f), 700f);
-        }
-    }
+    public override Vector2 InitialSize => ChooseYourOutfit.settings.disableAddedUI ? base.InitialSize : new Vector2(Math.Min(1400f, UI.screenWidth - 80f), 700f);
 
     protected override void DoContentsRect(Rect rect)
     {
@@ -300,16 +247,15 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         if (Input.GetMouseButtonUp(0))
         {
             canWearAllowed.Clear();
-            canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(SelectedPawn)));
+            canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a is { IsApparel: true } && a.apparel.PawnCanWear(SelectedPawn)));
             if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) LoadFilter();
             if (selPolicyInt != SelectedPolicy)
             {
                 layerListingRequest = true;
                 selPolicyInt = SelectedPolicy;
-                var pawn = SelectedPawn;
                 if (SelectedPawn.outfits.CurrentApparelPolicy != selPolicyInt)
                 {
-                    pawn = PawnsFinder.AllMapsCaravansAndTravellingTransporters_AliveSpawned_FreeColonists.FirstOrFallback(p => p.outfits.CurrentApparelPolicy == selPolicyInt, SelectedPawn);
+                    var pawn = PawnsFinder.AllMapsCaravansAndTravellingTransporters_AliveSpawned_FreeColonists.FirstOrFallback(p => p.outfits.CurrentApparelPolicy == selPolicyInt, SelectedPawn);
                     if (pawn != SelectedPawn)
                     {
                         InitializeByPawn(pawn);
@@ -345,7 +291,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         apparelListingRequest = false;
         selectedApparelListingRequest = false;
 
-        Task<IEnumerable<Action>>[] tasks = new Task<IEnumerable<Action>>[4];
+        var tasks = new Task<IEnumerable<Action>>[4];
         //右のインフォカード描画
         if (statsDrawn != lastMouseovered)
         {
@@ -371,7 +317,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         tasks[1] = Task.Run(() => DoApparelList(new Rect(rect5.x, layersRect.yMax + 12f, rect5.width, rect5.height - layersRect.height - 67f)));
 
         var scale = rect6.height / svgViewBox.height;
-        Rect rect8 = new Rect(rect6.x, rect6.y, rect6.width - (svgViewBox.width * scale) - 10f, rect6.height);
+        Rect rect8 = new(rect6.x, rect6.y, rect6.width - (svgViewBox.width * scale) - 10f, rect6.height);
 
         //選択したapparelのリストを描画
         tasks[2] = Task.Run(() => DoSelectedApparelList(new Rect(rect8.x, rect8.y + rect8.width, rect8.width, rect8.height - rect8.width)));
@@ -437,7 +383,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         {
             yield return new Widgets.DropdownMenuElement<Pawn>
             {
-                option = new FloatMenuOption(colonist.LabelShortCap, delegate ()
+                option = new FloatMenuOption(colonist.LabelShortCap, delegate
                 {
                     InitializeByPawn(colonist);
                     /*foreach (var apparel in allApparels)
@@ -446,11 +392,10 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                         this.overrideApparelColors.Remove(overrideApparelColors.FirstOrDefault(a => a.Key.def == apparel).Key);
                         this.apparelDatabase[apparel] = GetApparel(apparel, pawn);
                     }*/
-                }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+                }),
                 payload = pawn
             };
         }
-        yield break;
     }
 
     //クオリティリストを生成
@@ -465,7 +410,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                     selQualityInt = cat;
                     selQualityButtonLabel = cat.GetLabel();
                     if (statsDrawn != null) statsReporter.Reset(290f, statsDrawn, selStuffDatabase[statsDrawn], cat);
-                }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+                }),
                 payload = quality
             };
         }
@@ -478,7 +423,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         {
             yield return new Widgets.DropdownMenuElement<ThingDef>
             {
-                option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
+                option = new FloatMenuOption(stuff.LabelAsStuff, delegate
                 {
                     selStuffDatabase[statsDrawn] = stuff;
                     foreach (var apparel in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel))
@@ -490,11 +435,10 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                     statsReporter.Reset(290f, statsDrawn, selStuffDatabase[statsDrawn], selQualityInt);
 
                     if (statsReporter.SortingEntry.entry != null) apparelListingRequest = true;
-                }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+                }),
                 payload = tDef
             };
         }
-        yield break;
     }
 
     private IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GeneratePreviewApparelStuffList(ThingDef apparel)
@@ -503,43 +447,41 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         {
             yield return new Widgets.DropdownMenuElement<ThingDef>
             {
-                option = new FloatMenuOption(stuff.LabelAsStuff, delegate ()
+                option = new FloatMenuOption(stuff.LabelAsStuff, delegate
                 {
                     previewApparelStuff[apparel] = stuff;
                     ChangePreviewedApparels();
 
-                }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+                }),
                 payload = apparel
             };
         }
-        yield break;
     }
 
     private IEnumerable<Widgets.DropdownMenuElement<ThingDef>> GenerateContextMenu(ThingDef apparel)
     {
         yield return new Widgets.DropdownMenuElement<ThingDef>
         {
-            option = new FloatMenuOption(string.Format("CYO.AddApparelToAllPolicies".Translate(), apparel.label), delegate ()
+            option = new FloatMenuOption(string.Format("CYO.AddApparelToAllPolicies".Translate(), apparel.label), delegate
             {
                 Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, true));
                 canWearAllowed.Clear();
-                canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(SelectedPawn)));
+                canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a is { IsApparel: true } && a.apparel.PawnCanWear(SelectedPawn)));
                 LoadFilter();
-            }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+            }),
             payload = apparel
         };
         yield return new Widgets.DropdownMenuElement<ThingDef>
         {
-            option = new FloatMenuOption(string.Format("CYO.RemoveApparelFromAllPolicies".Translate(), apparel.label), delegate ()
+            option = new FloatMenuOption(string.Format("CYO.RemoveApparelFromAllPolicies".Translate(), apparel.label), delegate
             {
                 Current.Game.outfitDatabase.AllOutfits.ForEach(o => o.filter.SetAllow(apparel, false));
                 canWearAllowed.Clear();
-                canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(SelectedPawn)));
+                canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a is { IsApparel: true } && a.apparel.PawnCanWear(SelectedPawn)));
                 LoadFilter();
-            }, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0),
+            }),
             payload = apparel
         };
-        yield break;
     }
 
     //服のレイヤーリストを描画
@@ -576,7 +518,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
             apparelListingRequest = true;
         }
 
-        foreach (var (layer, i) in layerListToShow.Select((l, i) => (l, i)))
+        foreach (var (layerDef, i) in layerListToShow.Select((l, i) => (l, i)))
         {
             var curRect = new Rect(itemRect.x, itemRect.y + ((i + 1) * itemRect.height), itemRect.width, itemRect.height);
 
@@ -587,7 +529,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                     if (Input.GetMouseButtonUp(0))
                     {
                         SelectedLayers.Clear();
-                        SelectedLayers.Add(layer);
+                        SelectedLayers.Add(layerDef);
                         apparelListingRequest = true;
                         Input.ResetInputAxes();
                     }
@@ -595,8 +537,8 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                 }
             };
 
-            if (SelectedLayers.Contains(layer)) yield return () => Widgets.DrawHighlightSelected(curRect);
-            yield return () => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layer.label.Truncate(curRect.width - 40f));
+            if (SelectedLayers.Contains(layerDef)) yield return () => Widgets.DrawHighlightSelected(curRect);
+            yield return () => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layerDef.label.Truncate(curRect.width - 40f));
         }
         yield return () =>
         {
@@ -616,7 +558,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
             Widgets.DrawMenuSection(outerRect);
         };
 
-        if (ChooseYourOutfit.settings.syncFilter is false)
+        if (!ChooseYourOutfit.settings.syncFilter)
         {
             parentRect.height -= 30f;
             var leftButtonRect = new Rect(parentRect.x + 3f, parentRect.yMax + 3f, (parentRect.width / 2) - 4.5f, 24f);
@@ -713,22 +655,22 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         }
 
         var outRect = parentRect;
-        Rect viewRect = outRect;
+        var viewRect = outRect;
         viewRect.height = Text.LineHeight * apparelListToShow?.Count ?? 0f;
 
         Widgets.AdjustRectsForScrollView(parentRect, ref outRect, ref viewRect);
-        Rect itemRect = parentRect;
+        var itemRect = parentRect;
         itemRect.height = Text.LineHeight;
-        Rect iconRect = new Rect(itemRect.x + 15f, itemRect.y, itemRect.height, itemRect.height);
-        Rect infoButtonRect = new Rect(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
-        Rect labelRect = new Rect(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 10f, itemRect.height);
+        Rect iconRect = new(itemRect.x + 15f, itemRect.y, itemRect.height, itemRect.height);
+        Rect infoButtonRect = new(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
+        Rect labelRect = new(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 10f, itemRect.height);
         infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
 
-        yield return () => Widgets.BeginScrollView(outRect, ref apparelsScrollPosition, viewRect, true);
+        yield return () => Widgets.BeginScrollView(outRect, ref apparelsScrollPosition, viewRect);
 
         //画面に表示されるアパレルの範囲をあらかじめindexとして計算する
         var fromInclusive = (int)Math.Max(apparelsScrollPosition.y / itemRect.height, 0);
-        var toExclusive = (int)Math.Min(((apparelsScrollPosition.y + outRect.height) / itemRect.height) + 1, apparelListToShow.Count);
+        var toExclusive = (int)Math.Min(((apparelsScrollPosition.y + outRect.height) / itemRect.height) + 1, apparelListToShow!.Count);
 
         for (var index = fromInclusive; index < toExclusive; index++)
         {
@@ -770,7 +712,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                 TinyInfoButton(curInfoButtonRect, apparel.Value, GenStuff.DefaultStuffFor(apparel.Value));
             };
         }
-        yield return () => Widgets.EndScrollView();
+        yield return Widgets.EndScrollView;
     }
 
     //パーツで分かれたポーンの体を描画
@@ -782,16 +724,12 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         Parallel.ForEach(existParts, (KeyValuePair<string, (BodyPartRecord part, List<BodyPartGroupDef> groups)> part) =>
         {
             if (buttonColliders[part.Key].Length == 0) Log.Error("[ChooseYourOutfit]Path does not contain any polygons. It may not be closed.");
-            float VectorX(Vector2 v) => v.x;
-            float VectorY(Vector2 v) => v.y;
             var pos = new Vector2(buttonColliders[part.Key].Min(p => p.Min(VectorX)), buttonColliders[part.Key].Min(p => p.Min(VectorY)));
             var size = new Vector2(buttonColliders[part.Key].Max(p => p.Max(VectorX)), buttonColliders[part.Key].Max(p => p.Max(VectorY))) - pos;
 
-            var isInPolygon = false;
-
             if (Mouse.IsOver(rect))
             {
-                isInPolygon = buttonColliders[part.Key].Any(p => PolygonCollider.IsInPolygon(p, mousePosition));
+                var isInPolygon = buttonColliders[part.Key].Any(p => PolygonCollider.IsInPolygon(p, mousePosition));
                 if (isInPolygon)
                 {
                     isInAnyPolygon = true;
@@ -835,7 +773,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
             var covered = partHasHlApGroups ? new Color(0.3f, 0.3f, 0.15f, 0.1f) : Color.clear;
 
             var pawnGender = SelectedPawn.gender;
-            var drawGender = pawnGender == Gender.Male || pawnGender == Gender.Female ? pawnGender : Gender.None;
+            var drawGender = pawnGender is Gender.Male or Gender.Female ? pawnGender : Gender.None;
             bodyPartsDrawer.TryAdd(() =>
             {
                 var unfilled = unfilledParts[(drawGender, part.Key)];
@@ -849,6 +787,9 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                     GUI.DrawTexture(new Rect(pos, size), filledParts[(drawGender, part.Key)], ScaleMode.ScaleToFit, true, 0f, (color * alpha * unhighlight) + covered, 0f, 0f);
                 }
             }, true);
+            return;
+            float VectorX(Vector2 v) => v.x;
+            float VectorY(Vector2 v) => v.y;
         });
 
         if (!isInAnyPolygon)
@@ -879,7 +820,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                 Find.WindowStack.Add(new FloatMenu(options));
             }
         };
-        Rect rect4 = new Rect(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
+        Rect rect4 = new(rect.x, rect.y + 40f, rect.width, rect.height - 40f);
         yield return () => Widgets.DrawMenuSection(rect4);
         if (statsDrawn != null)
         {
@@ -901,16 +842,16 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                     }
                 };
             }
-            Rect rect5 = rect4.ContractedBy(5f);
+            var rect8 = rect4.ContractedBy(5f);
             yield return () =>
             {
                 using (new TextBlock(GameFont.Medium))
                 {
-                    Widgets.Label(rect5, statsDrawn.label);
+                    Widgets.Label(rect8, statsDrawn.label);
                 }
             };
 
-            foreach (var draw in statsReporter.DrawStatsWorker(rect5)) yield return draw;
+            foreach (var draw in statsReporter.DrawStatsWorker(rect8)) yield return draw;
         }
     }
 
@@ -919,8 +860,8 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     {
         if (SelectedApparels.Count == 0) yield break;
 
-        Rect rect1 = new Rect(outerRect.x, outerRect.y, outerRect.width - (Text.LineHeight * 2) - 12f - GenUI.ScrollBarWidth + 1f, Text.LineHeight);
-        Rect rect2 = new Rect(outerRect.xMax - (Text.LineHeight * 2) - 12f - GenUI.ScrollBarWidth, outerRect.y, (Text.LineHeight * 2) + 12f + GenUI.ScrollBarWidth - 2f, Text.LineHeight);
+        Rect rect1 = new(outerRect.x, outerRect.y, outerRect.width - (Text.LineHeight * 2) - 12f - GenUI.ScrollBarWidth + 1f, Text.LineHeight);
+        Rect rect2 = new(outerRect.xMax - (Text.LineHeight * 2) - 12f - GenUI.ScrollBarWidth, outerRect.y, (Text.LineHeight * 2) + 12f + GenUI.ScrollBarWidth - 2f, Text.LineHeight);
         yield return () =>
         {
             Widgets.DrawBoxSolidWithOutline(rect1, new Color(0.18f, 0.18f, 0.2f), new Color(0.36f, 0.36f, 0.4f));
@@ -951,26 +892,26 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
             };
         }
 
-        Rect itemRect = outerRect;
+        var itemRect = outerRect;
         itemRect.xMax -= GenUI.ScrollBarWidth;
         var viewRect = itemRect;
         itemRect.height = Text.LineHeight;
         viewRect.height = (selectedApparelListToShow.Count + selectedApparelListToShow.Where(l => !collapse[l.Key]).Select(l => l.Value.Count).Sum()) * itemRect.height;
-        Rect checkBoxRect = new Rect(itemRect.xMax - itemRect.height, itemRect.y, itemRect.height, itemRect.height);
-        Rect stuffRect = new Rect(itemRect.xMax - (itemRect.height * 2), itemRect.y, itemRect.height, itemRect.height);
+        Rect checkBoxRect = new(itemRect.xMax - itemRect.height, itemRect.y, itemRect.height, itemRect.height);
+        Rect stuffRect = new(itemRect.xMax - (itemRect.height * 2), itemRect.y, itemRect.height, itemRect.height);
         var curY = itemRect.y;
         var anyMouseOvered = false;
 
-        yield return () => Widgets.BeginScrollView(outerRect, ref listScrollPosition, viewRect, true);
+        yield return () => Widgets.BeginScrollView(outerRect, ref listScrollPosition, viewRect);
         foreach (var apparels in selectedApparelListToShow)
         {
             if (apparels.Value.NullOrEmpty()) continue;
 
             var curLayerY = curY;
-            Rect curLayerItemRect = new Rect(itemRect.x, curLayerY, itemRect.width, itemRect.height);
-            Rect butRect = new Rect(itemRect.x, curLayerY, itemRect.height, itemRect.height);
+            Rect curLayerItemRect = new(itemRect.x, curLayerY, itemRect.width, itemRect.height);
+            Rect butRect = new(itemRect.x, curLayerY, itemRect.height, itemRect.height);
             butRect.ContractedBy(3f);
-            Texture2D tex = collapse[apparels.Key] ? TexButton.Reveal : TexButton.Collapse;
+            var tex = collapse[apparels.Key] ? TexButton.Reveal : TexButton.Collapse;
 
             yield return () =>
             {
@@ -1040,7 +981,6 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                                 List<FloatMenuOption> options = [.. from opt in GeneratePreviewApparelStuffList(apparel)
                                                                  select opt.option];
                                 Find.WindowStack.Add(new FloatMenu(options));
-                                GeneratePreviewApparelStuffList(apparel);
                             }
                             else if (!Mouse.IsOver(curStuffRect) && Input.GetMouseButtonDown(0)) //上の判定がUpのためcurStuffRectの上での判定を除外する必要がある
                             {
@@ -1072,9 +1012,9 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
                 curY += apparels.Value.Count * itemRect.height;
             }
         }
-        yield return () => Widgets.EndScrollView();
+        yield return Widgets.EndScrollView;
 
-        if (anyMouseOvered is false) mouseoveredSelectedApparel = null;
+        if (!anyMouseOvered) mouseoveredSelectedApparel = null;
     }
 
     //ポーンの見た目プレビュー
@@ -1089,7 +1029,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         {
             SelectedPawn.Drawer.renderer.renderTree = selPawnRenderTree;
             inDialogPortraitRequest = true;
-            GUI.DrawTexture(rect, PortraitsCache.Get(SelectedPawn, rect.size, pawnPreviewRot, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, PreviewedApparels.Count != 0, null, null, false, null));
+            GUI.DrawTexture(rect, PortraitsCache.Get(SelectedPawn, rect.size, pawnPreviewRot, new Vector3(0f, 0f, 0.32f), 1f, true, true, true, PreviewedApparels.Count != 0));
         }
         finally
         {
@@ -1123,7 +1063,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
             .Where(a => SelectedLayers.Intersect(a.apparel.layers).Any())
             .Where(a => a.apparel.bodyPartGroups.Any(g => SelectedBodypartGroups?.Contains(g) ?? true))
             .OrderByDescending(a => a.label)
-            .GroupBy(a => SelectedApparels.Any(s => a.Equals(s)) || //その服が選択されていればtrue
+            .GroupBy(a => SelectedApparels.Any(a.Equals) || //その服が選択されていればtrue
             (SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
             ApparelUtility.HasPartsToWear(SelectedPawn, a)))
             .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)))
@@ -1132,17 +1072,17 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         if (ChooseYourOutfit.settings.currentlyResearched)
         {
             //そのapparelを含むレシピが存在しないか、あるいは研究済みのレシピに含まれているapparelに限定
-            var allDefs = DefDatabase<RecipeDef>.AllDefs;
+            var allDefs = DefDatabase<RecipeDef>.AllDefsListForReading;
             var availableRecipes = allDefs.Where(r => r.AvailableNow).ToArray();
             enumerable = enumerable.Where(a => allDefs.All(r => r.ProducedThingDef != a.Value) || availableRecipes.Any(r => r.ProducedThingDef == a.Value));
         }
 
         if (ChooseYourOutfit.settings.currentlyInStorage)
         {
-            var allApparels = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Apparel);
+            var allApparelsList = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Apparel);
             var hpFilter = SelectedPolicy.filter.AllowedHitPointsPercents;
             var quFilter = SelectedPolicy.filter.AllowedQualityLevels;
-            enumerable = enumerable.Where(a => allApparels.Any(t =>
+            enumerable = enumerable.Where(a => allApparelsList.Any(t =>
                 {
                     if (ChooseYourOutfit.settings.applyHitPoints && !hpFilter.Includes(t.HitPoints / (float)t.MaxHitPoints))
                     {
@@ -1164,18 +1104,20 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 
         if (statsReporter.SelectedEntry != null)
         {
-            if (statsReporter.SelectedEntry.category == StatCategoryDefOf.EquippedStatOffsets)
-                enumerable = enumerable.Where(a => a.Value.equippedStatOffsets.StatListContains(statsReporter.SelectedEntry.stat));
-            else enumerable = enumerable.Where(a => GetValueStringFromSelectedEntry(a.Value) == statsReporter.SelectedEntry.ValueString);
+            enumerable = statsReporter.SelectedEntry.category == StatCategoryDefOf.EquippedStatOffsets
+                ? enumerable.Where(a => a.Value.equippedStatOffsets.StatListContains(statsReporter.SelectedEntry.stat))
+                : enumerable.Where(a =>
+                    GetValueStringFromSelectedEntry(a.Value) == statsReporter.SelectedEntry.ValueString);
         }
 
-        if (ChooseYourOutfit.settings.apparelListMode) enumerable = enumerable.Where(a => a.Key == true);
-        else if (ChooseYourOutfit.settings.moveToBottom) enumerable = enumerable.OrderByDescending(a => a.Key is true);
+        if (ChooseYourOutfit.settings.apparelListMode) enumerable = enumerable.Where(a => a.Key);
+        else if (ChooseYourOutfit.settings.moveToBottom) enumerable = enumerable.OrderByDescending(a => a.Key);
 
         if (statsReporter.SortingEntry.entry != null)
         {
-            if (statsReporter.SortingEntry.descending) enumerable = enumerable.OrderByDescending(a => GetSortingStatValue(a.Value));
-            else enumerable = enumerable.OrderBy(a => GetSortingStatValue(a.Value));
+            enumerable = statsReporter.SortingEntry.descending
+                ? enumerable.OrderByDescending(a => GetSortingStatValue(a.Value))
+                : enumerable.OrderBy(a => GetSortingStatValue(a.Value));
         }
         apparelListToShow.AddRange(enumerable);
     }
@@ -1183,39 +1125,40 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     private void ListingSelectedApparelToShow()
     {
         selectedApparelListToShow.Clear();
-        foreach (var layer in OrderedLayerDefs)
+        foreach (var layerDef in OrderedLayerDefs)
         {
-            if (!selectedApparelListToShow.TryGetValue(layer, out var list) || list == null)
+            if (!selectedApparelListToShow.TryGetValue(layerDef, out var list) || list == null)
             {
-                selectedApparelListToShow[layer] = [];
+                selectedApparelListToShow[layerDef] = [];
             }
-            selectedApparelListToShow[layer].Clear();
-            selectedApparelListToShow[layer].AddRange(SelectedApparels.Where(a => a.apparel.layers.Contains(layer)).OrderByDescending(a => a.label));
+            selectedApparelListToShow[layerDef].Clear();
+            selectedApparelListToShow[layerDef].AddRange(SelectedApparels.Where(a => a.apparel.layers.Contains(layerDef)).OrderByDescending(a => a.label));
         }
     }
 
     private void ListingLayerToShow()
     {
-        bool LayerShouldShow(ApparelLayerDef layer)
-        {
-            var selectedLayers = SelectedLayers;
-            SelectedLayers.Clear();
-            SelectedLayers.Add(layer);
-            ListingApparelToShow();
-            selLayersInt = selectedLayers;
-            return apparelListToShow.Count != 0;
-        }
-
         layerListToShow.Clear();
         layerListToShow.AddRange(DefDatabase<ApparelLayerDef>.AllDefs
             .Where(LayerShouldShow)
             .OrderByDescending(l => l.drawOrder));
         ListingApparelToShow();
+        return;
+
+        bool LayerShouldShow(ApparelLayerDef layerDef)
+        {
+            var selectedLayers = SelectedLayers;
+            SelectedLayers.Clear();
+            SelectedLayers.Add(layerDef);
+            ListingApparelToShow();
+            SelectedLayers = selectedLayers;
+            return apparelListToShow.Count != 0;
+        }
     }
 
     public void SelectApparel(ThingDef apparel)
     {
-        if (SelectedApparels.Contains(apparel))
+        if (!SelectedApparels.Add(apparel))
         {
             SelectedApparels.Remove(apparel);
             PreviewedApparels.Remove(apparel);
@@ -1225,7 +1168,6 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         }
         else
         {
-            SelectedApparels.Add(apparel);
             if (!PreviewedApparels.Any(p => apparel != p && !ApparelUtility.CanWearTogether(apparel, p, SelectedPawn.RaceProps.body)))
             {
                 PreviewedApparels.Add(apparel);
@@ -1251,7 +1193,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     {
         preApparelsApparel.ForEach(a => a.Destroy());
         preApparelsApparel.Clear();
-        preApparelsApparel.AddRange(PreviewedApparels.Select(p => GetApparel(p))); //drawOrderのためにここは一度リセットして再追加している
+        preApparelsApparel.AddRange(PreviewedApparels.Select(GetApparel)); //drawOrderのためにここは一度リセットして再追加している
         selPawnRenderTree.rootNode = null;
         PortraitsCache.Clear();
     }
@@ -1259,79 +1201,72 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     private string GetValueStringFromSelectedEntry(ThingDef apparel)
     {
         var label = statsReporter.SelectedEntry.LabelCap;
-        if (label == "Stat_Source_Label".Translate()) return apparel.modContentPack?.Name ?? null;
+        if (label == "Stat_Source_Label".Translate()) return apparel.modContentPack?.Name;
         if (label == "Covers".Translate()) return apparel.apparel.GetCoveredOuterPartsString(BodyDefOf.Human);
         if (label == "Layer".Translate()) return apparel.apparel.GetLayersString();
         if (label == "Stat_Thing_Apparel_CountsAsClothingNudity_Name".Translate()) return apparel.apparel.countsAsClothingForNudity ? "Yes".Translate() : "No".Translate();
-        if (label == "Stat_Thing_Apparel_ValidLifestage".Translate()) return apparel.apparel.developmentalStageFilter.ToCommaList(false).CapitalizeFirst();
-        if (label == "Stat_Thing_Apparel_Gender".Translate()) return apparel.apparel.gender.GetLabel(false).CapitalizeFirst();
-        IEnumerable<RecipeDef> recipes = from r in DefDatabase<RecipeDef>.AllDefsListForReading
-                                         where r.products.Count == 1 && r.products.Any((ThingDefCountClass p) => p.thingDef == apparel) && !r.IsSurgery
+        if (label == "Stat_Thing_Apparel_ValidLifestage".Translate()) return apparel.apparel.developmentalStageFilter.ToCommaList().CapitalizeFirst();
+        if (label == "Stat_Thing_Apparel_Gender".Translate()) return apparel.apparel.gender.GetLabel().CapitalizeFirst();
+        var recipes = from r in DefDatabase<RecipeDef>.AllDefsListForReading
+                                         where r.products.Count == 1 && r.products.Any(p => p.thingDef == apparel) && !r.IsSurgery
                                          select r;
         if (label == "CreatedAt".Translate())
         {
-            IEnumerable<string> enumerable = (from u in (from x in recipes
+            var enumerable = (from u in (from x in recipes
                                                          where x.recipeUsers != null
-                                                         select x).SelectMany((RecipeDef r) => r.recipeUsers)
+                                                         select x).SelectMany(r => r.recipeUsers)
                                               select u.label).Concat(from x in DefDatabase<ThingDef>.AllDefsListForReading
-                                                                     where x.recipes != null && x.recipes.Any((RecipeDef y) => y.products.Any((ThingDefCountClass z) => z.thingDef == apparel))
-                                                                     select x.label).Distinct<string>();
-            return enumerable.ToCommaList(false, false).CapitalizeFirst();
+                                                                     where x.recipes != null && x.recipes.Any(y => y.products.Any(z => z.thingDef == apparel))
+                                                                     select x.label).Distinct();
+            return enumerable.ToCommaList().CapitalizeFirst();
         }
         if (label == "Ingredients".Translate())
         {
-            RecipeDef recipeDef = recipes.FirstOrDefault<RecipeDef>();
+            var recipeDef = recipes.FirstOrDefault();
             List<string> tmpCostList = [];
-            if (recipeDef != null && !recipeDef.ingredients.NullOrEmpty<IngredientCount>())
+            if (recipeDef != null && !recipeDef.ingredients.NullOrEmpty())
             {
-                for (int j = 0; j < recipeDef.ingredients.Count; j++)
-                {
-                    IngredientCount ingredientCount = recipeDef.ingredients[j];
-                    if (!ingredientCount.filter.Summary.NullOrEmpty())
-                    {
-                        tmpCostList.Add(recipeDef.IngredientValueGetter.BillRequirementsDescription(recipeDef, ingredientCount));
-                    }
-                }
+                tmpCostList.AddRange(from ingredientCount in recipeDef.ingredients
+                    where !ingredientCount.filter.Summary.NullOrEmpty()
+                    select recipeDef.IngredientValueGetter.BillRequirementsDescription(recipeDef, ingredientCount));
             }
-            return tmpCostList.ToCommaList(false, false);
+            return tmpCostList.ToCommaList();
         }
-        return apparel.SpecialDisplayStats(StatRequest.ForEmpty()).FirstOrDefault(s => label == s.LabelCap)?.ValueString ?? null;
+        return apparel.SpecialDisplayStats(StatRequest.ForEmpty()).FirstOrDefault(s => label == s.LabelCap)?.ValueString;
     }
 
     private float GetSortingStatValue(ThingDef def)
     {
-        if (statsReporter.SortingEntry.entry.category == StatCategoryDefOf.EquippedStatOffsets)
-        {
-            return def.equippedStatOffsets.GetStatValueFromList(statsReporter.SortingEntry.entry.stat, 0f);
-        }
-        else
-        {
-            return def.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, selStuffDatabase[def]);
-        }
+        return statsReporter.SortingEntry.entry.category == StatCategoryDefOf.EquippedStatOffsets
+            ? def.equippedStatOffsets.GetStatValueFromList(statsReporter.SortingEntry.entry.stat, 0f)
+            : def.GetStatValueAbstract(statsReporter.SortingEntry.entry.stat, selStuffDatabase[def]);
     }
 
     private void GetExistPartsAndButtons()
     {
         var hediffSet = SelectedPawn.health.hediffSet;
-        bool ExistPart(BodyPartRecord part)
-        {
-            if (!hediffSet.PartIsMissing(part)) return true;
-            if (!ProstheticNoMissingBodyParts.Active) return false;
-
-            //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
-            return hediffSet.hediffs.Any(h => h != null && bodypartsWhiteList.Contains(h.def.defName) && (h.Part == part?.parent || h.Part == part?.parent?.parent));
-        }
 
         existParts.Clear();
-        var parts = SelectedPawn.def.race.body.AllParts.Where(ExistPart);
-        foreach (var (id, button) in buttonColliders)
+        var parts = SelectedPawn.def.race.body.AllParts.Where(ExistPart).ToList();
+        foreach (var collider in buttonColliders)
         {
-            var folder = SelectedPawn.gender == Gender.Female || SelectedPawn.gender == Gender.Male ? SelectedPawn.gender : Gender.None;
-
+            var id = collider.Key;
             var part = parts.FirstOrDefault(p => id.EqualsIgnoreCase(p.untranslatedCustomLabel?.Replace(" ", "_")) || id.EqualsIgnoreCase(p.def.defName));
             if (part == null) continue;
             var groups = part.groups.Concat(DefDatabase<BodyPartGroupDef>.AllDefs.Where(g => part.Label.Replace(" ", "").EqualsIgnoreCase(g.defName))).ToList();
             existParts[id] = (part, groups);
+        }
+
+        return;
+
+        bool ExistPart(BodyPartRecord part)
+        {
+            if (!hediffSet.PartIsMissing(part)) return true;
+            return ProstheticNoMissingBodyParts.Active &&
+                   //pawnのhediffsのいずれかが対象のパーツの親か親の親のhediffで、かつwhiteListに名前が載ってるならpartsに含める
+                   hediffSet.hediffs.Any(h =>
+                       h != null && bodypartsWhiteList.Contains(h.def.defName) &&
+                       (h.Part == part?.parent || h.Part == part?.parent?.parent));
         }
     }
 
@@ -1356,19 +1291,15 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         foreach (var a in SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) SelectedPolicy.filter.SetAllow(a, true);
     }
 
-    private bool TinyInfoButton(Rect rect, ThingDef thingDef, ThingDef stuffDef)
+    private void TinyInfoButton(Rect rect, ThingDef thingDef, ThingDef stuffDef)
     {
         if (InfoCardButtonWorker(rect))
-        {
-            Find.WindowStack.Add(new Dialog_InfoCard(thingDef, stuffDef, null));
-            return true;
-        }
-        return false;
+            Find.WindowStack.Add(new Dialog_InfoCard(thingDef, stuffDef));
     }
 
     private void InitializeByPawn(Pawn pawn)
     {
-        selPawnInt = pawn;
+        SelectedPawn = pawn;
         selPawnRenderTree = new PawnRenderTree(pawn);
         selPawnButtonLabel = pawn.LabelShortCap;
         allApparels.Clear();
@@ -1378,21 +1309,14 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         {
             cantWearTogether.Add(apparel, [.. allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body))]);
         }
-        Gender gender;
-        if (pawn.gender == Gender.Female || pawn.gender == Gender.Male)
-        {
-            gender = pawn.gender;
-        }
-        else
-        {
-            gender = Gender.None;
-        }
-        svgViewBox = SVGInterpreter.GetViewBox(SVGs[pawn.gender]);
-        float scale = Math.Min(rect6.height / svgViewBox.height, rect6.width / svgViewBox.width);
-        Vector2 offset = new Vector2(rect6.width - (svgViewBox.width * scale) - svgViewBox.x,
+
+        var gender = pawn.gender is Gender.Female or Gender.Male ? pawn.gender : Gender.None;
+        svgViewBox = SVGInterpreter.GetViewBox(SVGs[gender]);
+        var scale = Math.Min(rect6.height / svgViewBox.height, rect6.width / svgViewBox.width);
+        Vector2 offset = new(rect6.width - (svgViewBox.width * scale) - svgViewBox.x,
             (rect6.height / 2f) - (svgViewBox.height / 2f * scale) - svgViewBox.y);
 
-        foreach (var pair in Colliders[pawn.gender])
+        foreach (var pair in Colliders[gender])
         {
             buttonColliders[pair.Key] = [.. pair.Value.Select(l => l.Select(v => (v * scale) + offset).ToArray())];
         }
@@ -1402,7 +1326,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
         canWearAllowed.Clear();
         if (SelectedPolicy != null)
         {
-            canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a != null && a.IsApparel && a.apparel.PawnCanWear(SelectedPawn)));
+            canWearAllowed.AddRange(SelectedPolicy.filter.AllowedThingDefs.Where(a => a is { IsApparel: true } && a.apparel.PawnCanWear(SelectedPawn)));
         }
         LoadFilter();
         layerListingRequest = true;
@@ -1412,7 +1336,7 @@ public class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
     {
         MouseoverSounds.DoRegion(rect);
         TooltipHandler.TipRegionByKey(rect, "DefInfoTip");
-        bool result = Widgets.ButtonImage(rect, TexButton.Info, GUI.color, true);
+        var result = Widgets.ButtonImage(rect, TexButton.Info, GUI.color);
         UIHighlighter.HighlightOpportunity(rect, "InfoCard");
         return result;
     }

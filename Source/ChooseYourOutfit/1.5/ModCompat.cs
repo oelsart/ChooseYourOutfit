@@ -26,25 +26,23 @@ public static class ModCompat
         return args.Any(arg => arg == null);
     }
 
-    public static bool AnimalControls = ModsConfig.IsActive("avilmask.AnimalControls");
+    public static readonly bool AnimalControls = ModsConfig.IsActive("avilmask.AnimalControls");
 
-    public static bool ABHATweaker = ModsConfig.IsActive("AB.HATweaker");
+    public static readonly bool ABHATweaker = ModsConfig.IsActive("AB.HATweaker");
 
     public static class ProstheticNoMissingBodyParts
     {
-        public static bool Active = ModsConfig.IsActive("Mlie.ProstheticNoMissingBodyParts");
+        public static readonly bool Active = ModsConfig.IsActive("Mlie.ProstheticNoMissingBodyParts");
 
-        private static Mod Mod;
+        private static readonly ModSettings Settings;
 
-        private static ModSettings Settings;
+        private static readonly AccessTools.FieldRef<ModSettings, List<string>> ArmsWhitelist;
 
-        private static AccessTools.FieldRef<ModSettings, List<string>> ArmsWhitelist;
+        private static readonly AccessTools.FieldRef<ModSettings, List<string>> FeetWhitelist;
 
-        private static AccessTools.FieldRef<ModSettings, List<string>> FeetWhitelist;
+        private static readonly AccessTools.FieldRef<ModSettings, List<string>> HandsWhitelist;
 
-        private static AccessTools.FieldRef<ModSettings, List<string>> HandsWhitelist;
-
-        private static AccessTools.FieldRef<ModSettings, List<string>> LegsWhitelist;
+        private static readonly AccessTools.FieldRef<ModSettings, List<string>> LegsWhitelist;
 
         static ProstheticNoMissingBodyParts()
         {
@@ -52,8 +50,8 @@ public static class ModCompat
             {
                 try
                 {
-                    Mod = (Mod)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:mod")?.GetValue(null);
-                    Settings = (ModSettings)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:settings")?.GetValue(Mod);
+                    var mod = (Mod)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:mod")?.GetValue(null);
+                    Settings = (ModSettings)AccessTools.Field("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsMod:settings")?.GetValue(mod);
                     var t_ProstheticNoMissingBodyPartsSettings = AccessTools.TypeByName("ProstheticNoMissingBodyParts.ProstheticNoMissingBodyPartsSettings");
                     ArmsWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "ArmsWhitelist");
                     FeetWhitelist = AccessTools.FieldRefAccess<List<string>>(t_ProstheticNoMissingBodyPartsSettings, "FeetWhitelist");
@@ -70,7 +68,7 @@ public static class ModCompat
                 {
                     if (AnyNull(Settings, ArmsWhitelist, FeetWhitelist, HandsWhitelist, LegsWhitelist))
                     {
-                        Log.Error($"[ChooseYourOutfit] ProstheticNoMissingBodyParts compatibility is broken.");
+                        Log.Error("[ChooseYourOutfit] ProstheticNoMissingBodyParts compatibility is broken.");
                         Active = false;
                     }
                 }
@@ -81,7 +79,7 @@ public static class ModCompat
         {
             get
             {
-                if (!Active) return Enumerable.Empty<string>();
+                if (!Active) return [];
                 return ArmsWhitelist(Settings)
                     .Concat(FeetWhitelist(Settings))
                     .Concat(HandsWhitelist(Settings))
@@ -93,19 +91,19 @@ public static class ModCompat
 
     public static class SaveStorageSettings
     {
-        public static bool Active = ModsConfig.IsActive("savestoragesettings.kv.rw.fishtmp");
+        public static readonly bool Active = ModsConfig.IsActive("savestoragesettings.kv.rw.fishtmp");
 
-        public static MethodInfo Original;
+        public static readonly MethodInfo Original;
 
-        public static MethodInfo Postfix;
+        public static readonly MethodInfo Postfix;
 
-        public static Func<Dialog_ManageApparelPolicies, ApparelPolicy> GetSelectedPolicy;
+        public static readonly Func<Dialog_ManageApparelPolicies, ApparelPolicy> GetSelectedPolicy;
 
-        public static Action<Dialog_ManageApparelPolicies, ApparelPolicy> SetApparelPolicy;
+        public static readonly Action<Dialog_ManageApparelPolicies, ApparelPolicy> SetApparelPolicy;
 
-        public static Type LoadFilterDialog;
+        public static readonly Type LoadFilterDialog;
 
-        public static Type SaveFilterDialog;
+        public static readonly Type SaveFilterDialog;
 
         static SaveStorageSettings()
         {
@@ -133,7 +131,7 @@ public static class ModCompat
                 {
                     if (AnyNull(Original, Postfix, GetSelectedPolicy, SetApparelPolicy, LoadFilterDialog, SaveFilterDialog))
                     {
-                        Log.Error($"[ChooseYourOutfit] SaveStorageSettings compatibility is broken.");
+                        Log.Error("[ChooseYourOutfit] SaveStorageSettings compatibility is broken.");
                         Active = false;
                     }
                 }
@@ -144,47 +142,49 @@ public static class ModCompat
         {
             if (!Active) return;
 
-            Window GetDialog(Type type, string str, ThingFilter filter)
+            if (Widgets.ButtonText(new Rect(inRect.xMax - 300f, 15f, 140f, 35f), "SaveStorageSettings.LoadAsNew".Translate(), true, false))
             {
-                return (Window)Activator.CreateInstance(type, AccessTools.all, null, [str, filter], null);
-            }
-
-            if (Widgets.ButtonText(new Rect(inRect.xMax - 300f, 15f, 140f, 35f), "SaveStorageSettings.LoadAsNew".Translate(), true, false, true, null))
-            {
-                ApparelPolicy apparelPolicy = Current.Game.outfitDatabase.MakeNewOutfit();
+                var apparelPolicy = Current.Game.outfitDatabase.MakeNewOutfit();
                 SetApparelPolicy(dialog, apparelPolicy);
                 Find.WindowStack.Add(GetDialog(LoadFilterDialog, "Apparel_Management", apparelPolicy.filter));
             }
-            ApparelPolicy selectedPolicy = GetSelectedPolicy(dialog);
+            var selectedPolicy = GetSelectedPolicy(dialog);
             if (selectedPolicy != null)
             {
-                if (Widgets.ButtonText(new Rect(inRect.xMax - 155f, 15f, 75f, 35f), "SaveStorageSettings.LoadOutfit".Translate(), true, false, true, null))
+                if (Widgets.ButtonText(new Rect(inRect.xMax - 155f, 15f, 75f, 35f), "SaveStorageSettings.LoadOutfit".Translate(), true, false))
                 {
                     Find.WindowStack.Add(GetDialog(LoadFilterDialog, "Apparel_Management", selectedPolicy.filter));
                 }
-                if (Widgets.ButtonText(new Rect(inRect.xMax - 75f, 15f, 75f, 35f), "SaveStorageSettings.SaveOutfit".Translate(), true, false, true, null))
+                if (Widgets.ButtonText(new Rect(inRect.xMax - 75f, 15f, 75f, 35f), "SaveStorageSettings.SaveOutfit".Translate(), true, false))
                 {
                     Find.WindowStack.Add(GetDialog(SaveFilterDialog, "Apparel_Management", selectedPolicy.filter));
                 }
+            }
+
+            return;
+
+            Window GetDialog(Type type, string str, ThingFilter filter)
+            {
+                return (Window)Activator.CreateInstance(type, AccessTools.all, null, [str, filter], null);
             }
         }
     }
 
     public static class Outfitted
     {
-        public static bool Active = ModsConfig.IsActive("mitasamodel.Outfitted");
+        public static readonly bool Active = ModsConfig.IsActive("mitasamodel.Outfitted");
 
-        public static MethodInfo Patch1Original;
+        public static readonly MethodInfo Patch1Original;
 
-        public static MethodInfo Patch1;
+        public static readonly MethodInfo Patch1;
 
-        public static MethodInfo Patch2Original;
+        public static readonly MethodInfo Patch2Original;
 
-        public static MethodInfo Patch2;
+        public static readonly MethodInfo Patch2;
 
-        public static Action<Dialog_ManagePolicies<ApparelPolicy>, Rect> PostfixDelegate;
+        public static readonly Action<Dialog_ManagePolicies<ApparelPolicy>, Rect> PostfixDelegate;
 
-        public static FastInvokeHandler DrawOutfittedButtons;
+        public static readonly FastInvokeHandler DrawOutfittedButtons;
 
         static Outfitted()
         {
@@ -208,7 +208,7 @@ public static class ModCompat
                 {
                     if (AnyNull(Patch1Original, Patch1, Patch2Original, Patch2, PostfixDelegate, DrawOutfittedButtons))
                     {
-                        Log.Error($"[ChooseYourOutfit] Outfitted compatibility is broken.");
+                        Log.Error("[ChooseYourOutfit] Outfitted compatibility is broken.");
                         Active = false;
                     }
                 }
@@ -221,14 +221,14 @@ public static class ModCompat
 
             var dx = SaveStorageSettings.Active ? 445f : 140f;
             var buttonRect = new Rect(inRect.xMax - dx, 15f, 140f, 35f);
-            if (Widgets.ButtonText(buttonRect, "Outfitted", true, false, true, null))
+            if (Widgets.ButtonText(buttonRect, "Outfitted", true, false))
             {
                 var rect = new Rect(UI.MousePositionOnUIInverted, new Vector2(342f, 600f));
                 if (rect.xMax > Screen.width)
                 {
                     rect.x -= rect.width;
                 }
-                var dialog2 = new Dialog()
+                var dialog2 = new Dialog
                 {
                     windowRect = rect,
                     draggable = true,

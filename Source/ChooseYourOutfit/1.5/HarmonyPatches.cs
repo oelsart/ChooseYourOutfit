@@ -12,9 +12,9 @@ using static ChooseYourOutfit.ModCompat;
 namespace ChooseYourOutfit;
 
 [StaticConstructorOnStartup]
-class HarmonyPatches
+internal class HarmonyPatches
 {
-    public static Harmony Instance { get; private set; }
+    public static Harmony Instance { get; }
 
     static HarmonyPatches()
     {
@@ -25,15 +25,15 @@ class HarmonyPatches
 
 //new Dialog_ManageApparelPoliciesをnew Dialog_ManageApparelPoliciesExに置き換える
 [HarmonyPatch(typeof(PawnColumnWorker_Outfit), nameof(PawnColumnWorker_Outfit.DoHeader))]
-static class Patch_PawnColumnWorker_Outfit_DoHeader
+internal static class Patch_PawnColumnWorker_Outfit_DoHeader
 {
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         List<CodeInstruction> codes = [.. instructions];
         //置き換え後のoperandとしてDialog_ManageApparelPoliciesExのコンストラクタを取得
         var operand = AccessTools.Constructor(typeof(Dialog_ManageApparelPoliciesEx), [typeof(Pawn)]);
         //Dialog_ManageApparelPoliciesのコンストラクタをoperandに持つNewobjの場所を検索
-        int pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType.Equals(typeof(Dialog_ManageApparelPolicies)));
+        var pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType == typeof(Dialog_ManageApparelPolicies));
         //新しいoperandに置き換え
         codes[pos].operand = operand;
         return codes;
@@ -42,9 +42,9 @@ static class Patch_PawnColumnWorker_Outfit_DoHeader
 
 //new Dialog_ManageApparelPoliciesをnew Dialog_ManageApparelPoliciesExに置き換え、渡すのをpawnにする
 [HarmonyPatch]
-static class Patch_PawnColumnWorker_Outfit_Button_GenerateMenu
+internal static class Patch_PawnColumnWorker_Outfit_Button_GenerateMenu
 {
-    static MethodInfo TargetMethod()
+    private static MethodInfo TargetMethod()
     {
         var m_WindowStack_Add = AccessTools.Method(typeof(WindowStack), nameof(WindowStack.Add));
         return AccessTools.FindIncludingInnerTypes(typeof(PawnColumnWorker_Outfit),
@@ -55,13 +55,13 @@ static class Patch_PawnColumnWorker_Outfit_Button_GenerateMenu
             }));
     }
 
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         List<CodeInstruction> codes = [.. instructions];
         //置き換え後のoperandとしてDialog_ManageApparelPoliciesExのコンストラクタを取得
         var operand = AccessTools.Constructor(typeof(Dialog_ManageApparelPoliciesEx), [typeof(Pawn)]);
         //Dialog_ManageApparelPoliciesのコンストラクタをoperandに持つNewobjの場所を検索
-        var pos = codes.FindIndex(c => c.opcode.Equals(OpCodes.Newobj) && ((ConstructorInfo)c.operand).DeclaringType.Equals(typeof(Dialog_ManageApparelPolicies)));
+        var pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType == typeof(Dialog_ManageApparelPolicies));
         //新しいoperandに置き換え
         codes[pos].operand = operand;
         //(pawn以下の).outfits.CurrentApparelPolicyを削除
@@ -73,15 +73,15 @@ static class Patch_PawnColumnWorker_Outfit_Button_GenerateMenu
 
 //Policy編集ボタン3つを右端からポリシー名の横に変える
 [HarmonyPatch]
-static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
+internal static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
 {
-    static MethodBase TargetMethod()
+    private static MethodBase TargetMethod()
     {
-        Type generic = AnimalControls ? typeof(Dialog_ManagePolicies<FoodPolicy>) : typeof(Dialog_ManagePolicies<ApparelPolicy>);
+        var generic = AnimalControls ? typeof(Dialog_ManagePolicies<FoodPolicy>) : typeof(Dialog_ManagePolicies<ApparelPolicy>);
         return AccessTools.Method(generic, "DoWindowContents");
     }
 
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var codes = instructions.ToList();
         var m_LabelEllipses = AccessTools.Method(typeof(Widgets), "LabelEllipses");
@@ -92,8 +92,7 @@ static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
 
         var label = generator.DefineLabel();
         codes[pos].labels.Add(label);
-        codes.InsertRange(pos, new[]
-        {
+        codes.InsertRange(pos, [
             CodeInstruction.LoadArgument(0),
             CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
             new CodeInstruction(OpCodes.Brfalse_S, label),
@@ -110,7 +109,7 @@ static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
             CodeInstruction.LoadLocal(4, true),
             new CodeInstruction(OpCodes.Ldc_R4, margin + 488f),
             new CodeInstruction(OpCodes.Call, AccessTools.PropertySetter(typeof(Rect), nameof(Rect.xMax)))
-        });
+        ]);
 
         var pos2 = codes.FindIndex(pos, c => c.LoadsConstant("DeletePolicyTip"));
         var label2 = generator.DefineLabel();
@@ -118,8 +117,7 @@ static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
         var offset = generator.DeclareLocal(typeof(float));
         var m_OffsetButton = AccessTools.Method(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(OffsetButton));
         codes[pos2].labels.Add(label2);
-        codes.InsertRange(pos2, new[]
-        {
+        codes.InsertRange(pos2, [
             CodeInstruction.LoadArgument(0),
             CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
             new CodeInstruction(OpCodes.Brfalse_S, label2),
@@ -142,17 +140,17 @@ static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
             CodeInstruction.LoadLocal(5, true),
             new CodeInstruction(OpCodes.Ldloc_S, root),
             new CodeInstruction(OpCodes.Ldloca_S, offset),
-            new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
-        });
+            new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton)
+        ]);
         return codes;
     }
 
-    static bool MoveButtons(Dialog_ManagePolicies<ApparelPolicy> dialog)
+    private static bool MoveButtons(Dialog_ManagePolicies<ApparelPolicy> dialog)
     {
         return !ChooseYourOutfit.settings.disableAddedUI && dialog is Dialog_ManageApparelPoliciesEx;
     }
 
-    static void OffsetButton(ref Rect rect, float root, ref float offset)
+    private static void OffsetButton(ref Rect rect, float root, ref float offset)
     {
         rect.x = root + offset;
         offset += 42f;
@@ -183,9 +181,9 @@ public static class Patch_Thing_GetFloatMenuOptions
 
 [HarmonyPatch]
 [HarmonyAfter("AB.HATweaker", "cat2002.showhair")]
-static class Patch_PawnRenderTree_SetupApparelNodes
+internal static class Patch_PawnRenderTree_SetupApparelNodes
 {
-    static MethodBase TargetMethod()
+    private static MethodBase TargetMethod()
     {
         return AccessTools.FindIncludingInnerTypes(typeof(DynamicPawnRenderNodeSetup_Apparel), t =>
         {
@@ -194,7 +192,7 @@ static class Patch_PawnRenderTree_SetupApparelNodes
         });
     }
 
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         List<CodeInstruction> codes = [.. instructions];
         var label = generator.DefineLabel();
@@ -203,8 +201,7 @@ static class Patch_PawnRenderTree_SetupApparelNodes
         var windowOfTypeGeneric = AccessTools.Method(typeof(WindowStack), "WindowOfType").MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx));
 
         codes[0].labels.Add(label);
-        codes.InsertRange(0, new[]
-        {
+        codes.InsertRange(0, [
             new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(Find), nameof(Find.WindowStack))),
             new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
             new CodeInstruction(OpCodes.Stloc_S, window),
@@ -219,7 +216,7 @@ static class Patch_PawnRenderTree_SetupApparelNodes
             new CodeInstruction(OpCodes.Brtrue_S, label),
             new CodeInstruction(OpCodes.Ldc_I4_0),
             new CodeInstruction(OpCodes.Ret)
-        });
+        ]);
 
         var m_GetEnumerator = AccessTools.Method(typeof(List<Apparel>), "GetEnumerator");
         var pos = codes.FindIndex(c => c.opcode == OpCodes.Callvirt && c.OperandIs(m_GetEnumerator));
@@ -231,8 +228,7 @@ static class Patch_PawnRenderTree_SetupApparelNodes
 
         codes[pos].labels.Add(label2);
         codes[pos2].labels.Add(label3);
-        codes.InsertRange(pos2, new[]
-        {
+        codes.InsertRange(pos2, [
             new CodeInstruction(OpCodes.Ldloc_S, window),
             new CodeInstruction(OpCodes.Brfalse_S, label3),
             new CodeInstruction(OpCodes.Ldloc_S, window),
@@ -240,8 +236,8 @@ static class Patch_PawnRenderTree_SetupApparelNodes
             new CodeInstruction(OpCodes.Brfalse_S, label3),
             new CodeInstruction(OpCodes.Ldloc_S, window),
             CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
-            new CodeInstruction(OpCodes.Br_S, label2),
-        });
+            new CodeInstruction(OpCodes.Br_S, label2)
+        ]);
 
         if (ABHATweaker)
         {
@@ -251,14 +247,13 @@ static class Patch_PawnRenderTree_SetupApparelNodes
             var label5 = generator.DefineLabel();
             codes[pos3].labels.Add(label5);
 
-            codes.InsertRange(pos3, new[]
-            {
+            codes.InsertRange(pos3, [
                 new CodeInstruction(OpCodes.Ldloc_S, window),
                 new CodeInstruction(OpCodes.Brfalse_S, label5),
                 new CodeInstruction(OpCodes.Ldloc_S, window),
                 CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
-                new CodeInstruction(OpCodes.Brtrue_S, label4),
-            });
+                new CodeInstruction(OpCodes.Brtrue_S, label4)
+            ]);
         }
 
         return codes;
@@ -268,9 +263,9 @@ static class Patch_PawnRenderTree_SetupApparelNodes
 [HarmonyPatch(typeof(PawnRenderTree), "AdjustParms")]
 [HarmonyAfter("net.velc.rimworld.mod.hds", "AB.HATweaker")]
 [HarmonyBefore("cat2002.showhair")]
-static class Patch_PawnRenderTree_AdjustParms
+internal static class Patch_PawnRenderTree_AdjustParms
 {
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var codes = instructions.ToList();
 
@@ -296,14 +291,14 @@ static class Patch_PawnRenderTree_AdjustParms
         codes.InsertRange(pos2, new List<CodeInstruction>
         {
             CodeInstruction.Call(typeof(Find), "get_WindowStack"),
-            new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
-            new CodeInstruction(OpCodes.Dup),
-            new CodeInstruction(OpCodes.Brfalse_S, labelPop),
-            new CodeInstruction(OpCodes.Dup),
+            new(OpCodes.Callvirt, windowOfTypeGeneric),
+            new(OpCodes.Dup),
+            new(OpCodes.Brfalse_S, labelPop),
+            new(OpCodes.Dup),
             CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
-            new CodeInstruction(OpCodes.Brfalse_S, labelPop),
+            new(OpCodes.Brfalse_S, labelPop),
             CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
-            new CodeInstruction(OpCodes.Br_S, labelEnum),
+            new(OpCodes.Br_S, labelEnum),
             new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
         });
 
@@ -312,9 +307,9 @@ static class Patch_PawnRenderTree_AdjustParms
 }
 
 [HarmonyPatch(typeof(Pawn), nameof(Pawn.GetGizmos))]
-static class Patch_Pawn_GetGizmos
+internal static class Patch_Pawn_GetGizmos
 {
-    static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+    private static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
     {
         if (__instance.IsFreeColonist)
         {

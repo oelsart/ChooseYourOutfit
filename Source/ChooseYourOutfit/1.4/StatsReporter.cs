@@ -6,351 +6,345 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace ChooseYourOutfit
+namespace ChooseYourOutfit;
+
+public class StatsReporter
 {
-    public class StatsReporter
+    public void Reset(float width, ThingDef def, ThingDef stuff, QualityCategory quality)
     {
-        public void Reset(float width, ThingDef def, ThingDef stuff, QualityCategory quality)
+
+        scrollPosition = default(Vector2);
+        scrollPositioner.Arm(false);
+        mousedOverEntry = null;
+        cachedDrawEntries.Clear();
+        cachedEntryValues.Clear();
+        cachedEntryHeights.Clear();
+
+        BuildableDef buildableDef = def;
+        var req = buildableDef != null ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
+        specialDisplayStats = def.SpecialDisplayStats(req);
+
+        if (cachedDrawEntries.NullOrEmpty() && def.GetConcreteExample(stuff) is ThingWithComps thing)
         {
+            var compQuality = thing.GetComp<CompQuality>();
+            compQuality?.SetQuality(quality, ArtGenerationContext.Colony);
+            cachedDrawEntries.AddRange(specialDisplayStats);
+            cachedDrawEntries.AddRange(from r in StatsToDraw(thing)
+                where r.ShouldDisplay
+                select r);
+            FinalizeCachedDrawEntries(cachedDrawEntries);
+        }
 
-            this.scrollPosition = default(Vector2);
-            this.scrollPositioner.Arm(false);
-            this.mousedOverEntry = null;
-            this.cachedDrawEntries.Clear();
-            this.cachedEntryValues.Clear();
-            this.cachedEntryHeights.Clear();
-
-            BuildableDef buildableDef = def as BuildableDef;
-            StatRequest req = (buildableDef != null) ? StatRequest.For(buildableDef, stuff, quality) : StatRequest.ForEmpty();
-            this.specialDisplayStats = def.SpecialDisplayStats(req);
-
-            if (this.cachedDrawEntries.NullOrEmpty<StatDrawEntry>())
+        for (var i = 0; i < cachedDrawEntries.Count; i++)
+        {
+            using (new TextBlock(GameFont.Small))
             {
-                ThingWithComps thing = def.GetConcreteExample(stuff) as ThingWithComps;
-                CompQuality compQuality = thing.GetComp<CompQuality>();
-                compQuality?.SetQuality(quality, ArtGenerationContext.Colony);
-                this.cachedDrawEntries.AddRange(specialDisplayStats);
-                this.cachedDrawEntries.AddRange(from r in this.StatsToDraw(thing)
-                                                where r.ShouldDisplay
-                                                select r);
-                this.FinalizeCachedDrawEntries(this.cachedDrawEntries);
-            }
-
-            for (int i = 0; i < this.cachedDrawEntries.Count; i++)
-            {
-                using (new TextBlock(GameFont.Small))
-                {
-                    this.cachedEntryHeights.Add(Text.CalcHeight(this.cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
-                }
-            }
-
-            using (new TextBlock(GameFont.Medium))
-            {
-                this.titleHeight = Text.CalcHeight(def.label, width) + 5f;
+                cachedEntryHeights.Add(Text.CalcHeight(cachedEntryValues[i], width / 2 - GenUI.ScrollBarWidth - 8f));
             }
         }
 
-        public StatsReporter(Dialog_ManageOutfitsEx dialog)
+        using (new TextBlock(GameFont.Medium))
         {
-            this.dialog = dialog;
-            foreach (var statCategory in DefDatabase<StatCategoryDef>.AllDefs)
-            {
-                collapse[statCategory.LabelCap] = false;
-            }
+            titleHeight = Text.CalcHeight(def.label, width) + 5f;
         }
-
-        public StatDrawEntry SelectedEntry { get { return this.selectedEntry; } }
-
-        private IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
-        {
-            IEnumerable<StatDef> allDefs = DefDatabase<StatDef>.AllDefs.Where(s => s.Worker.ShouldShowFor(StatRequest.For(thing)));
-
-            foreach (StatDef statDef in allDefs)
-            {
-                yield return new StatDrawEntry(statDef.category, statDef, thing.GetStatValue(statDef, true, -1), StatRequest.For(thing), ToStringNumberSense.Undefined, null, false);
-            }
-
-            yield break;
-        }
-
-        private void SelectEntry(StatDrawEntry rec, bool playSound = true)
-        {
-            dialog.apparelListingRequest = true;
-            dialog.layerListingRequest = true;
-            if (this.selectedEntry == this.mousedOverEntry && this.selectedEntry != null) this.selectedEntry = null;
-            else this.selectedEntry = rec;
-            if (playSound)
-            {
-                SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
-            }
-        }
-
-        public IEnumerable<Action> DrawStatsWorker(Rect rect)
-        {
-            Rect rect2 = new Rect(rect);
-            rect2.yMin += this.titleHeight;
-            Rect viewRect = new Rect(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, this.listHeight);
-            var anyMouseOvered = false;
-
-            float num = 0f;
-            string b = null;
-            yield return () => Widgets.BeginScrollView(rect2, ref this.scrollPosition, viewRect, true);
-
-            foreach (var group in this.cachedDrawEntries.GroupBy(e => pinnedEntry.Contains(e)).OrderByDescending(g => g.Key == true))
-            {
-                foreach (var ent in group)
-                {
-                    var i = this.cachedDrawEntries.IndexOf(ent);
-
-                    if (group.Key == false && ent.category.LabelCap != b)
-                    {
-                        var tmp = num;
-                        yield return () => this.ListSeparator(tmp, viewRect.width, ent.category);
-                        b = ent.category.LabelCap;
-                        num += Widgets.ListSeparatorHeight;
-                    }
-
-                    if (collapse[ent.category.LabelCap]) continue;
-
-                    var statRect = new Rect(8f, num, viewRect.width, this.cachedEntryHeights[i]);
-                    yield return () =>
-                    {
-                        if (Mouse.IsOver(statRect) && specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
-                        {
-                            this.mousedOverEntry = ent;
-                            if (ChooseYourOutfit.settings.showTooltips)
-                            {
-                                var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
-                                if (ent.category == StatCategoryDefOf.EquippedStatOffsets) tip += "CYO.Tip.FilterByLabel".Translate();
-                                else tip += "CYO.Tip.FilterByValue".Translate();
-                                if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(statRect, tip);
-                            }
-                            Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
-                        }
-                    };
-
-                    var pinRect = new Rect(viewRect.width * 0.55f - 24f, num, 24f, 24f);
-                    var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
-                    var drawResult = this.Draw(ent, 8f, num, viewRect.width, this.selectedEntry == ent, false, false, () =>
-                    {
-                        if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
-                        {
-                            Input.ResetInputAxes();
-                            this.SelectEntry(ent, true);
-                        }
-                    }, () =>
-                    {
-                        anyMouseOvered = true;
-
-                        if (!pinnedEntry.Contains(ent)) GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
-                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(pinRect, "CYO.Tip.PinButton".Translate());
-                        if (Mouse.IsOver(pinRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
-                        {
-                            Input.ResetInputAxes();
-                            if (pinnedEntry.Contains(ent)) pinnedEntry.Remove(ent);
-                            else pinnedEntry.Add(ent);
-                        }
-
-                        if (ent.stat != null)
-                        {
-                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(sortButtonRect, "CYO.Tip.SortButton".Translate());
-                            if (ent != SortingEntry.entry) GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
-                            if (Mouse.IsOver(sortButtonRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
-                            {
-                                Input.ResetInputAxes();
-                                if (SortingEntry.entry != ent)
-                                {
-                                    SortingEntry.entry = ent;
-                                    SortingEntry.descending = true;
-                                }
-                                else if (SortingEntry.descending) SortingEntry.descending = false;
-                                else SortingEntry.entry = null;
-
-                                dialog.apparelListingRequest = true;
-                            }
-                        }
-                    }, this.scrollPosition, rect2, this.cachedEntryValues[i]);
-
-                    foreach (var draw in drawResult) yield return draw;
-
-                    if (group.Key == true)
-                    {
-                        yield return () => GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex);
-                    }
-
-                    if (ent == SortingEntry.entry)
-                    {
-                        yield return () => GUI.DrawTexture(sortButtonRect, SortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp);
-                    }
-
-                    num += this.cachedEntryHeights[i];
-                }
-            }
-            this.listHeight = num;
-            yield return () => Widgets.EndScrollView();
-
-            if (anyMouseOvered is false) this.mousedOverEntry = null;
-        }
-
-        private void FinalizeCachedDrawEntries(IEnumerable<StatDrawEntry> original)
-        {
-            this.cachedDrawEntries = (from sd in original
-                                      orderby sd.category.displayOrder, sd.DisplayPriorityWithinCategory descending, sd.LabelCap
-                                      select sd).ToList<StatDrawEntry>();
-            this.quickSearchWidget.noResultsMatched = !this.cachedDrawEntries.Any<StatDrawEntry>();
-            foreach (StatDrawEntry statDrawEntry in this.cachedDrawEntries)
-            {
-                this.cachedEntryValues.Add(statDrawEntry.ValueString);
-                var ent = this.pinnedEntry.FirstOrDefault((StatDrawEntry e) => e.Same(statDrawEntry));
-                if (ent != null) this.pinnedEntry.Replace(ent, statDrawEntry);
-            }
-            if (this.selectedEntry != null)
-            {
-                this.selectedEntry = this.cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(this.selectedEntry));
-            }
-            if (this.quickSearchWidget.filter.Active)
-            {
-                foreach (StatDrawEntry sd2 in this.cachedDrawEntries)
-                {
-                    if (this.Matches(sd2))
-                    {
-                        this.selectedEntry = sd2;
-                        this.scrollPositioner.Arm(true);
-                        break;
-                    }
-                }
-            }
-            if (this.SortingEntry.entry != null)
-            {
-                var ent = this.cachedDrawEntries.FirstOrDefault((StatDrawEntry e) => e.Same(this.SortingEntry.entry));
-                if (ent != null) this.SortingEntry.entry = ent;
-            }
-        }
-
-        private IEnumerable<Action> Draw(StatDrawEntry entry, float x, float y, float width, bool selected, bool highlightLabel, bool lowlightLabel, Action clickedCallback, Action mousedOverCallback, Vector2 scrollPosition, Rect scrollOutRect, string valueCached = null)
-        {
-            float num = width * 0.45f;
-            string text = valueCached ?? entry.ValueString;
-            Rect rect = new Rect(x, y, width, cachedEntryHeights[this.cachedDrawEntries.IndexOf(entry)]);
-            if (y - scrollPosition.y + rect.height >= 0f && y - scrollPosition.y <= scrollOutRect.height)
-            {
-                GUI.color = Color.white;
-                if (selected)
-                {
-                    yield return () => Widgets.DrawHighlightSelected(rect);
-                }
-                yield return () =>
-                {
-                    if (Mouse.IsOver(rect))
-                    {
-                        Widgets.DrawHighlight(rect);
-                    }
-                };
-                if (highlightLabel)
-                {
-                    yield return () => Widgets.DrawTextHighlight(rect, 4f, null);
-                }
-                if (lowlightLabel)
-                {
-                    GUI.color = Color.grey;
-                }
-                Rect rect2 = rect;
-                rect2.width -= num + 26f;
-                yield return () =>
-                {
-                    Widgets.Label(rect2, entry.LabelCap.Truncate(rect2.width));
-                    if (Text.CalcSize(entry.LabelCap).x > rect2.width) TooltipHandler.TipRegion(rect2, entry.LabelCap);
-                };
-                Rect rect3 = rect;
-                rect3.x = rect2.xMax + 26f;
-                rect3.width = num;
-                yield return () => Widgets.Label(rect3, text);
-                GUI.color = Color.white;
-                yield return () =>
-                {
-                    if (Mouse.IsOver(rect))
-                    {
-                        mousedOverCallback();
-                        if (entry.stat != null)
-                        {
-                            StatDef localStat = entry.stat;
-                            TooltipHandler.TipRegion(rect, new TipSignal(() => localStat.LabelCap + ": " + localStat.description, entry.stat.GetHashCode()));
-                        }
-                        if (Input.GetMouseButtonUp(0))
-                        {
-                            clickedCallback();
-                        }
-                    }
-                };
-            }
-        }
-
-        public bool Matches(StatDrawEntry sd)
-        {
-            return this.quickSearchWidget.filter.Matches(sd.LabelCap);
-        }
-
-        public void SelectEntry(int index)
-        {
-            if (index < 0 || index > this.cachedDrawEntries.Count)
-            {
-                return;
-            }
-            this.SelectEntry(this.cachedDrawEntries[index], true);
-        }
-
-        public void ListSeparator(float curY, float width, StatCategoryDef category)
-        {
-            Color color = GUI.color;
-            curY += 3f;
-            GUI.color = Widgets.SeparatorLabelColor;
-            Rect rect1 = new Rect(0f, curY, 20f, 20f);
-            Rect rect2 = new Rect(25f, curY, width - 25f, 30f);
-            Text.Anchor = TextAnchor.UpperLeft;
-            Texture2D tex = collapse[category.LabelCap] ? TexButton.Reveal : TexButton.Collapse;
-            if (Mouse.IsOver(rect1) && Input.GetMouseButtonUp(0))
-            {
-                Input.ResetInputAxes();
-                collapse[category.LabelCap] = !collapse[category.LabelCap];
-            }
-            Widgets.DrawTextureFitted(rect1, tex, 1f);
-            Widgets.Label(rect2, category.LabelCap);
-            curY += 20f;
-            GUI.color = Widgets.SeparatorLineColor;
-            Widgets.DrawLineHorizontal(0f, curY, width);
-            GUI.color = color;
-        }
-
-        private StatDrawEntry selectedEntry;
-
-        private StatDrawEntry mousedOverEntry;
-
-        private Vector2 scrollPosition;
-
-        private ScrollPositioner scrollPositioner = new ScrollPositioner();
-
-        private QuickSearchWidget quickSearchWidget = new QuickSearchWidget();
-
-        private float listHeight;
-
-        private List<StatDrawEntry> cachedDrawEntries = new List<StatDrawEntry>();
-
-        private List<string> cachedEntryValues = new List<string>();
-
-        private List<float> cachedEntryHeights = new List<float>();
-
-        private IEnumerable<StatDrawEntry> specialDisplayStats;
-
-        private float titleHeight;
-
-        private Dialog_ManageOutfitsEx dialog;
-
-        public (StatDrawEntry entry, bool descending) SortingEntry;
-
-        private Dictionary<string, bool> collapse = new Dictionary<string, bool>();
-
-        private List<StatDrawEntry> pinnedEntry = new List<StatDrawEntry>();
-
-        private readonly Texture2D PinTex = ContentFinder<Texture2D>.Get("UI/Icons/Pin", true);
     }
+
+    public StatsReporter(Dialog_ManageOutfitsEx dialog)
+    {
+        this.dialog = dialog;
+        foreach (var statCategory in DefDatabase<StatCategoryDef>.AllDefs)
+        {
+            collapse[statCategory.LabelCap] = false;
+        }
+    }
+
+    public StatDrawEntry SelectedEntry { get; private set; }
+
+    private IEnumerable<StatDrawEntry> StatsToDraw(ThingWithComps thing)
+    {
+        var allDefs = DefDatabase<StatDef>.AllDefs.Where(s => s.Worker.ShouldShowFor(StatRequest.For(thing)));
+
+        foreach (var statDef in allDefs)
+        {
+            yield return new StatDrawEntry(statDef.category, statDef, thing.GetStatValue(statDef), StatRequest.For(thing));
+        }
+    }
+
+    private void SelectEntry(StatDrawEntry rec, bool playSound = true)
+    {
+        dialog.apparelListingRequest = true;
+        dialog.layerListingRequest = true;
+        if (SelectedEntry == mousedOverEntry && SelectedEntry != null) SelectedEntry = null;
+        else SelectedEntry = rec;
+        if (playSound)
+        {
+            SoundDefOf.Tick_High.PlayOneShotOnCamera();
+        }
+    }
+
+    public IEnumerable<Action> DrawStatsWorker(Rect rect)
+    {
+        Rect rect2 = new(rect);
+        rect2.yMin += titleHeight;
+        Rect viewRect = new(0f, 0f, rect2.width - GenUI.ScrollBarWidth - 8f, listHeight);
+        var anyMouseOvered = false;
+
+        var num = 0f;
+        string b = null;
+        yield return () => Widgets.BeginScrollView(rect2, ref scrollPosition, viewRect);
+
+        foreach (var group in cachedDrawEntries.GroupBy(e => pinnedEntry.Contains(e)).OrderByDescending(g => g.Key))
+        {
+            foreach (var ent in group)
+            {
+                var i = cachedDrawEntries.IndexOf(ent);
+
+                if (!group.Key && ent.category.LabelCap != b)
+                {
+                    var tmp = num;
+                    yield return () => ListSeparator(tmp, viewRect.width, ent.category);
+                    b = ent.category.LabelCap;
+                    num += Widgets.ListSeparatorHeight;
+                }
+
+                if (collapse[ent.category.LabelCap]) continue;
+
+                var statRect = new Rect(8f, num, viewRect.width, cachedEntryHeights[i]);
+                yield return () =>
+                {
+                    if (Mouse.IsOver(statRect) && specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap))
+                    {
+                        mousedOverEntry = ent;
+                        if (ChooseYourOutfit.settings.showTooltips)
+                        {
+                            var tip = "CYO.Tip.SpecialStat".Translate() + "\n";
+                            if (ent.category == StatCategoryDefOf.EquippedStatOffsets) tip += "CYO.Tip.FilterByLabel".Translate();
+                            else tip += "CYO.Tip.FilterByValue".Translate();
+                            if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(statRect, tip);
+                        }
+                        Widgets.DrawRectFast(statRect, new Color(1f, 0.94f, 0.5f, 0.09f));
+                    }
+                };
+
+                var pinRect = new Rect(viewRect.width * 0.55f - 24f, num, 24f, 24f);
+                var sortButtonRect = new Rect(viewRect.xMax - 24f, num, 24f, 24f);
+                var drawResult = Draw(ent, 8f, num, viewRect.width, SelectedEntry == ent, false, false, () =>
+                {
+                    if (specialDisplayStats.Any(s => s.LabelCap == ent.LabelCap) && !Mouse.IsOver(sortButtonRect))
+                    {
+                        Input.ResetInputAxes();
+                        SelectEntry(ent);
+                    }
+                }, () =>
+                {
+                    anyMouseOvered = true;
+
+                    if (!pinnedEntry.Contains(ent)) GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                    if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(pinRect, "CYO.Tip.PinButton".Translate());
+                    if (Mouse.IsOver(pinRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
+                    {
+                        Input.ResetInputAxes();
+                        if (pinnedEntry.Contains(ent)) pinnedEntry.Remove(ent);
+                        else pinnedEntry.Add(ent);
+                    }
+
+                    if (ent.stat != null)
+                    {
+                        if (ChooseYourOutfit.settings.showTooltips) TooltipHandler.TipRegion(sortButtonRect, "CYO.Tip.SortButton".Translate());
+                        if (ent != sortingEntry.entry) GUI.DrawTexture(sortButtonRect, TexButton.ReorderDown, ScaleMode.ScaleToFit, true, 1f, new Color(1f, 1f, 1f, 0.5f), 0f, 0f);
+                        if (Mouse.IsOver(sortButtonRect) && Input.GetMouseButtonDown(0) && !Find.UIRoot.windows.IsOpen<FloatMenu>())
+                        {
+                            Input.ResetInputAxes();
+                            if (sortingEntry.entry != ent)
+                            {
+                                sortingEntry.entry = ent;
+                                sortingEntry.descending = true;
+                            }
+                            else if (sortingEntry.descending) sortingEntry.descending = false;
+                            else sortingEntry.entry = null;
+
+                            dialog.apparelListingRequest = true;
+                        }
+                    }
+                }, scrollPosition, rect2, cachedEntryValues[i]);
+
+                foreach (var draw in drawResult) yield return draw;
+
+                if (group.Key)
+                {
+                    yield return () => GUI.DrawTexture(pinRect.ContractedBy(2f), PinTex);
+                }
+
+                if (ent == sortingEntry.entry)
+                {
+                    yield return () => GUI.DrawTexture(sortButtonRect, sortingEntry.descending ? TexButton.ReorderDown : TexButton.ReorderUp);
+                }
+
+                num += cachedEntryHeights[i];
+            }
+        }
+        listHeight = num;
+        yield return Widgets.EndScrollView;
+
+        if (!anyMouseOvered) mousedOverEntry = null;
+    }
+
+    private void FinalizeCachedDrawEntries(IEnumerable<StatDrawEntry> original)
+    {
+        cachedDrawEntries = (from sd in original
+            orderby sd.category.displayOrder, sd.DisplayPriorityWithinCategory descending, sd.LabelCap
+            select sd).ToList();
+        quickSearchWidget.noResultsMatched = !cachedDrawEntries.Any();
+        foreach (var statDrawEntry in cachedDrawEntries)
+        {
+            cachedEntryValues.Add(statDrawEntry.ValueString);
+            var ent = pinnedEntry.FirstOrDefault(e => e.Same(statDrawEntry));
+            if (ent != null) pinnedEntry.Replace(ent, statDrawEntry);
+        }
+        if (SelectedEntry != null)
+        {
+            SelectedEntry = cachedDrawEntries.FirstOrDefault(e => e.Same(SelectedEntry));
+        }
+        if (quickSearchWidget.filter.Active)
+        {
+            foreach (var sd2 in cachedDrawEntries)
+            {
+                if (Matches(sd2))
+                {
+                    SelectedEntry = sd2;
+                    scrollPositioner.Arm();
+                    break;
+                }
+            }
+        }
+        if (sortingEntry.entry != null)
+        {
+            var ent = cachedDrawEntries.FirstOrDefault(e => e.Same(sortingEntry.entry));
+            if (ent != null) sortingEntry.entry = ent;
+        }
+    }
+
+    private IEnumerable<Action> Draw(StatDrawEntry entry, float x, float y, float width, bool selected, bool highlightLabel, bool lowlightLabel, Action clickedCallback, Action mousedOverCallback, Vector2 scrollPos, Rect scrollOutRect, string valueCached = null)
+    {
+        var num = width * 0.45f;
+        var text = valueCached ?? entry.ValueString;
+        Rect rect = new(x, y, width, cachedEntryHeights[cachedDrawEntries.IndexOf(entry)]);
+        if (y - scrollPos.y + rect.height >= 0f && y - scrollPos.y <= scrollOutRect.height)
+        {
+            GUI.color = Color.white;
+            if (selected)
+            {
+                yield return () => Widgets.DrawHighlightSelected(rect);
+            }
+            yield return () =>
+            {
+                if (Mouse.IsOver(rect))
+                {
+                    Widgets.DrawHighlight(rect);
+                }
+            };
+            if (highlightLabel)
+            {
+                yield return () => Widgets.DrawTextHighlight(rect);
+            }
+            if (lowlightLabel)
+            {
+                GUI.color = Color.grey;
+            }
+            var rect2 = rect;
+            rect2.width -= num + 26f;
+            yield return () =>
+            {
+                Widgets.Label(rect2, entry.LabelCap.Truncate(rect2.width));
+                if (Text.CalcSize(entry.LabelCap).x > rect2.width) TooltipHandler.TipRegion(rect2, entry.LabelCap);
+            };
+            var rect3 = rect;
+            rect3.x = rect2.xMax + 26f;
+            rect3.width = num;
+            yield return () => Widgets.Label(rect3, text);
+            GUI.color = Color.white;
+            yield return () =>
+            {
+                if (Mouse.IsOver(rect))
+                {
+                    mousedOverCallback();
+                    if (entry.stat != null)
+                    {
+                        var localStat = entry.stat;
+                        TooltipHandler.TipRegion(rect, new TipSignal(() => localStat.LabelCap + ": " + localStat.description, entry.stat.GetHashCode()));
+                    }
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        clickedCallback();
+                    }
+                }
+            };
+        }
+    }
+
+    public bool Matches(StatDrawEntry sd)
+    {
+        return quickSearchWidget.filter.Matches(sd.LabelCap);
+    }
+
+    public void SelectEntry(int index)
+    {
+        if (index < 0 || index > cachedDrawEntries.Count)
+        {
+            return;
+        }
+        SelectEntry(cachedDrawEntries[index]);
+    }
+
+    public void ListSeparator(float curY, float width, StatCategoryDef category)
+    {
+        var color = GUI.color;
+        curY += 3f;
+        GUI.color = Widgets.SeparatorLabelColor;
+        Rect rect1 = new(0f, curY, 20f, 20f);
+        Rect rect2 = new(25f, curY, width - 25f, 30f);
+        Text.Anchor = TextAnchor.UpperLeft;
+        var tex = collapse[category.LabelCap] ? TexButton.Reveal : TexButton.Collapse;
+        if (Mouse.IsOver(rect1) && Input.GetMouseButtonUp(0))
+        {
+            Input.ResetInputAxes();
+            collapse[category.LabelCap] = !collapse[category.LabelCap];
+        }
+        Widgets.DrawTextureFitted(rect1, tex, 1f);
+        Widgets.Label(rect2, category.LabelCap);
+        curY += 20f;
+        GUI.color = Widgets.SeparatorLineColor;
+        Widgets.DrawLineHorizontal(0f, curY, width);
+        GUI.color = color;
+    }
+
+    private StatDrawEntry mousedOverEntry;
+
+    private Vector2 scrollPosition;
+
+    private readonly ScrollPositioner scrollPositioner = new();
+
+    private readonly QuickSearchWidget quickSearchWidget = new();
+
+    private float listHeight;
+
+    private List<StatDrawEntry> cachedDrawEntries = [];
+
+    private readonly List<string> cachedEntryValues = [];
+
+    private readonly List<float> cachedEntryHeights = [];
+
+    private IEnumerable<StatDrawEntry> specialDisplayStats;
+
+    private float titleHeight;
+
+    private readonly Dialog_ManageOutfitsEx dialog;
+
+    public (StatDrawEntry entry, bool descending) sortingEntry;
+
+    private readonly Dictionary<string, bool> collapse = new();
+
+    private readonly List<StatDrawEntry> pinnedEntry = [];
+
+    private static readonly Texture2D PinTex = ContentFinder<Texture2D>.Get("UI/Icons/Pin");
 }
