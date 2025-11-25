@@ -157,28 +157,6 @@ internal static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
     }
 }
 
-[HarmonyPatch(typeof(Thing), nameof(Thing.GetFloatMenuOptions))]
-public static class Patch_Thing_GetFloatMenuOptions
-{
-    public static IEnumerable<FloatMenuOption> Postfix(IEnumerable<FloatMenuOption> values, Thing __instance, Pawn selPawn)
-    {
-        foreach (var value in values)
-        {
-            yield return value;
-        }
-        if (ChooseYourOutfit.settings.addFroatMenu && __instance.def.IsApparel)
-        {
-            var apparel = __instance.def;
-            var allows = selPawn.outfits.CurrentApparelPolicy.filter.Allows(apparel);
-            var key = string.Format(allows ? "CYO.RemoveApparelFromFilter".Translate() : "CYO.AddApparelToFilter".Translate(), apparel.label, selPawn.outfits.CurrentApparelPolicy.label);
-            yield return new FloatMenuOption(key, () =>
-            {
-                selPawn.outfits.CurrentApparelPolicy.filter.SetAllow(apparel, !allows);
-            });
-        }
-    }
-}
-
 [HarmonyPatch]
 [HarmonyAfter("AB.HATweaker", "cat2002.showhair")]
 internal static class Patch_PawnRenderTree_SetupApparelNodes
