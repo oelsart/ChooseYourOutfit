@@ -487,7 +487,7 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
         {
             Widgets.DrawMenuSection(outerRect.AtZero());
             Widgets.BeginScrollView(outerRect.AtZero(), ref layersScrollPosition, viewRect.AtZero());
-            Widgets.Label(new Rect(itemRect.position + new Vector2(20f, 0f), itemRect.size), "CYO.AllLayers".Translate());
+            Widgets.Label(new Rect(itemRect.position + new Vector2(5f, 0f), itemRect.size), "CYO.AllLayers".Translate());
             if (Mouse.IsOver(itemRect))
             {
                 if (Input.GetMouseButtonUp(0))
@@ -518,8 +518,16 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
                 {
                     if (Input.GetMouseButtonUp(0))
                     {
-                        SelectedLayers.Clear();
-                        SelectedLayers.Add(layerDef);
+                        if (Event.current.shift)
+                        {
+                            if (!SelectedLayers.Add(layerDef))
+                                SelectedLayers.Remove(layerDef);
+                        }
+                        else
+                        {
+                            SelectedLayers.Clear();
+                            SelectedLayers.Add(layerDef);
+                        }
                         apparelListingRequest = true;
                         Input.ResetInputAxes();
                     }
@@ -528,7 +536,7 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
             };
 
             if (SelectedLayers.Contains(layerDef)) yield return () => Widgets.DrawHighlightSelected(curRect);
-            yield return () => Widgets.Label(new Rect(curRect.x + 20f, curRect.y, curRect.width - 40f, curRect.height), layerDef.label.Truncate(curRect.width - 40f));
+            yield return () => Widgets.Label(new Rect(curRect.x + 5f, curRect.y, curRect.width - 10f, curRect.height), layerDef.label.Truncate(curRect.width - 40f));
         }
         yield return () =>
         {
@@ -651,9 +659,9 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
         Widgets.AdjustRectsForScrollView(parentRect, ref outRect, ref viewRect);
         var itemRect = parentRect;
         itemRect.height = Text.LineHeight;
-        Rect iconRect = new(itemRect.x + 15f, itemRect.y, itemRect.height, itemRect.height);
-        Rect infoButtonRect = new(itemRect.xMax - itemRect.height - 15f, itemRect.y, itemRect.height, itemRect.height);
-        Rect labelRect = new(iconRect.xMax + 5f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 10f, itemRect.height);
+        Rect iconRect = new(itemRect.x + 3f, itemRect.y, itemRect.height, itemRect.height);
+        Rect infoButtonRect = new(itemRect.xMax - itemRect.height - 3f, itemRect.y, itemRect.height, itemRect.height);
+        Rect labelRect = new(iconRect.xMax + 3f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 3f, itemRect.height);
         infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
 
         yield return () => Widgets.BeginScrollView(outRect, ref apparelsScrollPosition, viewRect);
@@ -1049,13 +1057,14 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
     public void ListingApparelToShow()
     {
         apparelListToShow.Clear();
-        var enumerable = (IEnumerable<KeyValuePair<bool, ThingDef>>)allApparels
+        IEnumerable<KeyValuePair<bool, ThingDef>> enumerable = allApparels
             .Where(a => SelectedLayers.Intersect(a.apparel.layers).Any())
             .Where(a => a.apparel.bodyPartGroups.Any(g => SelectedBodypartGroups?.Contains(g) ?? true))
             .OrderByDescending(a => a.label)
             .GroupBy(a => SelectedApparels.Any(a.Equals) || //その服が選択されていればtrue
-            (SelectedApparels.All(s => a == s || !cantWearTogether[a].Contains(s)) && //その服が選択されている全ての服と一緒に着られるならtrue
-            ApparelUtility.HasPartsToWear(SelectedPawn, a)))
+                          (SelectedApparels.All(s =>
+                               a == s || !cantWearTogether[a].Contains(s)) &&
+                           ApparelUtility.HasPartsToWear(SelectedPawn, a))) //その服が選択されている全ての服と一緒に着られるならtrue
             .SelectMany(g => g.Select(a => new KeyValuePair<bool, ThingDef>(g.Key, a)))
             .OrderByDescending(a => a.Value.label);
 
@@ -1138,8 +1147,7 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
         bool LayerShouldShow(ApparelLayerDef layerDef)
         {
             var selectedLayers = SelectedLayers;
-            SelectedLayers.Clear();
-            SelectedLayers.Add(layerDef);
+            SelectedLayers = [layerDef];
             ListingApparelToShow();
             SelectedLayers = selectedLayers;
             return apparelListToShow.Count != 0;
