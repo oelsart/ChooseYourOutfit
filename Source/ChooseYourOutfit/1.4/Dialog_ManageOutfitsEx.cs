@@ -48,11 +48,11 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
 
     private ThingDef statsDrawn;
 
-    private ThingDef mouseovered;
+    private ThingDef mouseOvered;
 
-    private ThingDef lastMouseovered;
+    private ThingDef lastMouseOvered;
 
-    private ThingDef mouseoveredSelectedApparel;
+    private ThingDef mouseOveredSelectedApparel;
 
     private readonly Dictionary<ThingDef, List<ThingDef>> cantWearTogether = new();
 
@@ -66,7 +66,8 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
 
     private readonly Dictionary<ApparelLayerDef, bool> collapse = [];
 
-    private readonly List<Apparel> preApparelsApparel = [];
+    [UsedImplicitly]
+    public readonly List<Apparel> preApparelsApparel = [];
 
     //private Dictionary<ThingDef, Apparel> apparelDatabase = new Dictionary<ThingDef, Apparel>();
 
@@ -221,7 +222,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
         {
             canWearAllowed.Clear();
             canWearAllowed.AddRange(SelectedOutfit.filter.AllowedThingDefs.Where(a => a is { IsApparel: true } && a.apparel.PawnCanWear(SelectedPawn)));
-            if (ChooseYourOutfit.settings.syncFilter && !canWearAllowed.OrderBy(l => l.label).SequenceEqual(SelectedApparels.OrderBy(l => l.label))) LoadFilter();
+            if (ChooseYourOutfit.settings.syncFilter) LoadFilter();
             if (selOutfitInt != SelectedOutfit)
             {
                 layerListingRequest = true;
@@ -266,9 +267,9 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
 
         var tasks = new Task<IEnumerable<Action>>[4];
         //右のインフォカード描画
-        if (statsDrawn != lastMouseovered)
+        if (statsDrawn != lastMouseOvered)
         {
-            statsDrawn = lastMouseovered;
+            statsDrawn = lastMouseOvered;
             statsReporter.Reset(rect7.width - 10f, statsDrawn, selStuffDatabase[statsDrawn], selQualityInt);
         }
 
@@ -524,7 +525,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
 
         yield return () =>
         {
-            mouseovered = null;
+            mouseOvered = null;
             Widgets.DrawMenuSection(outerRect);
         };
 
@@ -660,7 +661,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
             {
                 if (Mouse.IsOver(curItemRect))
                 {
-                    lastMouseovered = mouseovered = apparel.Value;
+                    lastMouseOvered = mouseOvered = apparel.Value;
                     TooltipHandler.TipRegion(curItemRect, apparel.Value.label + "\n\n" + apparel.Value.DescriptionDetailed);
                     Widgets.DrawHighlight(curItemRect);
                     if (Input.GetMouseButtonUp(0) && !Mouse.IsOver(curInfoButtonRect))
@@ -721,7 +722,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
             }
             var partHasSelGroups = SelectedBodypartGroups?.All(p => part.Value.groups.Contains(p)) ?? false;
             var partHasHlGroups = highlightedGroups?.All(p => part.Value.groups.Contains(p)) ?? false;
-            var partHasHlApGroups = mouseovered != null && mouseovered.apparel.bodyPartGroups.Intersect(part.Value.groups).Any();
+            var partHasHlApGroups = mouseOvered != null && mouseOvered.apparel.bodyPartGroups.Intersect(part.Value.groups).Any();
             var color = partHasSelGroups ? new Color(0.5f, 0.75f, 1f, 1f) : Color.white;
 
             //このパーツが着ることのできる衣服がある全てのレイヤー
@@ -908,9 +909,9 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
                     var curStuffRect = new Rect(stuffRect.x, curApparelY, stuffRect.width, stuffRect.height);
 
                     var isPreviewed = PreviewedApparels.Contains(apparel);
-                    if (mouseoveredSelectedApparel != null)
+                    if (mouseOveredSelectedApparel != null)
                     {
-                        if (mouseoveredSelectedApparel != apparel && cantWearTogether[mouseoveredSelectedApparel].Contains(apparel))
+                        if (mouseOveredSelectedApparel != apparel && cantWearTogether[mouseOveredSelectedApparel].Contains(apparel))
                             yield return () => Widgets.DrawRectFast(curItemRect, new Color(0.5f, 0f, 0f, 0.15f));
                     }
 
@@ -919,7 +920,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
                         if (Mouse.IsOver(curItemRect))
                         {
                             anyMouseOvered = true;
-                            mouseoveredSelectedApparel = apparel;
+                            mouseOveredSelectedApparel = apparel;
                             Widgets.DrawRectFast(curItemRect, new Color(0.7f, 0.7f, 1f, 0.2f));
 
                             if (Mouse.IsOver(curCheckBoxRect) && Input.GetMouseButtonDown(0))
@@ -980,7 +981,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
         }
         yield return Widgets.EndScrollView;
 
-        if (!anyMouseOvered) mouseoveredSelectedApparel = null;
+        if (!anyMouseOvered) mouseOveredSelectedApparel = null;
     }
 
     //ポーンの見た目プレビュー
@@ -1221,28 +1222,17 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
     private void LoadFilter()
     {
         SelectedApparels.Clear();
-        foreach (var a in canWearAllowed) SelectedApparels.Add(a);
-
-        var addedApparels = canWearAllowed.Where(a => a != null && !SelectedApparels.Contains(a)).Where(a => PreviewedApparels.All(p => !cantWearTogether[a].Contains(p)));
-        PreviewedApparels.AddRange(addedApparels);
-        PreviewedApparels.SortBy(a => a.apparel.LastLayer.drawOrder);
-
-        selectedApparelListingRequest = true;
-        apparelListingRequest = true;
+        foreach (var apparel in canWearAllowed)
+        {
+            SelectApparel(apparel);
+        }
         PreviewedApparels.RemoveAll(a => !SelectedApparels.Contains(a));
-        ChangePreviewedApparels();
     }
 
     private void ApplyFilter()
     {
         foreach (var a in canWearAllowed.OrderBy(a => a.label).Except(SelectedApparels.OrderBy(a => a.label))) SelectedOutfit.filter.SetAllow(a, false);
         foreach (var a in SelectedApparels.OrderBy(a => a.label).Except(canWearAllowed.OrderBy(a => a.label))) SelectedOutfit.filter.SetAllow(a, true);
-    }
-
-    private void TinyInfoButton(Rect rect, ThingDef thingDef, ThingDef stuffDef)
-    {
-        if (InfoCardButtonWorker(rect))
-            Find.WindowStack.Add(new Dialog_InfoCard(thingDef, stuffDef));
     }
 
     private void InitializeByPawn(Pawn pawn)
@@ -1281,7 +1271,13 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
         layerListingRequest = true;
     }
 
-    private bool InfoCardButtonWorker(Rect rect)
+    private static void TinyInfoButton(Rect rect, ThingDef thingDef, ThingDef stuffDef)
+    {
+        if (InfoCardButtonWorker(rect))
+            Find.WindowStack.Add(new Dialog_InfoCard(thingDef, stuffDef));
+    }
+
+    private static bool InfoCardButtonWorker(Rect rect)
     {
         MouseoverSounds.DoRegion(rect);
         TooltipHandler.TipRegionByKey(rect, "DefInfoTip");

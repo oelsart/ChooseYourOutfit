@@ -158,129 +158,67 @@ internal static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
 }
 
 [HarmonyPatch]
-[HarmonyAfter("AB.HATweaker", "cat2002.showhair")]
-internal static class Patch_PawnRenderTree_SetupApparelNodes
+internal static class Patch_DynamicPawnRenderNodeSetup_Apparel_GetDynamicNodes
 {
     private static MethodBase TargetMethod()
     {
         return AccessTools.FindIncludingInnerTypes(typeof(DynamicPawnRenderNodeSetup_Apparel), t =>
         {
-            if (!t.Name.Contains("<GetDynamicNodes>")) return null;
-            return t.GetDeclaredMethods().FirstOrDefault(m => m.Name.Contains("MoveNext"));
+            return !t.Name.Contains("<GetDynamicNodes>")
+                ? null
+                : t.GetDeclaredMethods().FirstOrDefault(m => m.Name.Contains("MoveNext"));
         });
     }
 
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        List<CodeInstruction> codes = [.. instructions];
-        var label = generator.DefineLabel();
-        var window = generator.DeclareLocal(typeof(Dialog_ManageApparelPoliciesEx));
-
-        var windowOfTypeGeneric = AccessTools.Method(typeof(WindowStack), "WindowOfType").MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx));
-
-        codes[0].labels.Add(label);
-        codes.InsertRange(0, [
-            new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(Find), nameof(Find.WindowStack))),
-            new CodeInstruction(OpCodes.Callvirt, windowOfTypeGeneric),
-            new CodeInstruction(OpCodes.Stloc_S, window),
-            new CodeInstruction(OpCodes.Ldloc_S, window),
-            new CodeInstruction(OpCodes.Brfalse_S, label),
-            new CodeInstruction(OpCodes.Ldloc_S, window),
-            CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
-            new CodeInstruction(OpCodes.Brfalse_S, label),
-            new CodeInstruction(OpCodes.Ldloc_S, window),
-            CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
-            new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(List<Apparel>), nameof(List<Apparel>.Count))),
-            new CodeInstruction(OpCodes.Brtrue_S, label),
-            new CodeInstruction(OpCodes.Ldc_I4_0),
-            new CodeInstruction(OpCodes.Ret)
-        ]);
-
-        var m_GetEnumerator = AccessTools.Method(typeof(List<Apparel>), "GetEnumerator");
-        var pos = codes.FindIndex(c => c.opcode == OpCodes.Callvirt && c.OperandIs(m_GetEnumerator));
-        var g_WornApparel = AccessTools.PropertyGetter(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.WornApparel));
-        var pos2 = codes.FindLastIndex(pos, c => c.opcode == OpCodes.Callvirt && c.OperandIs(g_WornApparel)) - 3;
-
-        var label2 = generator.DefineLabel();
-        var label3 = generator.DefineLabel();
-
-        codes[pos].labels.Add(label2);
-        codes[pos2].labels.Add(label3);
-        codes.InsertRange(pos2, [
-            new CodeInstruction(OpCodes.Ldloc_S, window),
-            new CodeInstruction(OpCodes.Brfalse_S, label3),
-            new CodeInstruction(OpCodes.Ldloc_S, window),
-            CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
-            new CodeInstruction(OpCodes.Brfalse_S, label3),
-            new CodeInstruction(OpCodes.Ldloc_S, window),
-            CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
-            new CodeInstruction(OpCodes.Br_S, label2)
-        ]);
-
-        if (ABHATweaker)
-        {
-            var label4 = generator.DefineLabel();
-            codes[pos2].labels.Add(label4);
-            var pos3 = codes.FindLastIndex(pos2, c => c.opcode == OpCodes.Stloc_2) + 1;
-            var label5 = generator.DefineLabel();
-            codes[pos3].labels.Add(label5);
-
-            codes.InsertRange(pos3, [
+        return new CodeMatcher(instructions, generator)
+            .MatchStartForward(CodeMatch.Calls(AccessTools.Method(typeof(List<Apparel>), nameof(List<>.GetEnumerator))))
+            .CreateLabel(out var label)
+            .DeclareLocal(typeof(Dialog_ManageApparelPoliciesEx), out var window)
+            .Insert(
+                new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(Find), nameof(Find.WindowStack))),
+                new CodeInstruction(OpCodes.Callvirt,
+                    AccessTools.Method(typeof(WindowStack), nameof(WindowStack.WindowOfType))
+                        .MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx))),
+                new CodeInstruction(OpCodes.Stloc_S, window),
                 new CodeInstruction(OpCodes.Ldloc_S, window),
-                new CodeInstruction(OpCodes.Brfalse_S, label5),
+                new CodeInstruction(OpCodes.Brfalse_S, label),
                 new CodeInstruction(OpCodes.Ldloc_S, window),
-                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
-                new CodeInstruction(OpCodes.Brtrue_S, label4)
-            ]);
-        }
-
-        return codes;
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), nameof(Dialog_ManageApparelPoliciesEx.inDialogPortraitRequest)),
+                new CodeInstruction(OpCodes.Brfalse_S, label),
+                new CodeInstruction(OpCodes.Pop),
+                new CodeInstruction(OpCodes.Ldloc_S, window),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), nameof(Dialog_ManageApparelPoliciesEx.preApparelsApparel)))
+            .InstructionEnumeration();
     }
 }
 
 [HarmonyPatch(typeof(PawnRenderTree), "AdjustParms")]
-[HarmonyAfter("net.velc.rimworld.mod.hds", "AB.HATweaker")]
-[HarmonyBefore("cat2002.showhair")]
+[HarmonyAfter("net.velc.rimworld.mod.hds")]
 internal static class Patch_PawnRenderTree_AdjustParms
 {
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        var codes = instructions.ToList();
-
-        int pos;
-        if (ABHATweaker)
-        {
-            var m_GetApparel_1 = AccessTools.Method(AccessTools.TypeByName("HeadApparelTweaker.HarmonyPatchA5"), "GetApparel_1");
-            pos = codes.FindIndex(c => c.Calls(m_GetApparel_1)) - 2;
-        }
-        else
-        {
-            var m_GetEnumerator = AccessTools.Method(typeof(List<Apparel>), "GetEnumerator");
-            pos = codes.FindIndex(c => c.Calls(m_GetEnumerator));
-        }
-        var windowOfTypeGeneric = AccessTools.Method(typeof(WindowStack), "WindowOfType").MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx));
-
-        var labelPop = generator.DefineLabel();
-        var labelEnum = generator.DefineLabel();
-
-        var g_WornApparel = AccessTools.PropertyGetter(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.WornApparel));
-        var pos2 = codes.FindLastIndex(pos, c => c.Calls(g_WornApparel)) - 3;
-        codes[pos].WithLabels(labelEnum);
-        codes.InsertRange(pos2, new List<CodeInstruction>
-        {
-            CodeInstruction.Call(typeof(Find), "get_WindowStack"),
-            new(OpCodes.Callvirt, windowOfTypeGeneric),
-            new(OpCodes.Dup),
-            new(OpCodes.Brfalse_S, labelPop),
-            new(OpCodes.Dup),
-            CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "inDialogPortraitRequest"),
-            new(OpCodes.Brfalse_S, labelPop),
-            CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), "preApparelsApparel"),
-            new(OpCodes.Br_S, labelEnum),
-            new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
-        });
-
-        return codes;
+        return new CodeMatcher(instructions, generator)
+            .MatchStartForward(CodeMatch.Calls(AccessTools.Method(typeof(List<Apparel>), nameof(List<>.GetEnumerator))))
+            .CreateLabel(out var label)
+            .DeclareLocal(typeof(Dialog_ManageApparelPoliciesEx), out var window)
+            .Insert(
+                new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(Find), nameof(Find.WindowStack))),
+                new CodeInstruction(OpCodes.Callvirt,
+                    AccessTools.Method(typeof(WindowStack), nameof(WindowStack.WindowOfType))
+                        .MakeGenericMethod(typeof(Dialog_ManageApparelPoliciesEx))),
+                new CodeInstruction(OpCodes.Stloc_S, window),
+                new CodeInstruction(OpCodes.Ldloc_S, window),
+                new CodeInstruction(OpCodes.Brfalse_S, label),
+                new CodeInstruction(OpCodes.Ldloc_S, window),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), nameof(Dialog_ManageApparelPoliciesEx.inDialogPortraitRequest)),
+                new CodeInstruction(OpCodes.Brfalse_S, label),
+                new CodeInstruction(OpCodes.Pop),
+                new CodeInstruction(OpCodes.Ldloc_S, window),
+                CodeInstruction.LoadField(typeof(Dialog_ManageApparelPoliciesEx), nameof(Dialog_ManageApparelPoliciesEx.preApparelsApparel)))
+            .InstructionEnumeration();
     }
 }
 

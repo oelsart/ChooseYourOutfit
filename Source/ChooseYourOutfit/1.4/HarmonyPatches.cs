@@ -115,9 +115,9 @@ internal static class Patch_PawnGraphicSet_ResolveApparelGraphics
             new(OpCodes.Dup),
             new(OpCodes.Brfalse_S, labelPop),
             new(OpCodes.Dup),
-            CodeInstruction.LoadField(typeof(Dialog_ManageOutfitsEx), "inDialogPortraitRequest"),
+            CodeInstruction.LoadField(typeof(Dialog_ManageOutfitsEx), nameof(Dialog_ManageOutfitsEx.inDialogPortraitRequest)),
             new(OpCodes.Brfalse_S, labelPop),
-            CodeInstruction.LoadField(typeof(Dialog_ManageOutfitsEx), "preApparelsApparel"),
+            CodeInstruction.LoadField(typeof(Dialog_ManageOutfitsEx), nameof(Dialog_ManageOutfitsEx.preApparelsApparel)),
             new(OpCodes.Br_S, labelEnum),
             new CodeInstruction(OpCodes.Pop).WithLabels(labelPop)
         });
