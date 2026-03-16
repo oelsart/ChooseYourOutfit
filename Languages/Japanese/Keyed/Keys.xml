@@ -20,6 +20,7 @@
   <CYO.Tip.ColonistButton>プレビューに表示する入植者を選択します.\n衣服リストに表示される衣服はこのボタンで指定した入植者が着られるものに限定されます.</CYO.Tip.ColonistButton>
   <CYO.Tip.Researched>衣服リストに表示される衣服を現在研究済みのレシピを持つものに限定することができます.</CYO.Tip.Researched>
   <CYO.Tip.InStorage>衣服リストをに表示される衣服を現在のマップのストレージに貯蔵されているものに限定することができます.</CYO.Tip.InStorage>
+  <CYO.Tip.ApparelCount>現在のマップに存在する衣服の数です.\n(貯蔵数 + 入植者の装備数 + 衣服スタンドの装備数)</CYO.Tip.ApparelCount>
   <CYO.Tip.ApplyHitPoints>"貯蔵済みの衣服のみ"フィルターに現在のポリシーのHPフィルターを適用します.</CYO.Tip.ApplyHitPoints>
   <CYO.Tip.ApplyQuality>"貯蔵済みの衣服のみ"フィルターに現在のポリシーの品質フィルターを適用します.</CYO.Tip.ApplyQuality>
   <CYO.Tip.Checkbox>この衣服をプレビューに反映させるかどうかです.\n"加工台に加工指示を追加"ボタンで追加する衣服を指定する目的で使うこともできます.</CYO.Tip.Checkbox>
@@ -54,6 +55,7 @@
   <CYO.Settings.HideUnregistrable>フィルターに登録できない衣服をリストに表示させない.</CYO.Settings.HideUnregistrable>
   <CYO.Settings.ShowResearchedButton>"研究済みの衣服のみ"チェック項目を表示する.</CYO.Settings.ShowResearchedButton>
   <CYO.Settings.ShowInStorageButton>"貯蔵済みの衣服のみ"チェック項目を表示する.</CYO.Settings.ShowInStorageButton>
+  <CYO.Settings.ShowApparelCount>衣服が現在のマップに存在する数を表示する.</CYO.Settings.ShowApparelCount>
   <CYO.Settings.ShowAddBillsButton>"加工台に加工指示を追加"ボタンを表示する.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>加工指示の最大数を無視する.</CYO.Settings.IgnoreBillLimit>
   <CYO.Settings.ShowTooltips>機能説明のためのツールチップを表示する.\n(このMOD特有の機能に関する説明だけが切り替えできます)</CYO.Settings.ShowTooltips>

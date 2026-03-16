@@ -19,7 +19,8 @@ public class Settings : ModSettings
     public bool currentlyInStorage;
     public bool applyHitPoints;
     public bool applyQuality;
-    public bool addFroatMenu = true;
+    public bool showApparelCount = true;
+    public bool addFloatMenu = true;
 
     public override void ExposeData()
     {
@@ -38,7 +39,8 @@ public class Settings : ModSettings
         Scribe_Values.Look(ref applyHitPoints, "applyHitPoints");
         Scribe_Values.Look(ref applyQuality, "applyQuality");
         Scribe_Values.Look(ref showInStorageButton, "showInStorageButton", true);
-        Scribe_Values.Look(ref addFroatMenu, "addFroatMenu", true);
+        Scribe_Values.Look(ref showApparelCount, "showApparelCount", true);
+        Scribe_Values.Look(ref addFloatMenu, "addFloatMenu", true);
         base.ExposeData();
     }
 }

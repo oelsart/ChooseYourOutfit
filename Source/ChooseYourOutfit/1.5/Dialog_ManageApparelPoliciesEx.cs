@@ -85,6 +85,8 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
     public readonly HashSet<ThingDef> allApparels = [];
 
     private readonly HashSet<ThingDef> canWearAllowed = [];
+    
+    private readonly Dictionary<ThingDef, (int count, bool outfitStand)> apparelCounts = [];
 
     private readonly StatsReporter statsReporter;
 
@@ -118,6 +120,10 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
     private static readonly Dictionary<(Gender, string), Texture2D> unfilledParts = [];
 
     private static readonly Dictionary<(Gender, string), Texture2D> filledParts = [];
+    
+    private static readonly ThingDef outfitStand = DefDatabase<ThingDef>.GetNamedSilentFail("Building_OutfitStand");
+    
+    private static readonly ThingDef kidOutfitStand = DefDatabase<ThingDef>.GetNamedSilentFail("Building_KidOutfitStand");
 
     static Dialog_ManageApparelPoliciesEx()
     {
@@ -659,10 +665,6 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
         Widgets.AdjustRectsForScrollView(parentRect, ref outRect, ref viewRect);
         var itemRect = parentRect;
         itemRect.height = Text.LineHeight;
-        Rect iconRect = new(itemRect.x + 3f, itemRect.y, itemRect.height, itemRect.height);
-        Rect infoButtonRect = new(itemRect.xMax - itemRect.height - 3f, itemRect.y, itemRect.height, itemRect.height);
-        Rect labelRect = new(iconRect.xMax + 3f, itemRect.y, infoButtonRect.xMin - iconRect.xMax - 3f, itemRect.height);
-        infoButtonRect = infoButtonRect.ContractedBy(itemRect.height * 0.1f);
 
         yield return () => Widgets.BeginScrollView(outRect, ref apparelsScrollPosition, viewRect);
 
@@ -675,16 +677,42 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
             var curY = index * itemRect.height;
             //if (curY < this.apparelsScrollPosition.y - itemRect.height || curY > this.apparelsScrollPosition.y + outerRect.height) return;
 
-            var curItemRect = new Rect(itemRect.x, itemRect.y + curY, itemRect.width, itemRect.height);
-            var curIconRect = new Rect(iconRect.x, iconRect.y + curY, iconRect.width, iconRect.height);
-            var curLabelRect = new Rect(labelRect.x, labelRect.y + curY, labelRect.width, labelRect.height);
-            var curInfoButtonRect = new Rect(infoButtonRect.x, infoButtonRect.y + curY, infoButtonRect.width, infoButtonRect.height);
-
             var apparel = apparelListToShow[index];
+            (int count, bool outfitStand) counts = default;
+            var showCount = ChooseYourOutfit.settings.showApparelCount &&
+                            apparelCounts.TryGetValue(apparel.Value, out counts) &&
+                            counts.count > 0;
+            
+            var curItemRect = new Rect(itemRect.x, itemRect.y + curY, itemRect.width, itemRect.height);
+            var iconRect = new Rect(curItemRect.x + 3f, curItemRect.y, itemRect.height, itemRect.height);
+            var infoButtonRect = new Rect(curItemRect.xMax - itemRect.height - 3f, curItemRect.y, itemRect.height, itemRect.height).ContractedBy(2f);
+            var labelRect = new Rect(iconRect.xMax + 2f, curItemRect.y, 0f, itemRect.height)
+            {
+                xMax = infoButtonRect.xMin - 2f
+            };
 
-            if (!apparel.Key) yield return () => GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
+            if (!apparel.Key) yield return () => Widgets.DrawBoxSolid(curItemRect, new Color(0f, 0f, 0f, 0.3f));
             if (SelectedApparels.Contains(apparel.Value)) yield return () => Widgets.DrawHighlightSelected(curItemRect);
-
+            
+            if (showCount)
+            {
+                var offset = itemRect.height - 3f;
+                labelRect.xMax -= offset;
+                var countRect = new Rect(infoButtonRect.xMin - offset, curItemRect.y, itemRect.height, itemRect.height);
+                yield return () =>
+                {
+                    if (ChooseYourOutfit.settings.showTooltips)
+                        TooltipHandler.TipRegion(countRect, "CYO.Tip.ApparelCount".Translate());
+                    if (counts.outfitStand && outfitStand is not null)
+                    {
+                        Widgets.ThingIcon(countRect, outfitStand, ThingDefOf.WoodLog, scale: 0.75f, alpha: 0.5f);
+                    }
+                    using (new TextBlock(GameFont.Tiny, TextAnchor.MiddleCenter))
+                    {
+                        Widgets.Label(countRect, counts.count > 99 ? "99+" : counts.count.ToString());
+                    }
+                };
+            }
             yield return () =>
             {
                 if (Mouse.IsOver(curItemRect))
@@ -692,7 +720,7 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
                     lastMouseOvered = mouseOvered = apparel.Value;
                     TooltipHandler.TipRegion(curItemRect, apparel.Value.label + "\n\n" + apparel.Value.DescriptionDetailed);
                     Widgets.DrawHighlight(curItemRect);
-                    if (Input.GetMouseButtonUp(0) && !Mouse.IsOver(curInfoButtonRect))
+                    if (Input.GetMouseButtonUp(0) && !Mouse.IsOver(infoButtonRect))
                     {
                         Input.ResetInputAxes();
                         SelectApparel(apparel.Value);
@@ -705,9 +733,9 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
                         Find.WindowStack.Add(new FloatMenu(options));
                     }
                 }
-                Widgets.DefIcon(curIconRect, apparel.Value);
-                Widgets.Label(curLabelRect, apparel.Value.label.Truncate(labelRect.width));
-                TinyInfoButton(curInfoButtonRect, apparel.Value, GenStuff.DefaultStuffFor(apparel.Value));
+                Widgets.DefIcon(iconRect, apparel.Value);
+                Widgets.Label(labelRect, apparel.Value.label.Truncate(labelRect.width));
+                TinyInfoButton(infoButtonRect, apparel.Value, GenStuff.DefaultStuffFor(apparel.Value));
             };
         }
         yield return Widgets.EndScrollView;
@@ -1292,9 +1320,29 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
         allApparels.Clear();
         allApparels.AddRange(DefDatabase<ThingDef>.AllDefs.Where(d => d.IsApparel).Where(a => a.apparel.PawnCanWear(pawn)));
         cantWearTogether.Clear();
+        apparelCounts.Clear();
+        var map = pawn.MapHeld ?? Find.CurrentMap;
+        var freeColonists = map?.mapPawns.FreeColonists;
+        var outfitStands = outfitStand is not null
+            ? map?.listerThings.ThingsOfDef(outfitStand)
+            : null;
+        var kidOutfitStands = kidOutfitStand is not null 
+            ? map?.listerThings.ThingsOfDef(kidOutfitStand)
+            : null;
         foreach (var apparel in allApparels)
         {
-            cantWearTogether.Add(apparel, [.. allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body))]);
+            cantWearTogether[apparel] = [.. allApparels.Where(a => !ApparelUtility.CanWearTogether(apparel, a, SelectedPawn.RaceProps.body))];
+            if (ChooseYourOutfit.settings.showApparelCount && map is not null)
+            {
+                var count = map.listerThings.ThingsOfDef(apparel).CountAllowNull();
+                count += freeColonists?.Sum(p => p.apparel.WornApparel.Count(a => a.def == apparel)) ?? 0;
+                var func = (Thing thing) =>
+                {
+                    return thing is Building_OutfitStand stand ? stand.HeldItems.Count(t => t.def == apparel) : 0;
+                };
+                var onStandCount = outfitStands?.Sum(func) ?? 0 + kidOutfitStands?.Sum(func) ?? 0;
+                apparelCounts[apparel] = (count + onStandCount, onStandCount > 0);
+            }
         }
 
         var gender = pawn.gender is Gender.Female or Gender.Male ? pawn.gender : Gender.None;

@@ -37,10 +37,11 @@ public class ChooseYourOutfit : Mod
             listingStandard.CheckboxLabeled("CYO.Settings.HideUnregistrable".Translate(), ref settings.hideUnregistrable);
             listingStandard.CheckboxLabeled("CYO.Settings.ShowResearchedButton".Translate(), ref settings.showResearchedButton);
             listingStandard.CheckboxLabeled("CYO.Settings.ShowInStorageButton".Translate(), ref settings.showInStorageButton);
+            listingStandard.CheckboxLabeled("CYO.Settings.ShowApparelCount".Translate(), ref settings.showApparelCount);
             listingStandard.CheckboxLabeled("CYO.Settings.ShowAddBillsButton".Translate(), ref settings.showAddBillsButton);
             if (settings.showAddBillsButton) listingStandard.CheckboxLabeled("CYO.Settings.IgnoreBillLimit".Translate(), ref settings.ignoreBillLimit);
             listingStandard.CheckboxLabeled("CYO.Settings.ShowTooltips".Translate(), ref settings.showTooltips);
-            listingStandard.CheckboxLabeled("CYO.Settings.AddFroatMenu".Translate(), ref settings.addFroatMenu);
+            listingStandard.CheckboxLabeled("CYO.Settings.AddFroatMenu".Translate(), ref settings.addFloatMenu);
         }
         listingStandard.End();
         base.DoSettingsWindowContents(inRect);

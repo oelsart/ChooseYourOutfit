@@ -16,7 +16,7 @@ public class FloatMenuOptionProvider_ApparelFilter : FloatMenuOptionProvider
 
     public override IEnumerable<FloatMenuOption> GetOptionsFor(Thing clickedThing, FloatMenuContext context)
     {
-        if (ChooseYourOutfit.settings.addFroatMenu && clickedThing.def.IsApparel)
+        if (ChooseYourOutfit.settings.addFloatMenu && clickedThing.def.IsApparel)
         {
             var pawn = context.FirstSelectedPawn;
             if (pawn?.outfits?.CurrentApparelPolicy?.filter is null) yield break;

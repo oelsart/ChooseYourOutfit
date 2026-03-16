@@ -20,6 +20,7 @@
   <CYO.Tip.ColonistButton>Select the colonist to show in the preview.\nThe apparels displayed in the apparel list is restricted to that can be worn by the colonist specified by this button.</CYO.Tip.ColonistButton>
   <CYO.Tip.Researched>The list of apparels can be restricted to those with recipes that have been currently researched.</CYO.Tip.Researched>
   <CYO.Tip.InStorage>This list can be restricted to those currently in storage for this map.</CYO.Tip.InStorage>
+  <CYO.Tip.ApparelCount>Count of apparel items on the current map.\n(Stored items + Colonist equipment + Outfit stand equipment)</CYO.Tip.ApparelCount>
   <CYO.Tip.ApplyHitPoints>Apply the hit points filter of the current policy to the "Currently in Storage" filter.</CYO.Tip.ApplyHitPoints>
   <CYO.Tip.ApplyQuality>Apply the quality filter of the current policy to the "Currently in Storage" filter.</CYO.Tip.ApplyQuality>
   <CYO.Tip.Checkbox>Whether or not this apparel is reflected in the preview.\nThis is also possible to use to specify apparel to be added by "Add Bills To WorkTables" button.</CYO.Tip.Checkbox>
@@ -54,6 +55,7 @@
   <CYO.Settings.HideUnregistrable>Hide apparel that cannot be registered in the filter.</CYO.Settings.HideUnregistrable>
   <CYO.Settings.ShowResearchedButton>Show "Currently Researched" button.</CYO.Settings.ShowResearchedButton>
   <CYO.Settings.ShowInStorageButton>Show "Currently in Storage" button.</CYO.Settings.ShowInStorageButton>
+  <CYO.Settings.ShowApparelCount>Show the amount of apparel on the current map.</CYO.Settings.ShowApparelCount>
   <CYO.Settings.ShowAddBillsButton>Show "Add Bills To WorkTables" button.</CYO.Settings.ShowAddBillsButton>
   <CYO.Settings.IgnoreBillLimit>Ignore the maximum number of bills.</CYO.Settings.IgnoreBillLimit>
   <CYO.Settings.ShowTooltips>Show tooltips to describe features.\n(Only the description of the features specific to this mod can be toggled)</CYO.Settings.ShowTooltips>

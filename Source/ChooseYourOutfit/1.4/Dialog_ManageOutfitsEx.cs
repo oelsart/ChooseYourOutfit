@@ -654,7 +654,7 @@ public sealed class Dialog_ManageOutfitsEx : Dialog_ManageOutfits
 
             var apparel = apparelListToShow[index];
 
-            if (!apparel.Key) yield return () => GUI.DrawTexture(curItemRect, SolidColorMaterials.NewSolidColorTexture(new Color(0f, 0f, 0f, 0.3f)));
+            if (!apparel.Key) yield return () => Widgets.DrawBoxSolid(curItemRect, new Color(0f, 0f, 0f, 0.3f));
             if (SelectedApparels.Contains(apparel.Value)) yield return () => Widgets.DrawHighlightSelected(curItemRect);
 
             yield return () =>
