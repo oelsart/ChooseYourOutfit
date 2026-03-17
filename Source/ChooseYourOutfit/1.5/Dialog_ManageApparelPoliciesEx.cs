@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.U2D;
 using Verse;
 using Verse.Sound;
 using static ChooseYourOutfit.ModCompat;
@@ -14,6 +15,7 @@ using static ChooseYourOutfit.ModCompat;
 namespace ChooseYourOutfit;
 
 [StaticConstructorOnStartup]
+[HotSwap]
 public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicies
 {
     private PawnRenderTree selPawnRenderTree;
@@ -117,9 +119,9 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
 
     private static readonly Dictionary<Gender, Dictionary<string, List<List<Vector2>>>> Colliders = [];
 
-    private static readonly Dictionary<(Gender, string), Texture2D> unfilledParts = [];
+    private static readonly Dictionary<(Gender, string), Sprite> unfilledParts = [];
 
-    private static readonly Dictionary<(Gender, string), Texture2D> filledParts = [];
+    private static readonly Dictionary<(Gender, string), Sprite> filledParts = [];
     
     private static readonly ThingDef outfitStand = DefDatabase<ThingDef>.GetNamedSilentFail("Building_OutfitStand");
     
@@ -127,15 +129,20 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
 
     static Dialog_ManageApparelPoliciesEx()
     {
+        var atlas = ChooseYourOutfit.content.assetBundles.loadedAssetBundles
+            .Select(bundle => bundle.LoadAsset<SpriteAtlas>("PawnBodyAtlas"))
+            .FirstOrDefault(atlas => atlas is not null);
+            
         foreach (Gender gender in Enum.GetValues(typeof(Gender)))
         {
-            SVGs[gender] = XDocument.Load(ChooseYourOutfit.content.RootDir + @"/ButtonColliders/" + gender + ".svg");
+            SVGs[gender] = XDocument.Load($"{ChooseYourOutfit.content.RootDir}/ButtonColliders/{gender}.svg");
             Colliders[gender] = SVGInterpreter.SVGToPolygons(SVGs[gender]);
 
+            if (atlas is null) continue;
             foreach (var id in Colliders[gender].Keys)
             {
-                unfilledParts[(gender, id)] = ContentFinder<Texture2D>.Get($"ChooseYourOutfit/Body/{gender}/Unfilled/{id}", false);
-                filledParts[(gender, id)] = ContentFinder<Texture2D>.Get($"ChooseYourOutfit/Body/{gender}/Filled/{id}", false);
+                unfilledParts[(gender, id)] = atlas.GetSprite($"{gender}_{id}_Unfilled");
+                filledParts[(gender, id)] = atlas.GetSprite($"{gender}_{id}_Filled");
             }
         }
     }
@@ -805,17 +812,27 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
                 var unfilled = unfilledParts[(drawGender, part.Key)];
                 if (unfilled != null)
                 {
-                    GUI.DrawTexture(new Rect(pos, size), unfilled, ScaleMode.ScaleToFit, true, 0f, color * unhighlight + covered, 0f, 0f);
+                    DrawSprite(pos, size, unfilled, color * unhighlight + covered);
                 }
                 var filled = filledParts[(drawGender, part.Key)];
-                if (filled != null)
+                if (filled != null && alpha.a > 0f)
                 {
-                    GUI.DrawTexture(new Rect(pos, size), filledParts[(drawGender, part.Key)], ScaleMode.ScaleToFit, true, 0f, color * alpha * unhighlight + covered, 0f, 0f);
+                    DrawSprite(pos, size, filled, color * alpha * unhighlight + covered);
                 }
             }, true);
             return;
             float VectorX(Vector2 v) => v.x;
             float VectorY(Vector2 v) => v.y;
+            static void DrawSprite(Vector2 pos, Vector2 size, Sprite sprite, Color color)
+            {
+                var bl = sprite.uv[0];
+                var tr = sprite.uv[3];
+                var uvRect = new Rect(bl.x, tr.y, tr.x - bl.x, bl.y - tr.y);
+                var tmpColor = GUI.color;
+                GUI.color = color;
+                GUI.DrawTextureWithTexCoords(new Rect(pos, size), sprite.texture, uvRect, true);
+                GUI.color = tmpColor;
+            }
         });
 
         if (!isInAnyPolygon)
