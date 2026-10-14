@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+	  <LangVersion>preview</LangVersion>
+    <RootNamespace>ChooseYourOutfit.MaterialFilterPatch</RootNamespace>
+    <AssemblyName>MaterialFilterPatch</AssemblyName>
+    <OutDir>..\..\..\1.7\MaterialFilter\Assemblies</OutDir>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <ImplicitUsings>true</ImplicitUsings>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.7.4977-alpha.1" />
+    <PackageReference Include="Lib.Harmony" Version="3.0.0-rc.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ChooseYourOutfit\ChooseYourOutfit.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MaterialFilter">
+      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\1541305730\1.6\Assemblies\MaterialFilter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

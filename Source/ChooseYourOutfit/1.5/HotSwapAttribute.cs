@@ -1,7 +1,0 @@
-﻿using System;
-
-namespace ChooseYourOutfit;
-
-public sealed class HotSwapAllAttribute : Attribute;
-public sealed class HotSwapAttribute : Attribute;
-public sealed class IgnoreHotSwapAttribute : Attribute;

@@ -3,18 +3,23 @@
     <li>/</li>
     <li>1.4</li>
     <li IfModActive="KamiKatze.MaterialFilter">1.4/MaterialFilter</li>
-	<li>LegacyTextures</li>
+	<li>RawTextures</li>
   </v1.4>
   <v1.5>
     <li>/</li>
     <li>1.5</li>
     <li IfModActive="KamiKatze.MaterialFilter">1.5/MaterialFilter</li>
-	<li>LegacyTextures</li>
+	<li>RawTextures</li>
   </v1.5>
   <v1.6>
     <li>/</li>
     <li>1.6</li>
     <li IfModActive="KamiKatze.MaterialFilter">1.6/MaterialFilter</li>
-	<li>Common</li>
   </v1.6>
+  <v1.7>
+    <li>/</li>
+    <li>1.7</li>
+    <li IfModActive="KamiKatze.MaterialFilter">1.7/MaterialFilter</li>
+	<li>RawTextures</li>
+  </v1.7>
 </loadFolders>
