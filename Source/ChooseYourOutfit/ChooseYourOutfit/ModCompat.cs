@@ -150,7 +150,7 @@ public static class ModCompat
 			{
 				var apparelPolicy = Current.Game.outfitDatabase.MakeNewOutfit();
 				SetApparelPolicy(dialog, apparelPolicy);
-				Find.WindowStack.Add(GetDialog(LoadFilterDialog, "Apparel_Management", apparelPolicy.filter));
+				Find.WindowStack.Add(GetDialog(LoadFilterDialog, "Apparel_Management", apparelPolicy));
 			}
 
 			var selectedPolicy = GetSelectedPolicy(dialog);
@@ -159,21 +159,21 @@ public static class ModCompat
 				if (Widgets.ButtonText(new Rect(inRect.xMax - 155f, 15f, 75f, 35f),
 					    "SaveStorageSettings.LoadOutfit".Translate(), true, false))
 				{
-					Find.WindowStack.Add(GetDialog(LoadFilterDialog, "Apparel_Management", selectedPolicy.filter));
+					Find.WindowStack.Add(GetDialog(LoadFilterDialog, "Apparel_Management", selectedPolicy));
 				}
 
 				if (Widgets.ButtonText(new Rect(inRect.xMax - 75f, 15f, 75f, 35f), "SaveStorageSettings.SaveOutfit".Translate(),
 					    true, false))
 				{
-					Find.WindowStack.Add(GetDialog(SaveFilterDialog, "Apparel_Management", selectedPolicy.filter));
+					Find.WindowStack.Add(GetDialog(SaveFilterDialog, "Apparel_Management", selectedPolicy));
 				}
 			}
 
 			return;
 
-			Window GetDialog(Type type, string str, ThingFilter filter)
+			Window GetDialog(Type type, string str, ApparelPolicy policy)
 			{
-				return (Window)Activator.CreateInstance(type, AccessTools.all, null, [str, filter], null);
+				return (Window)Activator.CreateInstance(type, AccessTools.all, null, [str, policy], null);
 			}
 		}
 	}
