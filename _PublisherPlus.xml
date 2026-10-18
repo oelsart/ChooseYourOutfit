@@ -2,7 +2,7 @@
 <Configuration>
   <Excluded>
     <exclude>.git</exclude>
-    <exclude>.vs</exclude>
+    <exclude>Directory.Build.targets</exclude>
     <exclude>Source</exclude>
   </Excluded>
 </Configuration>

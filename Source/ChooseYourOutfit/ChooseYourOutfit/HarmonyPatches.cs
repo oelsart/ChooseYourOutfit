@@ -2,10 +2,7 @@
 using RimWorld;
 using System.Reflection;
 using System.Reflection.Emit;
-using LudeonTK;
-using UnityEngine;
 using Verse;
-using static ChooseYourOutfit.ModCompat;
 
 namespace ChooseYourOutfit;
 
@@ -68,101 +65,6 @@ internal static class Patch_PawnColumnWorker_Outfit_Button_GenerateMenu
 		codes.RemoveAt(pos - 1);
 		codes.RemoveAt(pos - 2);
 		return codes;
-	}
-}
-
-//Policy編集ボタン3つを右端からポリシー名の横に変える
-[HarmonyPatch]
-internal static class Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents
-{
-	private static MethodInfo TargetMethod()
-	{
-		var generic = typeof(Dialog_ManagePolicies<ApparelPolicy>);
-		return AccessTools.Method(generic, nameof(Window.DoWindowContents));
-	}
-
-	private static List<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-	{
-		var codes = instructions.ToList();
-		var m_LabelEllipses = ((Delegate)Widgets.LabelEllipses).Method;
-		var pos = codes.FindIndex(c => c.Calls(m_LabelEllipses));
-		const float WindowMargin = 18f;
-		var root = generator.DeclareLocal(typeof(float));
-
-		var label = generator.DefineLabel();
-		codes[pos].labels.Add(label);
-		codes.InsertRange(pos, [
-			CodeInstruction.LoadArgument(0),
-			CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
-			new CodeInstruction(OpCodes.Brfalse_S, label),
-			new CodeInstruction(OpCodes.Dup),
-			CodeInstruction.Call(typeof(Text), nameof(Text.CalcSize)),
-			CodeInstruction.LoadField(typeof(Vector2), "x"),
-			new CodeInstruction(OpCodes.Ldc_R4, WindowMargin),
-			new CodeInstruction(OpCodes.Ldc_R4, 194f),
-			new CodeInstruction(OpCodes.Add),
-			new CodeInstruction(OpCodes.Add),
-			new CodeInstruction(OpCodes.Ldc_R4, WindowMargin + 488f),
-			CodeInstruction.Call(typeof(Math), "Min", [typeof(float), typeof(float)]),
-			new CodeInstruction(OpCodes.Stloc_S, root),
-			CodeInstruction.LoadLocal(4, true),
-			new CodeInstruction(OpCodes.Ldc_R4, WindowMargin + 488f),
-			new CodeInstruction(OpCodes.Call, AccessTools.PropertySetter(typeof(Rect), nameof(Rect.xMax)))
-		]);
-
-		var pos2 = codes.FindIndex(pos, c => c.LoadsConstant("DeletePolicyTip"));
-		var label2 = generator.DefineLabel();
-		var label3 = generator.DefineLabel();
-		var offset = generator.DeclareLocal(typeof(float));
-		var m_OffsetButton = AccessTools.Method(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents),
-			nameof(OffsetButton));
-		codes[pos2].labels.Add(label2);
-		codes.InsertRange(pos2, [
-			CodeInstruction.LoadArgument(0),
-			CodeInstruction.Call(typeof(Patch_Dialog_ManagePolicies_ApparelPolicy_DoWindowContents), nameof(MoveButtons)),
-			new CodeInstruction(OpCodes.Brfalse_S, label2),
-			new CodeInstruction(OpCodes.Ldc_R4, 0f),
-			new CodeInstruction(OpCodes.Stloc_S, offset),
-			CodeInstruction.LoadLocal(13),
-			new CodeInstruction(OpCodes.Brtrue_S, label3),
-			CodeInstruction.LoadLocal(8, true),
-			new CodeInstruction(OpCodes.Ldloc_S, root),
-			new CodeInstruction(OpCodes.Ldloca_S, offset),
-			new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
-			CodeInstruction.LoadLocal(7, true).WithLabels(label3),
-			new CodeInstruction(OpCodes.Ldloc_S, root),
-			new CodeInstruction(OpCodes.Ldloca_S, offset),
-			new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
-			CodeInstruction.LoadLocal(6, true),
-			new CodeInstruction(OpCodes.Ldloc_S, root),
-			new CodeInstruction(OpCodes.Ldloca_S, offset),
-			new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton),
-			CodeInstruction.LoadLocal(5, true),
-			new CodeInstruction(OpCodes.Ldloc_S, root),
-			new CodeInstruction(OpCodes.Ldloca_S, offset),
-			new CodeInstruction(opcode: OpCodes.Call, m_OffsetButton)
-		]);
-		return codes;
-	}
-
-	private static bool MoveButtons(Window dialog)
-	{
-		return !ChooseYourOutfit.Settings.disableAddedUI && dialog is Dialog_ManageApparelPoliciesEx;
-	}
-
-	private static void OffsetButton(ref Rect rect, float root, ref float offset)
-	{
-		rect.x = root + offset;
-		offset += 42f;
-	}
-
-	[DebugAction("ChooseYourOutfit")]
-	private static void RepatchButtonOffset()
-	{
-		var target = TargetMethod();
-		var patch = ((Delegate)Transpiler).Method;
-		HarmonyPatches.Instance.Unpatch(target, patch);
-		HarmonyPatches.Instance.Patch(target, transpiler: patch);
 	}
 }
 

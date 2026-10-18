@@ -2,6 +2,7 @@
 using MaterialFilter;
 using System.Reflection;
 using System.Reflection.Emit;
+using MaterialFilter.Patches;
 using Verse;
 
 namespace ChooseYourOutfit.MaterialFilterPatch;
@@ -16,10 +17,10 @@ internal class HarmonyPatches
     }
 }
 
-[HarmonyPatch(typeof(Dialog_ManageApparelPolicies_DoWindowContents_Patch), nameof(Dialog_ManageApparelPolicies_DoWindowContents_Patch.drawFilterButton))]
+[HarmonyPatch(typeof(Dialog_ManageApparelPolicies_DoWindowContents_Patch), nameof(Dialog_ManageApparelPolicies_DoWindowContents_Patch.Postfix))]
 internal static class Patch_MaterialFilter_drawFilterButton
 {
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+	public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         List<CodeInstruction> codes = [.. instructions];
         var pos = codes.FindIndex(c => c.opcode == OpCodes.Newobj && ((ConstructorInfo)c.operand).DeclaringType == typeof(MaterialFilterWindow));

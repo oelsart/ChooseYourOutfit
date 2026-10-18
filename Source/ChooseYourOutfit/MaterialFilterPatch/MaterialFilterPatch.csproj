@@ -14,7 +14,7 @@
   
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.7.4977-alpha.1" />
-    <PackageReference Include="Lib.Harmony" Version="3.0.0-rc.2" />
+    <PackageReference Include="Lib.Harmony" Version="3.0.0-rc.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ChooseYourOutfit\ChooseYourOutfit.csproj">
@@ -23,7 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MaterialFilter">
-      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\1541305730\1.6\Assemblies\MaterialFilter.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\3698331639\1.6\Assemblies\MaterialFilter.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -191,11 +191,27 @@ public sealed class Dialog_ManageApparelPoliciesEx : Dialog_ManageApparelPolicie
 
 	public override void DoWindowContents(Rect inRect)
 	{
-		base.DoWindowContents(inRect);
-		if (ChooseYourOutfit.Settings.disableAddedUI) return;
+		if (ChooseYourOutfit.Settings.disableAddedUI || SelectedPolicy is null)
+		{
+			base.DoWindowContents(inRect);
+			return;
+		}
+
+		var label = SelectedPolicy.label;
+		var isDefault = SelectedPolicy == GetDefaultPolicy();
+		if (isDefault)
+			label += $" ({"default".Translate()})";
+		float labelWidth;
+		using (new TextBlock(GameFont.Medium))
+		{
+			labelWidth = Text.CalcSize(label).x;
+		}
+		var root = Mathf.Min(labelWidth + Margin + 194f, Margin + 488f);
+		var xMax = root + 42f * (isDefault ? 3f : 4f);
+		base.DoWindowContents(inRect.LeftPartPixels(xMax));
 
 		//baseのDoWindowContentsメソッドの後に追加の衣装選択インターフェイスを描画する
-		if (SelectedPolicy == null) return;
+		if (SelectedPolicy is null) return;
 
 		if (Input.GetMouseButtonUp(0))
 		{
